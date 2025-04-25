@@ -3,75 +3,43 @@ body {
   max-width: 640px;
   margin: 2rem auto;
   padding: 0 1rem;
-  color: #333;
+  color: #fff;
+  background: #000;
   line-height: 1.5;
 }
 
 header, footer {
   text-align: center;
+  color: #0ff;
 }
 
 a {
-  color: #0366d6;
+  color: #0ff;
   text-decoration: none;
 }
 a:hover {
   text-decoration: underline;
 }
 
-/* Extensión Neon Work Clock */
+/* Sección de imagen panorámica */
 #extension {
+  display: flex;
+  justify-content: center;
   padding: 4rem 1rem;
   background: #111;
-  color: #f1f1f1;
 }
-#extension h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2.25rem;
-  color: #0ff;
-  text-shadow: 0 0 8px rgba(0,255,255,0.7);
-}
-.ext-card {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  align-items: flex-start;
-}
-.ext-img img {
-  max-width: 300px;
+#extension .ext-img img {
+  max-width: 100%;
+  height: auto;
   border: 4px solid #0ff;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0,255,255,0.5);
-}
-.ext-info {
-  max-width: 400px;
-  line-height: 1.5;
-}
-.ext-info p {
-  margin-bottom: 1rem;
-}
-.btn-install {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background: #0ff;
-  color: #111;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 4px;
-}
-.btn-install:hover {
-  opacity: 0.85;
 }
 
 /* Demo interactivo Neon Work Clock */
 #neon-demo {
   text-align: center;
   margin: 4rem 0;
-  color: #fff;
-  font-family: sans-serif;
 }
 #neon-demo h2 {
   margin-bottom: 1.5rem;
