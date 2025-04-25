@@ -7,52 +7,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main>
-    <!-- Sección de imagen a pantalla completa -->
-    <section id="extension">
-      <img src="assets/working-clock.png" alt="Neon Work Clock">
-    </section>
-
-    <!-- Demo interactivo Neon Work Clock -->
-    <section id="neon-demo">
-      <h2>Live Demo: Neon Work Clock</h2>
-      <div class="clock">
-        <div id="status" class="status">WORKING</div>
-        <div id="display" class="time">00:00:00</div>
-      </div>
-      <button id="toggle">Toggle Status</button>
-    </section>
-  </main>
-
-  <script>
-  (() => {
-    const display = document.getElementById('display');
-    const statusEl = document.getElementById('status');
-    const toggle = document.getElementById('toggle');
-
-    let start = Date.now();
-    let working = true;
-
-    function pad(n){ return n < 10 ? '0' + n : n; }
-
-    function tick() {
-      const diff = Date.now() - start;
-      const h = Math.floor(diff / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      display.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-      requestAnimationFrame(tick);
-    }
-
-    toggle.addEventListener('click', () => {
-      working = !working;
-      statusEl.textContent = working ? 'WORKING' : 'OFF WORK';
-      statusEl.classList.toggle('off');
-      start = Date.now();
-    });
-
-    tick();
-  })();
-  </script>
+  <!-- Sección de imagen a pantalla completa -->
+  <section id="extension">
+    <img src="assets/working-clock.png" alt="Neon Work Clock" />
+  </section>
 </body>
 </html>
