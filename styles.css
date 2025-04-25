@@ -1,21 +1,12 @@
-/* Reset y estilos básicos */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; }
-
-body {
-  font-family: sans-serif;
-  background: #000;
-  margin: 0;
-}
-
-/* Imagen full-screen */
 #extension {
-  position: fixed;
-  inset: 0;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
-  z-index: -1;
+  margin: 0;
+  padding: 0;
 }
-#extension img {
+
+#extension video {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
