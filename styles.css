@@ -1,14 +1,28 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 #extension {
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 
 #extension video {
   width: 100vw;
   height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
   object-fit: cover;
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #000;
 }
