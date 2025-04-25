@@ -7,9 +7,17 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Sección de imagen a pantalla completa -->
+  <!-- Sección de video a pantalla completa -->
   <section id="extension">
-    <img src="assets/working-clock.png" alt="Neon Work Clock" />
+    <video src="assets/video.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; display: block;"></video>
+    <!-- 
+      - src="assets/video.mp4": Cambia este valor si tu video está en otra ruta.
+      - autoplay: El video inicia automáticamente.
+      - loop: El video se repite.
+      - muted: El video está sin sonido (requerido por la mayoría de navegadores para autoplay).
+      - playsinline: Para evitar pantalla completa automática en móviles.
+      - style: Ajusta tamaño para ocupar el ancho de la sección.
+    -->
   </section>
 </body>
 </html>
