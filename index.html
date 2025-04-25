@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Clientes – Servicio Financiero</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Bienvenido a Clientes</h1>
+    <p>Próximamente aquí podrás solicitar tus reportes financieros.</p>
+  </header>
+
+  <main>
+    <!-- Sección de extensión -->
+    <section id="extension" class="container">
+      <h2>Neon Work Clock – New Tab</h2>
+      <div class="ext-card">
+        <div class="ext-img">
+          <a href="https://chrome.google.com/webstore/detail/neon-work-clock-newtab/ikckgihkcenlmafeeheiadmdlpfppaij" target="_blank">
+            <img src="assets/working-clock.png" alt="Captura Neon Work Clock">
+          </a>
+        </div>
+        <div class="ext-info">
+          <p><strong>Versión:</strong> 1.4.0</p>
+          <p><strong>Tamaño:</strong> &lt; 1 MB</p>
+          <p><strong>Descripción:</strong><br>
+             Displays a beautiful neon interface showing working status and time in a new tab, you can control and count working time, etc.
+          </p>
+          <p><strong>Permisos:</strong><br>
+             • Replace new tab page<br>
+             • Read most visited sites list<br>
+             • Show notifications
+          </p>
+          <a class="btn-install"
+             href="https://chrome.google.com/webstore/detail/neon-work-clock-newtab/ikckgihkcenlmafeeheiadmdlpfppaij"
+             target="_blank">
+            ➕ Añadir a Chrome
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo interactivo -->
+    <section id="neon-demo">
+      <h2>Live Demo: Neon Work Clock</h2>
+      <div class="clock">
+        <div id="status" class="status">WORKING</div>
+        <div id="display" class="time">00:00:00</div>
+      </div>
+      <button id="toggle">Toggle Status</button>
+    </section>
+  </main>
+
+  <footer>
+    <small>© 2025 Tu Empresa</small>
+  </footer>
+
+  <script>
+  (() => {
+    const display = document.getElementById('display');
+    const statusEl = document.getElementById('status');
+    const toggle = document.getElementById('toggle');
+
+    let start = Date.now();
+    let working = true;
+
+    function pad(n){ return n < 10 ? '0' + n : n; }
+
+    function tick() {
+      const diff = Date.now() - start;
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      display.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+      requestAnimationFrame(tick);
+    }
+
+    toggle.addEventListener('click', () => {
+      working = !working;
+      statusEl.textContent = working ? 'WORKING' : 'OFF WORK';
+      statusEl.classList.toggle('off');
+      start = Date.now();
+    });
+
+    tick();
+  })();
+  </script>
+</body>
+</html>
