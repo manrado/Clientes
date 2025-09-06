@@ -2,15 +2,172 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Clientes – Servicio de información financiera</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manrado - Automatización Contable y Fiscal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/silueta_blanca.ico" type="image/x-ico">
+
+  <style>
+    /* Paleta y fuentes */
+    :root {
+      --bg-dark: #0a0a1a;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0c0;
+      --cyan: #00eaff;
+      --magenta: #ff00d4;
+      --blue-soft: #2a3a9a;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background:
+        radial-gradient(ellipse at center, rgba(42,58,154,0.25) 0%, transparent 70%),
+        var(--bg-dark);
+      background-attachment: fixed;
+    }
+    .font-pixel-title { font-family: 'Press Start 2P', cursive; }
+    .font-pixel-data  { font-family: 'VT323', monospace; }
+
+    /* Glitch */
+    @keyframes glitch{
+      0%{text-shadow:.05em 0 0 var(--cyan),-.05em 0 0 var(--magenta)}
+      25%{text-shadow:-.05em 0 0 var(--cyan),.05em 0 0 var(--magenta)}
+      50%{text-shadow:.02em .02em 0 var(--cyan),-.02em -.02em 0 var(--magenta)}
+      75%{text-shadow:.05em 0 0 var(--cyan),-.05em 0 0 var(--magenta)}
+      100%{text-shadow:none}
+    }
+    .glitch-hover:hover{animation:glitch .3s cubic-bezier(.25,.46,.45,.94) both}
+
+    /* Pulso datos */
+    @keyframes pulse{
+      0%,100%{text-shadow:0 0 5px var(--cyan),0 0 10px var(--cyan)}
+      50%{text-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan)}
+    }
+    .data-pulse{color:var(--cyan);animation:pulse 2s infinite ease-in-out}
+
+    /* Tarjetas servicio */
+    .service-card{background:#0f172a;border:2px solid var(--blue-soft);transition:border-color .3s, transform .3s;position:relative}
+    .service-card:hover{border-color:var(--magenta);transform:translateY(-4px)}
+    .service-card-title::before{content:'>';color:var(--magenta);position:absolute;left:1rem;opacity:0;transition:opacity .3s}
+    .service-card:hover .service-card-title::before{opacity:1}
+
+    /* Utilidades para Tailwind */
+    .border-blue-soft{border-color:var(--blue-soft)!important}
+    .bg-blue-soft-30{background-color:rgba(42,58,154,.30)!important}
+
+    /* Scanlines suaves para coherencia retro */
+    .crt-wrap{position:relative}
+    .crt-wrap::after{
+      content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;
+      background-image:repeating-linear-gradient(to bottom,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 1px,transparent 2px,transparent 4px);
+      mix-blend-mode:overlay
+    }
+  </style>
 </head>
-<body>
-  <!-- Sección de video a pantalla completa -->
-  <section id="extension">
-    <video src="assets/video.mp4" autoplay loop muted playsinline></video>
-  </section>
+<body class="bg-black text-slate-200">
+
+  <!-- Header -->
+  <header class="bg-black/70 backdrop-blur-sm shadow-lg shadow-cyan/10 sticky top-0 z-50 border-b border-slate-800">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="#" class="font-pixel-title text-xl text-white glitch-hover">Manrado<span class="text-cyan-400">.</span></a>
+      <a href="#contacto" class="glitch-hover bg-cyan-400 text-black font-bold px-4 py-2">Contactar</a>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-6 py-12 md:py-20">
+
+    <!-- Hero coherente con la imagen -->
+    <section class="text-center mb-16 md:mb-24 flex flex-col items-center">
+      <div class="crt-wrap mb-12 w-full max-w-xl mx-auto rounded-none border-4 border-blue-soft shadow-lg shadow-cyan-500/20">
+        <!-- Using the existing working-clock image as a placeholder -->
+        <img src="assets/working-clock.png"
+             alt="Pixel art financiero: núcleo azul, barras doradas y flujos en cian"
+             class="w-full h-auto block">
+      </div>
+
+      <h1 class="font-pixel-title text-3xl md:text-5xl mb-4 leading-tight">
+        <span class="text-cyan-400">Automatización Contable/Fiscal</span>
+        <span class="block text-white mt-3">para Decisiones Precisas.</span>
+      </h1>
+      <p class="max-w-3xl mx-auto text-lg text-slate-400 mb-8 font-pixel-data tracking-wider">
+        Integramos CFDI, Bancos y CONTPAQi® con Python y SQL. Datos confiables para dirigir con precisión.
+      </p>
+      <a href="#servicios" class="glitch-hover bg-slate-800 border-2 border-slate-600 text-white font-bold px-8 py-3 rounded-none inline-block">
+        Nuestros Servicios
+      </a>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="mb-16 md:mb-24">
+      <h2 class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Soluciones a la Medida</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Contabilidad</h3>
+          <p class="text-slate-400">Cierres y estados financieros trazables y alineados con SAT.</p>
+        </div>
+        <div class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Integración</h3>
+          <p class="text-slate-400">CFDI y Bancos conectados a CONTPAQi® con validación por UUID.</p>
+        </div>
+        <div class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Automatización</h3>
+          <p class="text-slate-400">Extracción y conciliación con Python y SQL. Cero retrabajo.</p>
+        </div>
+        <div class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Auditorías</h3>
+          <p class="text-slate-400">Paquetes listos para dirección o auditor externo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultados -->
+    <section id="resultados" class="mb-16 md:mb-24 bg-blue-soft-30 p-8 md:p-12 rounded-none border-2 border-blue-soft">
+      <h2 class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Resultados [STATS]</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center max-w-4xl mx-auto">
+        <div>
+          <p class="font-pixel-data text-6xl md:text-7xl mb-2 data-pulse">90%</p>
+          <p class="text-slate-400 text-lg">Cierres más rápidos</p>
+        </div>
+        <div>
+          <p class="font-pixel-data text-6xl md:text-7xl mb-2 data-pulse">-80%</p>
+          <p class="text-slate-400 text-lg">Menos retrabajo</p>
+        </div>
+        <div>
+          <p class="font-pixel-data text-6xl md:text-7xl mb-2 data-pulse">3 DÍAS</p>
+          <p class="text-slate-400 text-lg">Paquetes de auditoría</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="text-center bg-blue-soft-30 text-white p-8 md:p-16 rounded-none">
+      <h2 class="font-pixel-title text-2xl md:text-3xl mb-4">Optimiza tu gestión financiera</h2>
+      <p class="max-w-2xl mx-auto text-lg text-slate-300 mb-8 font-pixel-data tracking-wider">
+        Escríbenos para integrar CFDI, Bancos y CONTPAQi® con Python/SQL.
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+        <a href="mailto:info@manrado.com" class="glitch-hover w-full sm:w-auto flex items-center justify-center gap-2 bg-cyan-400 text-black font-bold py-3 px-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          info@manrado.com
+        </a>
+        <a href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" class="glitch-hover w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-800 text-white font-bold py-3 px-6 border-2 border-slate-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          LinkedIn
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-800 mt-16">
+    <div class="container mx-auto px-6 py-6 text-center text-slate-500">
+      <p class="font-pixel-data">&copy; 2025 Manrado. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
