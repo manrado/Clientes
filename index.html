@@ -1,16 +1,290 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Clientes – Servicio de información financiera</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="assets/silueta_blanca.ico" type="image/x-ico">
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Manrado - Análisis de Información Financiera</title>
+  <meta name="description" content="Información financiera clara y trazable para decisiones precisas. Integración CFDI–bancos–contabilidad, procesos eficientes y paquetes listos para auditoría."/>
+  <meta name="theme-color" content="#0a0a0a"/>
+  <link rel="icon" href="assets/silueta_blanca.ico" type="image/x-icon">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://manrado.com/"/>
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="Manrado - Análisis de Información Financiera"/>
+  <meta property="og:description" content="Transformamos tus datos en decisiones precisas y accionables."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://manrado.com/"/>
+  <meta property="og:image" content="https://raw.githubusercontent.com/manrado/Clientes/main/20250905_2015_M%C3%A9tricas%20Financieras%20Digitales_remix_01k4ect8h2eyytbk9amttemft1.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Manrado - Análisis de Información Financiera"/>
+  <meta name="twitter:description" content="Transformamos tus datos en decisiones precisas y accionables."/>
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/manrado/Clientes/main/20250905_2015_M%C3%A9tricas%20Financieras%20Digitales_remix_01k4ect8h2eyytbk9amttemft1.jpg"/>
+
+  <!-- Tailwind (prototipo). Para producción: compilar y minificar. -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-dark:#0a0a0a; --text-primary:#e0e0e0; --cyan:#00eaff; --magenta:#39ff14; --blue-soft:#1a1a3a; --matrix-green:#39ff14;
+    }
+    body{font-family:Inter,sans-serif;color:var(--text-primary);background:var(--bg-dark)}
+    .font-pixel-title{font-family:'Press Start 2P',cursive}
+    .font-pixel-data{font-family:'VT323',monospace}
+
+    /* Canvas decorativo */
+    #matrix-bg{position:fixed;inset:0;z-index:-1;opacity:.1}
+
+    /* Glitch */
+    @keyframes glitch{
+      0%{text-shadow:.05em 0 0 var(--cyan),-.05em 0 0 var(--magenta)}
+      25%{text-shadow:-.05em 0 0 var(--cyan),.05em 0 0 var(--magenta)}
+      50%{text-shadow:.02em .02em 0 var(--cyan),-.02em -.02em 0 var(--magenta)}
+      75%{text-shadow:.05em 0 0 var(--cyan),-.05em 0 0 var(--magenta)}
+      100%{text-shadow:none}
+    }
+    .glitch-hover:hover{animation:glitch .3s cubic-bezier(.25,.46,.45,.94) both}
+
+    /* Pulso datos */
+    @keyframes pulse{0%,100%{text-shadow:0 0 5px var(--cyan),0 0 10px var(--cyan)}50%{text-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan)}}
+    .data-pulse{color:var(--cyan);animation:pulse 2s infinite ease-in-out}
+
+    /* Tarjetas */
+    .service-card{background:#0f172a;border:2px solid var(--blue-soft);transition:border-color .3s,transform .3s;position:relative}
+    .service-card:hover{border-color:var(--magenta);transform:translateY(-4px)}
+    .service-card-title::before{content:'>';color:var(--magenta);position:absolute;left:1rem;opacity:0;transition:opacity .3s}
+    .service-card:hover .service-card-title::before{opacity:1}
+    .border-blue-soft{border-color:var(--blue-soft)!important}
+    .bg-blue-soft-30{background-color:rgba(0,0,0,.30)!important}
+
+    /* CRT */
+    .crt-wrap{position:relative}
+    .crt-wrap::after{
+      content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;
+      background-image:repeating-linear-gradient(to bottom,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 1px,transparent 2px,transparent 4px);
+      mix-blend-mode:overlay
+    }
+
+    /* Skip link y Foco visible */
+    .skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip-link:focus{left:1rem;top:1rem;width:auto;height:auto;background:#fff;color:#000;padding:.5rem 1rem;z-index:9999;border-radius:4px}
+    :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 2px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .data-pulse, .glitch-hover:hover { animation: none; }
+    }
+  </style>
 </head>
-<body>
-  <!-- Sección de video a pantalla completa -->
-  <section id="extension">
-    <video src="assets/video.mp4" autoplay loop muted playsinline></video>
-  </section>
+<body class="bg-black text-slate-200 h-full">
+  <a href="#contenido" class="skip-link">Saltar al contenido</a>
+  <canvas id="matrix-bg" aria-hidden="true"></canvas>
+
+  <!-- Header -->
+  <header class="bg-black/70 backdrop-blur-sm shadow-lg shadow-cyan/10 sticky top-0 z-50 border-b border-slate-800">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center" aria-label="Principal">
+      <a href="https://manrado.com/" class="font-pixel-title text-xl text-white glitch-hover">Manrado<span class="text-cyan-400">.</span></a>
+      <a href="#contacto" class="glitch-hover bg-cyan-400 text-black font-bold px-4 py-2">Contactar</a>
+    </nav>
+  </header>
+
+  <main id="contenido" class="container mx-auto px-6 py-12 md:py-20">
+    <!-- Hero -->
+    <section class="text-center mb-16 md:mb-24 flex flex-col items-center">
+      <div class="crt-wrap mb-12 w-full max-w-xl mx-auto rounded-none border-4 border-blue-soft shadow-lg shadow-cyan-500/20 overflow-hidden">
+        <figure class="m-0">
+          <video
+            class="w-full h-auto block"
+            autoplay loop muted playsinline preload="metadata"
+            poster="https://raw.githubusercontent.com/manrado/Clientes/main/20250905_2015_M%C3%A9tricas%20Financieras%20Digitales_remix_01k4ect8h2eyytbk9amttemft1.jpg">
+            <source src="https://github.com/manrado/Clientes/raw/main/Pixel_Art_Growth_and_Data_Transmission.mp4" type="video/mp4"/>
+            <!-- Añade un <source src="video.webm" type="video/webm"> si tienes ese formato -->
+            Tu navegador no soporta el elemento de video.
+          </video>
+        </figure>
+      </div>
+
+      <h1 class="font-pixel-title text-3xl md:text-5xl mb-4 leading-tight">
+        <span class="text-cyan-400">Análisis de Información</span>
+        <span class="block text-white mt-3">Financiera.</span>
+      </h1>
+      <p class="max-w-3xl mx-auto text-lg text-slate-300 mb-8 font-pixel-data tracking-wider">
+        Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.
+      </p>
+      <a href="#servicios" class="glitch-hover bg-slate-800 border-2 border-slate-600 text-white font-bold px-8 py-3 rounded-none inline-block">
+        Nuestros Servicios
+      </a>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" aria-labelledby="servicios-titulo" class="mb-16 md:mb-24">
+      <h2 id="servicios-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Nuestras Capacidades</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <article class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Análisis Contable</h3>
+          <p class="text-slate-400">Cierres y estados financieros trazables y alineados con SAT.</p>
+        </article>
+        <article class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Integridad de Datos</h3>
+          <p class="text-slate-400">Unificación de CFDI y bancos con tu sistema contable para mayor control.</p>
+        </article>
+        <article class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Procesos Eficientes</h3>
+          <p class="text-slate-400">Menos tareas repetitivas, menos errores, más tiempo para decidir.</p>
+        </article>
+        <article class="service-card p-6 h-full">
+          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Soporte a Auditoría</h3>
+          <p class="text-slate-400">Paquetes ordenados para dirección o auditores externos.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Resultados -->
+    <section id="resultados" aria-labelledby="resultados-titulo" class="mb-16 md:mb-24 bg-blue-soft-30 p-8 md:p-12 rounded-none border-2 border-blue-soft">
+      <h2 id="resultados-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Resultados que Impulsamos</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center max-w-5xl mx-auto">
+        <div>
+          <h3 class="font-pixel-data text-4xl md:text-5xl mb-4 data-pulse">AGILIDAD</h3>
+          <p class="text-slate-400 text-lg">Cierres contables más rápidos y eficientes.</p>
+        </div>
+        <div>
+          <h3 class="font-pixel-data text-4xl md:text-5xl mb-4 data-pulse">PRECISIÓN</h3>
+          <p class="text-slate-400 text-lg">Integridad de datos y menos retrabajo manual.</p>
+        </div>
+        <div>
+          <h3 class="font-pixel-data text-4xl md:text-5xl mb-4 data-pulse">CLARIDAD</h3>
+          <p class="text-slate-400 text-lg">Paquetes listos para decisión y auditoría.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" aria-labelledby="contacto-titulo" class="text-center bg-blue-soft-30 text-white p-8 md:p-16 rounded-none">
+      <h2 id="contacto-titulo" class="font-pixel-title text-2xl md:text-3xl mb-4">¿Hablamos de tu proyecto?</h2>
+      <p class="max-w-2xl mx-auto text-lg text-slate-300 mb-8 font-pixel-data tracking-wider">
+        Cuéntanos tu situación y te proponemos un plan claro y accionable.
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+        <a href="mailto:info@manrado.com?subject=Consulta%20Manrado" class="glitch-hover w-full sm:w-auto flex items-center justify-center gap-2 bg-cyan-400 text-black font-bold py-3 px-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          info@manrado.com
+        </a>
+        <a href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener noreferrer" class="glitch-hover w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-800 text-white font-bold py-3 px-6 border-2 border-slate-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          LinkedIn
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-800 mt-16">
+    <div class="container mx-auto px-6 py-6 text-center text-slate-500">
+      <p class="font-pixel-data">&copy; 2025 Manrado. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Datos estructurados -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Manrado",
+    "url": "https://manrado.com/",
+    "email": "info@manrado.com",
+    "logo": "https://manrado.com/icon.png",
+    "sameAs": ["https://www.linkedin.com/in/miguel-ramirez-3700a0196"]
+  }
+  </script>
+
+  <!-- Animación Matrix optimizada -->
+  <script>
+    (function(){
+      const canvas = document.getElementById('matrix-bg');
+      const ctx = canvas.getContext('2d');
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      const COL_W = 20;
+      const CHAR_H = 20;
+      const SPEED = 50;
+      const bgFade = 'rgba(10,10,26,0.05)';
+      const matrixGreen = getComputedStyle(document.documentElement).getPropertyValue('--matrix-green').trim();
+
+      let cols, ypos, rafId = null, lastTs = 0;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function resize(){
+        width = window.innerWidth;
+        height = window.innerHeight;
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        cols = Math.floor(width / COL_W) + 1;
+        ypos = new Array(cols).fill(0).map((_, i) => Math.random() * height);
+      }
+
+      function frame(ts){
+        if (!lastTs) lastTs = ts;
+        const dt = (ts - lastTs) / 1000;
+        lastTs = ts;
+
+        ctx.fillStyle = bgFade;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = matrixGreen;
+        ctx.font = '15pt VT323';
+
+        for (let i = 0; i < cols; i++) {
+          const x = i * COL_W;
+          const y = ypos[i];
+          ctx.fillText(Math.random() < 0.5 ? '0' : '1', x, y);
+
+          const reset = height + CHAR_H;
+          ypos[i] = (y > reset) ? 0 : y + Math.max(CHAR_H, SPEED * dt);
+        }
+        rafId = requestAnimationFrame(frame);
+      }
+
+      function start(){
+        if (reduceMotion) return;
+        if (rafId) cancelAnimationFrame(rafId);
+        lastTs = 0;
+        rafId = requestAnimationFrame(frame);
+      }
+
+      function stop(){
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      }
+
+      let resizeTimer;
+      window.addEventListener('resize', ()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resize, 150);
+      });
+      document.addEventListener('visibilitychange', ()=>{
+        if (document.hidden) stop(); else start();
+      });
+      
+      resize();
+      start();
+    })();
+  </script>
 </body>
 </html>
