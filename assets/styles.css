@@ -1,0 +1,275 @@
+/* Manrado - Optimized Styles for Financial Consulting */
+
+:root {
+  --bg-dark: #0a0a0a;
+  --text-primary: #e0e0e0;
+  --cyan: #00eaff;
+  --magenta: #39ff14;
+  --blue-soft: #1a1a3a;
+  --matrix-green: #39ff14;
+  --accent-professional: #0891b2; /* More professional cyan */
+  --text-secondary: #94a3b8;
+  --border-subtle: #334155;
+}
+
+body {
+  font-family: Inter, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-dark);
+}
+
+.font-pixel-title {
+  font-family: 'Press Start 2P', cursive;
+}
+
+.font-pixel-data {
+  font-family: 'VT323', monospace;
+}
+
+/* Professional typography alternatives */
+.font-professional {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Canvas decorativo */
+#matrix-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.08; /* Reduced for more professional look */
+}
+
+/* Glitch effects - toned down for professionalism */
+@keyframes glitch {
+  0% {
+    text-shadow: 0.05em 0 0 var(--accent-professional), -0.05em 0 0 var(--magenta);
+  }
+  25% {
+    text-shadow: -0.05em 0 0 var(--accent-professional), 0.05em 0 0 var(--magenta);
+  }
+  50% {
+    text-shadow: 0.02em 0.02em 0 var(--accent-professional), -0.02em -0.02em 0 var(--magenta);
+  }
+  75% {
+    text-shadow: 0.05em 0 0 var(--accent-professional), -0.05em 0 0 var(--magenta);
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+.glitch-hover:hover {
+  animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Professional pulse animation */
+@keyframes pulse-professional {
+  0%, 100% {
+    text-shadow: 0 0 5px var(--accent-professional), 0 0 10px var(--accent-professional);
+    opacity: 1;
+  }
+  50% {
+    text-shadow: 0 0 10px var(--accent-professional), 0 0 20px var(--accent-professional);
+    opacity: 0.8;
+  }
+}
+
+.data-pulse {
+  color: var(--accent-professional);
+  animation: pulse-professional 2s infinite ease-in-out;
+}
+
+/* Enhanced service cards */
+.service-card {
+  background: #0f172a;
+  border: 2px solid var(--border-subtle);
+  transition: all 0.3s ease;
+  position: relative;
+  border-radius: 8px; /* Slightly rounded for professionalism */
+}
+
+.service-card:hover {
+  border-color: var(--accent-professional);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(8, 145, 178, 0.15);
+}
+
+.service-card-title::before {
+  content: '>';
+  color: var(--accent-professional);
+  position: absolute;
+  left: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.service-card:hover .service-card-title::before {
+  opacity: 1;
+}
+
+.border-blue-soft {
+  border-color: var(--border-subtle) !important;
+}
+
+.bg-blue-soft-30 {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(30, 41, 59, 0.2) 100%) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Professional CRT effect */
+.crt-wrap {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.crt-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08; /* Reduced for cleaner look */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.12) 0,
+    rgba(255, 255, 255, 0.12) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Accessibility improvements */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  background: #fff;
+  color: #000;
+  padding: 0.5rem 1rem;
+  z-index: 9999;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-professional);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Trust signals styling */
+.trust-signal {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.trust-signal:hover {
+  border-color: var(--accent-professional);
+  transform: translateY(-2px);
+}
+
+/* Enhanced buttons */
+.btn-primary {
+  background: var(--accent-professional);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  background: #0e7490;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent-professional);
+  border: 2px solid var(--accent-professional);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-professional);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Insights section styling */
+.insight-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.insight-card:hover {
+  border-color: var(--accent-professional);
+  transform: translateY(-2px);
+}
+
+.insight-card h3 {
+  color: var(--accent-professional);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .service-card {
+    margin-bottom: 1rem;
+  }
+  
+  .font-pixel-title {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .data-pulse, .glitch-hover:hover {
+    animation: none;
+  }
+  
+  .service-card:hover, .trust-signal:hover, .btn-primary:hover, .btn-secondary:hover {
+    transform: none;
+  }
+}
