@@ -4,16 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Manrado — Análisis de Información Financiera</title>
-  <meta name="description" content="Optimizamos tus procesos con integración de datos (CFDI, bancos, contabilidad) para cierres ágiles y auditorías simplificadas." />
+  <meta name="description" content="Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría." />
   <meta name="theme-color" content="#0b1526" />
   <link rel="canonical" href="https://manrado.com/" />
   
-  <!-- Open Graph -->
   <meta property="og:title" content="Manrado — Análisis de Información Financiera" />
-  <meta property="og:description" content="Optimizamos tus procesos con integración de datos para cierres ágiles y auditorías simplificadas." />
+  <meta property="og:description" content="Integración CFDI–bancos–contabilidad para cierres más rápidos, menos errores y paquetes listos para auditoría." />
   <meta property="og:url" content="https://manrado.com/" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" />
 
   <style>
     :root{
@@ -24,46 +23,129 @@
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
     .skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-    .skip:focus{position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.6rem 1rem;border-radius:.5rem;background:#fff;color:#000;z-index:999}
+    .skip:focus{position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.6rem 1rem;border-radius:.5rem;background:#fff;color:#000;z-index:9999}
     
-    header{position:sticky;top:0;background:linear-gradient(180deg, rgba(11,21,38,.95), rgba(11,21,38,.75));backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid rgba(255,255,255,.06);z-index:10}
-    .nav{max-width:var(--max);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem}
-    .brand{font-weight:700;font-size:1.1rem;letter-spacing:.3px}
-    .brand b{color:#fff}
-    .menu{display:flex;gap:1rem;align-items:center;}
-    .menu a{padding:.4rem .6rem;border-radius:.5rem;color:var(--ink-2);transition: all .2s ease;}
-    .menu a:hover{background:var(--muted);color:var(--ink)}
+    header{position:sticky;top:0;background:linear-gradient(180deg, rgba(11,21,38,.9), rgba(11,21,38,.7));backdrop-filter:saturate(140%) blur(8px);-webkit-backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid rgba(255,255,255,.06);z-index:100}
+    .nav{max-width:var(--max);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem; height: 64px; box-sizing: border-box;}
+    .brand{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.1rem;letter-spacing:.3px}
     
-    .btn{display:inline-block;padding:.8rem 1.2rem;border-radius:.75rem;background:var(--accent);color:#071225;font-weight:600;border:1px solid rgba(0,0,0,.1);transition: all .2s ease;}
+    .menu{display:flex;gap:.5rem;align-items:center;}
+    .menu a{padding:.4rem .8rem;border-radius:.5rem;color:var(--ink-2);transition: all .2s ease-in-out;}
+    .menu a:hover{background:var(--muted);color:var(--ink);text-decoration: none;}
+    
+    .btn{display:inline-block;padding:.8rem 1.4rem;border-radius:.75rem;background:var(--accent);color:#071225;font-weight:600;border:1px solid rgba(0,0,0,.1);transition: all .2s ease-in-out;}
     .btn:hover{text-decoration:none;filter:brightness(1.1);transform: translateY(-2px);}
     
-    .hero{position:relative;isolation:isolate;background:radial-gradient(1200px 500px at 50% -10%, #17325d 10%, transparent 60%), var(--bg)}
-    .hero-media{position:absolute;inset:0;z-index:-1;opacity:.25}
+    .hero{position:relative;isolation:isolate; background-color: var(--bg);}
+    .hero::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: -2;
+        background: radial-gradient(ellipse at 50% -20%, #17325d 10%, transparent 60%);
+    }
+    .hero-media{position:absolute;inset:0;z-index:-1;opacity:.3; mix-blend-mode: screen;}
     .hero video,.hero img{object-fit:cover;width:100%;height:100%;display:block}
     
     .wrap{max-width:var(--max);margin:auto;padding:2rem 1rem}
-    .section-padding { padding-top: 3rem; padding-bottom: 3rem; }
-    .h1{font-size:clamp(2.2rem,5vw,3.5rem);line-height:1.15;margin:0 0 .8rem;font-weight:700;}
-    .lead{color:var(--ink-2);font-size:clamp(1.1rem,2vw,1.2rem);max-width: 65ch;}
+    .section-padding { padding-top: 4rem; padding-bottom: 4rem; }
+    .h1{font-size:clamp(2.4rem,5vw,3.8rem);line-height:1.15;margin:0 0 .8rem;font-weight:800;letter-spacing:-1px;}
+    .lead{color:var(--ink-2);font-size:clamp(1.1rem,2vw,1.25rem);max-width: 65ch;}
     
     .grid{display:grid;gap:1.5rem}
-    @media(min-width:720px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1024px){.grid-4{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:768px){.grid-3{grid-template-columns:repeat(3,1fr)}}
     @media(min-width:640px){.grid-2{grid-template-columns:repeat(2,1fr)}}
     
-    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;transition: all .3s ease;}
-    .card:hover{transform: translateY(-5px); border-color: rgba(95, 179, 255, 0.4);}
-    .card h3{margin:.8rem 0 .3rem;font-size:1.1rem;color: var(--ink);}
-    .card .icon { color: var(--accent); margin-bottom: 0.5rem; }
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;transition: all .3s ease-in-out; display: flex; flex-direction: column;}
+    .card:hover{transform: translateY(-6px); border-color: rgba(95, 179, 255, 0.4);}
+    .card h3{margin:.8rem 0 .4rem;font-size:1.2rem;color: var(--ink);}
+    .card p { margin-top: auto; }
+    .card .icon { color: var(--accent); margin-bottom: 0.5rem; transition: transform .3s ease-in-out; }
+    .card:hover .icon { transform: scale(1.1); }
 
     .kpi{display:flex;align-items:center;gap:.6rem;font-weight:600;}
     .kpi .dot{width:.6rem;height:.6rem;border-radius:999px;display:inline-block}
     
-    .section h2{margin:0 0 .5rem;font-size:clamp(1.5rem, 4vw, 2rem); line-height: 1.2;}
+    .section h2{margin:0 0 .5rem;font-size:clamp(1.8rem, 4vw, 2.5rem); line-height: 1.2;font-weight:700;}
     .muted{color:var(--ink-2)}
     
     footer{border-top:1px solid rgba(255,255,255,.06)}
-    .footer{max-width:var(--max);margin:auto;padding:2rem 1rem;color:var(--ink-2);display:grid;gap:.8rem}
-    .pill{display:inline-block;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:.25rem .8rem;color:var(--ink-2);font-size:.9rem;margin-bottom: 1rem;}
+    .footer{max-width:var(--max);margin:auto;padding:3rem 1rem;color:var(--ink-2);display:grid;gap:1rem; text-align: center;}
+
+    .moodborder{
+        position:fixed;top:0;left:0;width:100%;height:3px;
+        background: linear-gradient(90deg, var(--accent), var(--ok), var(--warn), var(--accent));
+        background-size: 200% 100%;
+        z-index:9999;
+        animation: moodborder-anim 4s linear infinite;
+    }
+    
+    .hero .btn {
+      animation: pulse-btn 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    
+    .mobile-menu-btn, .desktop-menu { display: none; }
+    
+    /* Mobile Navigation */
+    @media (max-width: 768px) {
+      .desktop-menu { display: none; }
+      .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--ink);
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 1001;
+      }
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 64px; right: 0; left: 0;
+        flex-direction: column;
+        background: rgba(15, 29, 54, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 2rem;
+        gap: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+        animation: slide-down .3s ease-in-out;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .nav-links a {
+        font-size: 1.2rem;
+        text-align: center;
+      }
+      .nav-links .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Desktop Navigation */
+    @media (min-width: 769px) {
+        .desktop-menu { display: flex; }
+        .mobile-menu-btn { display: none; }
+        .nav-links { display: flex !important; }
+    }
+
+    @keyframes moodborder-anim {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    @keyframes pulse-btn {
+        0% { box-shadow: 0 0 0 0 rgba(95, 179, 255, 0.5); }
+        70% { box-shadow: 0 0 0 12px rgba(95, 179, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(95, 179, 255, 0); }
+    }
+    @keyframes slide-down {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
   <script type="application/ld+json">
   {
@@ -75,103 +157,201 @@
   }
   </script>
 </head>
-<body>
+<body id="top">
+  <div class="moodborder"></div>
   <a href="#contenido" class="skip">Saltar al contenido</a>
 
   <header>
     <nav class="nav" aria-label="Primaria">
-      <a class="brand" href="#"><span>Manrado<span>.<b></b></span></a>
-      <div class="menu">
+      <a class="brand" href="#top">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 7L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 7L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 22V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Manrado</span>
+      </a>
+      
+      <!-- Desktop Menu -->
+      <div class="menu desktop-menu">
         <a href="#servicios">Servicios</a>
+        <a href="#metodologia">Metodología</a>
+        <a href="#confianza">Confianza</a>
+        <a class="btn" href="#contacto">Contactar</a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- Mobile/Toggled Menu Links -->
+      <div class="menu nav-links" id="nav-links">
+        <a href="#servicios">Servicios</a>
+        <a href="#metodologia">Metodología</a>
         <a href="#confianza">Confianza</a>
         <a href="#contacto">Contacto</a>
-        <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">Contactar</a>
+        <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">Enviar Correo</a>
       </div>
     </nav>
   </header>
 
   <section class="hero" aria-label="Portada">
     <div class="hero-media" aria-hidden="true">
-      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" alt="Dashboard con gráficas financieras abstractas">
+      <img src="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" alt="Pantallas con dashboards y análisis de datos financieros.">
     </div>
-    <div class="wrap" style="padding:5rem 1rem 6rem">
-      <p class="pill">Análisis de Información Financiera</p>
-      <h1 class="h1">Decisiones precisas basadas<br/>en datos confiables.</h1>
-      <p class="lead">Optimizamos tus procesos a través de la integración de datos (CFDI, bancos, contabilidad). El resultado es información clara para cierres ágiles y auditorías simplificadas.</p>
-      <p style="margin-top:1.5rem"><a class="btn" href="#contacto">¿Hablamos de tu proyecto?</a></p>
+    <div class="wrap" style="padding:6rem 1rem 7rem">
+      <h1 class="h1">Análisis de Información Financiera.</h1>
+      <p class="lead">Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.</p>
+      <p style="margin-top:2rem"><a class="btn" href="#contacto">¿Hablamos de tu proyecto?</a></p>
     </div>
   </section>
 
-  <main id="contenido" class="wrap" role="main">
-    <section id="servicios" class="section section-padding" aria-labelledby="t-servicios">
-      <h2 id="t-servicios">Nuestros Servicios</h2>
-      <p class="muted">Planes claros y accionables para ordenar la información financiera y acelerar decisiones.</p>
-      <div class="grid grid-3" style="margin-top:1.5rem">
+  <main id="contenido" role="main">
+    <section id="servicios" class="section section-padding wrap" aria-labelledby="t-servicios">
+      <h2 id="t-servicios">Nuestras Capacidades</h2>
+      <p class="muted lead" style="max-width: 75ch;">Transformamos datos dispersos en información clara y accionable para la toma de decisiones.</p>
+      <div class="grid grid-4" style="margin-top:2rem">
         <article class="card">
-          <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
-          <h3>Diagnóstico de Cierre</h3><p class="muted">Mapeo de fuentes, brechas y tiempos de corte. Priorización por impacto.</p>
+          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
+          <h3>Análisis Contable</h3><p class="muted">Cierres y estados financieros trazables y alineados con SAT.</p>
         </article>
         <article class="card">
-          <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
-          <h3>Automatización Ligera</h3><p class="muted">Flujos para integrar CFDI, bancos y contabilidad con controles básicos.</p>
+          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></div>
+          <h3>Integridad de Datos</h3><p class="muted">Unificación de CFDI y bancos con tu sistema contable para mayor control.</p>
         </article>
         <article class="card">
-          <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
-          <h3>Paquetes para Dirección</h3><p class="muted">Estados y anexos listos para revisión o auditoría externa.</p>
+          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+          <h3>Procesos Eficientes</h3><p class="muted">Menos tareas repetitivas, menos errores, más tiempo para decidir.</p>
+        </article>
+        <article class="card">
+          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
+          <h3>Soporte a Auditoría</h3><p class="muted">Paquetes ordenados para dirección o auditores externos.</p>
         </article>
       </div>
     </section>
 
-    <section id="confianza" class="section section-padding" aria-labelledby="t-confianza">
+    <section id="metodologia" class="section section-padding" style="background: var(--bg-2);" aria-labelledby="t-metodologia">
+      <div class="wrap">
+        <h2 id="t-metodologia">Nuestra Metodología</h2>
+        <p class="muted lead" style="max-width: 75ch;">Un enfoque estructurado para garantizar resultados consistentes y medibles.</p>
+        <div class="grid grid-3" style="margin-top:2rem">
+          <article class="card" style="background: var(--bg);">
+            <h3>1. Diagnóstico</h3>
+            <p class="muted">Entendemos tus procesos actuales, sistemas y puntos de dolor para definir el alcance y los objetivos del proyecto.</p>
+          </article>
+          <article class="card" style="background: var(--bg);">
+            <h3>2. Implementación</h3>
+            <p class="muted">Integramos tus fuentes de datos (CFDI, bancos) y optimizamos los flujos de trabajo para asegurar la consistencia y precisión.</p>
+          </article>
+          <article class="card" style="background: var(--bg);">
+            <h3>3. Acompañamiento</h3>
+            <p class="muted">Te apoyamos en los cierres mensuales, preparamos tus reportes y capacitamos a tu equipo para mantener la eficiencia.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="confianza" class="section section-padding wrap" aria-labelledby="t-confianza">
         <h2 id="t-confianza">Generamos Confianza</h2>
-        <p class="muted">Nuestros clientes valoran la claridad y el orden que aportamos a sus operaciones.</p>
-        <div class="grid grid-2" style="margin-top:1.5rem">
+        <p class="muted lead" style="max-width: 75ch;">Nuestros clientes valoran la claridad y el orden que aportamos a sus operaciones.</p>
+        <div class="grid grid-2" style="margin-top:2rem">
             <article class="card">
                 <p class="muted" style="font-style: italic;">"El nivel de orden y claridad que Manrado trajo a nuestros cierres mensuales fue transformador. Ahora tenemos visibilidad total y confianza en los números."</p>
-                <h3 style="margin-top: 1rem; font-size: 1rem;">Directora de Finanzas<br><span class="muted" style="font-size: .9rem;">Startup de E-commerce</span></h3>
+                <h3 style="margin-top: 1.5rem; font-size: 1rem;">Directora de Finanzas<br><span class="muted" style="font-size: .9rem;">Startup de E-commerce</span></h3>
             </article>
             <article class="card">
                 <p class="muted" style="font-style: italic;">"El proceso de auditoría solía ser nuestra mayor fuente de estrés. Con los paquetes que nos preparan, ahora es un proceso fluido y sin sorpresas."</p>
-                <h3 style="margin-top: 1rem; font-size: 1rem;">Gerente de Contabilidad<br><span class="muted" style="font-size: .9rem;">Empresa de Logística</span></h3>
+                <h3 style="margin-top: 1.5rem; font-size: 1rem;">Gerente de Contabilidad<br><span class="muted" style="font-size: .9rem;">Empresa de Logística</span></h3>
             </article>
         </div>
     </section>
     
-    <section class="section section-padding" aria-labelledby="t-resultados">
+    <section id="resultados" class="section section-padding" style="background: var(--bg-2);" aria-labelledby="t-resultados">
+      <div class="wrap">
       <h2 id="t-resultados">Resultados que Impulsamos</h2>
-      <div class="grid grid-3" style="margin-top:1.5rem">
-        <article class="card">
+      <div class="grid grid-3" style="margin-top:2rem">
+        <article class="card" style="background: var(--bg);">
           <div class="kpi"><span class="dot" style="background:var(--ok)"></span>AGILIDAD</div>
-          <p class="muted" style="margin-top: .5rem;">Cierres contables más rápidos y eficientes.</p>
+          <p class="muted" style="margin-top: .5rem;">Reducción significativa en el tiempo de cierre contable, liberando a tu equipo para análisis de mayor valor.</p>
         </article>
-        <article class="card">
+        <article class="card" style="background: var(--bg);">
           <div class="kpi"><span class="dot" style="background:var(--warn)"></span>PRECISIÓN</div>
-          <p class="muted" style="margin-top: .5rem;">Integridad de datos y menos retrabajo manual.</p>
+          <p class="muted" style="margin-top: .5rem;">Minimización de errores manuales y discrepancias, garantizando la integridad de tus datos financieros.</p>
         </article>
-        <article class="card">
+        <article class="card" style="background: var(--bg);">
           <div class="kpi"><span class="dot" style="background:var(--accent)"></span>CLARIDAD</div>
-          <p class="muted" style="margin-top: .5rem;">Paquetes listos para decisión y auditoría.</p>
+          <p class="muted" style="margin-top: .5rem;">Información financiera consolidada y paquetes de auditoría listos para la toma de decisiones estratégicas.</p>
         </article>
+      </div>
       </div>
     </section>
 
-    <section id="contacto" class="section section-padding" aria-labelledby="t-contacto">
-      <h2 id="t-contacto">¿Hablamos de tu proyecto?</h2>
-      <p class="muted">Cuéntanos tu situación y te proponemos un plan claro y accionable.</p>
-      <p style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">
-        <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">info@manrado.com</a>
-        <a class="btn" href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
-      </p>
+    <section id="contacto" class="section section-padding wrap" aria-labelledby="t-contacto">
+        <div style="max-width: 600px; margin: auto; text-align: center; background: var(--card); padding: 3rem 2rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.08);">
+            <h2 id="t-contacto">¿Listo para optimizar tus finanzas?</h2>
+            <p class="muted lead">Cuéntanos tu situación y te proponemos un plan claro y accionable. Sin compromiso.</p>
+            <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+                <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">info@manrado.com</a>
+                <a class="btn" style="background: var(--muted); color: var(--ink);" href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+        </div>
     </section>
   </main>
 
   <footer>
     <div class="footer">
-      <div>© 2025 Manrado. Todos los derechos reservados.</div>
+      <div>© <span id="copyright-year"></span> Manrado. Todos los derechos reservados.</div>
       <div class="muted">Contenido alineado con SAT y prácticas contables mexicanas.
-      <span aria-hidden="true">•</span> <a href="#">Volver arriba</a></div>
+      <span aria-hidden="true">•</span> <a href="#top">Volver arriba</a></div>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile Menu Toggle
+      const menuBtn = document.querySelector('.mobile-menu-btn');
+      const navLinks = document.querySelector('.nav-links');
+      if (menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+          const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
+          menuBtn.setAttribute('aria-expanded', !isExpanded);
+          navLinks.classList.toggle('active');
+          // Close menu when a link is clicked
+          navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+              menuBtn.setAttribute('aria-expanded', 'false');
+              navLinks.classList.remove('active');
+            });
+          });
+        });
+      }
+
+      // Smooth scroll for all anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+
+      // Set Copyright Year
+      const yearSpan = document.getElementById('copyright-year');
+      if(yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+      }
+    });
+  </script>
+
 </body>
 </html>
 
