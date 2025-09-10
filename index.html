@@ -1,438 +1,177 @@
-<!DOCTYPE html>
-<html lang="es" class="h-full">
+<!doctype html>
+<html lang="es-MX" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Manrado - Consultoría en Análisis Financiero | Integración CFDI y Auditoría</title>
-  <meta name="description" content="Consultoría especializada en análisis financiero para empresas. Integración CFDI-bancos-contabilidad, cierres ágiles y paquetes para auditoría. Reducimos tiempo de cierre 60%."/>
-  <meta name="keywords" content="consultoría financiera, análisis financiero, CFDI, auditoría, cierre contable, integración bancaria, SAT compliance"/>
-  <meta name="theme-color" content="#0a0a0a"/>
-  <link rel="icon" href="assets/silueta_blanca.ico" type="image/x-icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manrado — Análisis de Información Financiera</title>
+  <meta name="description" content="Optimizamos tus procesos con integración de datos (CFDI, bancos, contabilidad) para cierres ágiles y auditorías simplificadas." />
+  <meta name="theme-color" content="#0b1526" />
+  <link rel="canonical" href="https://manrado.com/" />
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Manrado — Análisis de Información Financiera" />
+  <meta property="og:description" content="Optimizamos tus procesos con integración de datos para cierres ágiles y auditorías simplificadas." />
+  <meta property="og:url" content="https://manrado.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" />
 
-  <!-- Canonical -->
-  <link rel="canonical" href="https://manrado.com/"/>
+  <style>
+    :root{
+      --bg:#0b1526; --bg-2:#0f1d36; --ink:#f5f7fb; --ink-2:#c7d0e1; --accent:#5fb3ff; --muted:#1b2b4a; --card:#0e1a2f; --ok:#2ec27e; --warn:#f6c244;
+      --max:1120px; --radius:16px;
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.5}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip:focus{position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.6rem 1rem;border-radius:.5rem;background:#fff;color:#000;z-index:999}
+    
+    header{position:sticky;top:0;background:linear-gradient(180deg, rgba(11,21,38,.95), rgba(11,21,38,.75));backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid rgba(255,255,255,.06);z-index:10}
+    .nav{max-width:var(--max);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem}
+    .brand{font-weight:700;font-size:1.1rem;letter-spacing:.3px}
+    .brand b{color:#fff}
+    .menu{display:flex;gap:1rem;align-items:center;}
+    .menu a{padding:.4rem .6rem;border-radius:.5rem;color:var(--ink-2);transition: all .2s ease;}
+    .menu a:hover{background:var(--muted);color:var(--ink)}
+    
+    .btn{display:inline-block;padding:.8rem 1.2rem;border-radius:.75rem;background:var(--accent);color:#071225;font-weight:600;border:1px solid rgba(0,0,0,.1);transition: all .2s ease;}
+    .btn:hover{text-decoration:none;filter:brightness(1.1);transform: translateY(-2px);}
+    
+    .hero{position:relative;isolation:isolate;background:radial-gradient(1200px 500px at 50% -10%, #17325d 10%, transparent 60%), var(--bg)}
+    .hero-media{position:absolute;inset:0;z-index:-1;opacity:.25}
+    .hero video,.hero img{object-fit:cover;width:100%;height:100%;display:block}
+    
+    .wrap{max-width:var(--max);margin:auto;padding:2rem 1rem}
+    .section-padding { padding-top: 3rem; padding-bottom: 3rem; }
+    .h1{font-size:clamp(2.2rem,5vw,3.5rem);line-height:1.15;margin:0 0 .8rem;font-weight:700;}
+    .lead{color:var(--ink-2);font-size:clamp(1.1rem,2vw,1.2rem);max-width: 65ch;}
+    
+    .grid{display:grid;gap:1.5rem}
+    @media(min-width:720px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:640px){.grid-2{grid-template-columns:repeat(2,1fr)}}
+    
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;transition: all .3s ease;}
+    .card:hover{transform: translateY(-5px); border-color: rgba(95, 179, 255, 0.4);}
+    .card h3{margin:.8rem 0 .3rem;font-size:1.1rem;color: var(--ink);}
+    .card .icon { color: var(--accent); margin-bottom: 0.5rem; }
 
-  <!-- Open Graph / Twitter -->
-  <meta property="og:title" content="Manrado - Consultoría en Análisis Financiero | Expertos en CFDI"/>
-  <meta property="og:description" content="Transformamos tus procesos financieros con integración CFDI-bancos-contabilidad. Cierres más rápidos, mayor precisión y auditorías eficientes."/>
-  <meta property="og:type" content="website"/>
-  <meta property="og:url" content="https://manrado.com/"/>
-  <meta property="og:image" content="https://raw.githubusercontent.com/manrado/Clientes/main/20250905_2015_M%C3%A9tricas%20Financieras%20Digitales_remix_01k4ect8h2eyytbk9amttemft1.jpg"/>
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Manrado - Consultoría en Análisis Financiero"/>
-  <meta name="twitter:description" content="Expertos en integración CFDI y optimización de procesos contables. Reducimos tiempo de cierre 60%."/>
-  <meta name="twitter:image" content="https://raw.githubusercontent.com/manrado/Clientes/main/20250905_2015_M%C3%A9tricas%20Financieras%20Digitales_remix_01k4ect8h2eyytbk9amttemft1.jpg"/>
-
-  <!-- Tailwind (prototipo). Para producción: compilar y minificar. -->
-  <script src="https://cdn.tailwindcss.com" defer></script>
-
-  <!-- Fuentes optimizadas -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilos externos para mejor cacheo -->
-  <link rel="stylesheet" href="assets/styles.css">
-</head>
-<body class="bg-black text-slate-200 h-full">
-  <a href="#contenido" class="skip-link">Saltar al contenido</a>
-  <canvas id="matrix-bg" aria-hidden="true"></canvas>
-
-  <!-- Header -->
-  <header class="bg-black/70 backdrop-blur-sm shadow-lg shadow-cyan/10 sticky top-0 z-50 border-b border-slate-800">
-    <nav class="container mx-auto px-6 py-4 flex justify-between items-center" aria-label="Principal">
-      <a href="https://manrado.com/" class="font-pixel-title text-xl text-white glitch-hover">Manrado<span class="text-cyan-400">.</span></a>
-      <a href="#contacto" class="glitch-hover bg-cyan-400 text-black font-bold px-4 py-2">Contactar</a>
-    </nav>
-  </header>
-
-  <main id="contenido" class="container mx-auto px-6 py-12 md:py-20">
-    <!-- Hero -->
-    <section class="text-center mb-16 md:mb-24 flex flex-col items-center">
-      <div class="crt-wrap mb-12 w-full max-w-xl mx-auto rounded-none border-4 border-blue-soft shadow-lg shadow-cyan-500/20 overflow-hidden">
-        <figure class="m-0">
-          <video
-            class="w-full h-auto block"
-            autoplay loop muted playsinline preload="metadata"
-            poster="assets/video.gif">
-            <source src="assets/video.mp4" type="video/mp4"/>
-            <!-- Añade un <source src="video.webm" type="video/webm"> si tienes ese formato -->
-            Tu navegador no soporta el elemento de video.
-          </video>
-        </figure>
-      </div>
-
-      <h1 class="font-pixel-title text-3xl md:text-5xl mb-4 leading-tight">
-        <span class="text-cyan-400">Información Financiera</span>
-        <span class="block text-white mt-3">Clara y Trazable.</span>
-      </h1>
-      <p class="max-w-3xl mx-auto text-lg text-slate-300 mb-8 font-pixel-data tracking-wider">
-        Integración CFDI–bancos–contabilidad + procesos eficientes = decisiones precisas, cierres ágiles y paquetes listos para auditoría.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <a href="#contacto" class="btn-primary glitch-hover">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          Agendar Consulta
-        </a>
-        <a href="#casos-exito" class="btn-secondary glitch-hover">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14,2 14,8 20,8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10,9 9,9 8,9"></polyline></svg>
-          Ver Casos de Éxito
-        </a>
-      </div>
-    </section>
-
-    <!-- Servicios -->
-    <section id="servicios" aria-labelledby="servicios-titulo" class="mb-16 md:mb-24">
-      <h2 id="servicios-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Nuestras Capacidades</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <article class="service-card p-6 h-full">
-          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Análisis Contable</h3>
-          <p class="text-slate-400">Cierres y estados financieros trazables y alineados con SAT.</p>
-        </article>
-        <article class="service-card p-6 h-full">
-          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Integridad de Datos</h3>
-          <p class="text-slate-400">Unificación de CFDI y bancos con tu sistema contable para mayor control.</p>
-        </article>
-        <article class="service-card p-6 h-full">
-          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Procesos Eficientes</h3>
-          <p class="text-slate-400">Menos tareas repetitivas, menos errores, más tiempo para decidir.</p>
-        </article>
-        <article class="service-card p-6 h-full">
-          <h3 class="service-card-title font-bold text-xl mb-3 text-cyan-400 pl-6">Soporte a Auditoría</h3>
-          <p class="text-slate-400">Paquetes ordenados para dirección o auditores externos.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- Casos de Éxito y Testimonios -->
-    <section id="casos-exito" aria-labelledby="casos-titulo" class="mb-16 md:mb-24">
-      <h2 id="casos-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Casos de Éxito</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        <article class="trust-signal">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="flex-shrink-0 w-12 h-12 bg-cyan-400 rounded-full flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0-6 0"></path><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"></path></svg>
-            </div>
-            <div>
-              <h3 class="font-bold text-xl text-cyan-400 mb-2">Empresa Manufacturera - Bajío</h3>
-              <p class="text-slate-400 mb-4">Reducción del 60% en tiempo de cierre contable y eliminación completa de diferencias entre bancos y contabilidad.</p>
-              <div class="flex items-center gap-2 text-sm text-slate-500">
-                <span class="data-pulse">Agilidad</span>
-                <span>•</span>
-                <span class="data-pulse">Precisión</span>
-              </div>
-            </div>
-          </div>
-        </article>
-        
-        <article class="trust-signal">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="flex-shrink-0 w-12 h-12 bg-cyan-400 rounded-full flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M7 4V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2"></path><path d="M17 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3Z"></path><path d="M9 12h6"></path><path d="M12 9v6"></path></svg>
-            </div>
-            <div>
-              <h3 class="font-bold text-xl text-cyan-400 mb-2">Distribuidora Nacional</h3>
-              <p class="text-slate-400 mb-4">Automatización completa del proceso de auditoría con paquetes digitales que redujeron el tiempo de revisión en 4 semanas.</p>
-              <div class="flex items-center gap-2 text-sm text-slate-500">
-                <span class="data-pulse">Claridad</span>
-                <span>•</span>
-                <span class="data-pulse">Eficiencia</span>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
-      
-      <div class="text-center">
-        <blockquote class="max-w-3xl mx-auto mb-6">
-          <p class="text-xl text-slate-300 font-pixel-data italic mb-4">
-            "Manrado transformó nuestra operación financiera. Lo que antes nos tomaba 15 días, ahora lo completamos en 3. La trazabilidad es impecable."
-          </p>
-          <footer class="text-slate-400">
-            <cite class="font-semibold text-cyan-400">— CFO, Grupo Industrial Mexicano</cite>
-          </footer>
-        </blockquote>
-      </div>
-    </section>
-
-    <!-- Acerca de Nosotros -->
-    <section id="acerca" aria-labelledby="acerca-titulo" class="mb-16 md:mb-24 bg-blue-soft-30 p-8 md:p-12 rounded-lg border-2 border-blue-soft">
-      <h2 id="acerca-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-8">Quiénes Somos</h2>
-      <div class="max-w-4xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h3 class="text-xl font-bold text-cyan-400 mb-4">Expertise Financiero + Innovación Tecnológica</h3>
-            <p class="text-slate-400 mb-4">
-              Somos un equipo especializado en análisis financiero con más de 10 años de experiencia ayudando a empresas medianas y grandes a optimizar sus procesos contables y financieros.
-            </p>
-            <p class="text-slate-400 mb-6">
-              Nuestra metodología combina conocimiento profundo de normativas fiscales mexicanas con herramientas tecnológicas avanzadas para entregar resultados precisos y accionables.
-            </p>
-            <div class="flex flex-wrap gap-3">
-              <span class="px-3 py-1 bg-cyan-400/20 text-cyan-400 rounded-full text-sm">CPA Certificado</span>
-              <span class="px-3 py-1 bg-cyan-400/20 text-cyan-400 rounded-full text-sm">SAT Compliance</span>
-              <span class="px-3 py-1 bg-cyan-400/20 text-cyan-400 rounded-full text-sm">IFRS</span>
-              <span class="px-3 py-1 bg-cyan-400/20 text-cyan-400 rounded-full text-sm">Auditoría Digital</span>
-            </div>
-          </div>
-          <div class="trust-signal">
-            <h4 class="font-bold text-lg mb-4 text-cyan-400">Miguel Ramírez</h4>
-            <p class="text-slate-400 mb-4">CEO & Fundador</p>
-            <p class="text-sm text-slate-500">
-              Contador Público certificado con especialización en tecnologías financieras. Ex-auditor senior en Big Four con experiencia en empresas Fortune 500.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Insights y Recursos -->
-    <section id="insights" aria-labelledby="insights-titulo" class="mb-16 md:mb-24">
-      <h2 id="insights-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Insights Financieros</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <article class="insight-card">
-          <h3>5 Claves para Optimizar tu Cierre Contable</h3>
-          <p class="text-slate-400 mb-4">Descubre cómo reducir el tiempo de cierre de 15 a 3 días con metodologías probadas y automatización inteligente.</p>
-          <a href="#contacto" class="text-cyan-400 hover:text-cyan-300 font-semibold text-sm flex items-center gap-2">
-            Leer más
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7,7 17,7 17,17"></polyline></svg>
-          </a>
-        </article>
-        
-        <article class="insight-card">
-          <h3>CFDI 4.0: Compliance Sin Complicaciones</h3>
-          <p class="text-slate-400 mb-4">Guía completa para mantener tu empresa al día con las últimas regulaciones del SAT sin afectar tu operación.</p>
-          <a href="#contacto" class="text-cyan-400 hover:text-cyan-300 font-semibold text-sm flex items-center gap-2">
-            Leer más
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7,7 17,7 17,17"></polyline></svg>
-          </a>
-        </article>
-        
-        <article class="insight-card">
-          <h3>Auditoría Digital: El Futuro es Ahora</h3>
-          <p class="text-slate-400 mb-4">Cómo preparar documentación digital que impresione a auditores y acelere el proceso de revisión externa.</p>
-          <a href="#contacto" class="text-cyan-400 hover:text-cyan-300 font-semibold text-sm flex items-center gap-2">
-            Leer más
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7,7 17,7 17,17"></polyline></svg>
-          </a>
-        </article>
-      </div>
-    </section>
-
-    <!-- Resultados -->
-    <section id="resultados" aria-labelledby="resultados-titulo" class="mb-16 md:mb-24 bg-blue-soft-30 p-8 md:p-12 rounded-none border-2 border-blue-soft">
-      <h2 id="resultados-titulo" class="font-pixel-title text-2xl md:text-3xl text-center mb-12">Resultados que Impulsamos</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center max-w-5xl mx-auto">
-        <div>
-          <h3 class="font-pixel-data text-4xl md:text-5xl mb-4 data-pulse">AGILIDAD</h3>
-          <p class="text-slate-400 text-lg">Cierres contables más rápidos y eficientes.</p>
-        </div>
-        <div>
-          <h3 class="font-pixel-data text-4xl md:text-5xl mb-4 data-pulse">PRECISIÓN</h3>
-          <p class="text-slate-400 text-lg">Integridad de datos y menos retrabajo manual.</p>
-        </div>
-        <div>
-          <h3 class="font-pixel-data text-4xl md:text-5xl mb-4 data-pulse">CLARIDAD</h3>
-          <p class="text-slate-400 text-lg">Paquetes listos para decisión y auditoría.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contacto -->
-    <section id="contacto" aria-labelledby="contacto-titulo" class="text-center bg-blue-soft-30 text-white p-8 md:p-16 rounded-lg">
-      <h2 id="contacto-titulo" class="font-pixel-title text-2xl md:text-3xl mb-4">¿Listo para Optimizar tus Finanzas?</h2>
-      <p class="max-w-2xl mx-auto text-lg text-slate-300 mb-8 font-pixel-data tracking-wider">
-        Agenda una consulta gratuita de 30 minutos y descubre cómo podemos acelerar tus procesos financieros.
-      </p>
-      
-      <!-- Opciones de contacto mejoradas -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-4xl mx-auto">
-        <div class="trust-signal text-center">
-          <div class="w-16 h-16 bg-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2 text-cyan-400">Consulta Inmediata</h3>
-          <p class="text-slate-400 text-sm">Respuesta en menos de 2 horas</p>
-        </div>
-        
-        <div class="trust-signal text-center">
-          <div class="w-16 h-16 bg-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2 text-cyan-400">Demo en Vivo</h3>
-          <p class="text-slate-400 text-sm">Videollamada de 30 minutos</p>
-        </div>
-        
-        <div class="trust-signal text-center">
-          <div class="w-16 h-16 bg-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14,2 14,8 20,8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10,9 9,9 8,9"></polyline></svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2 text-cyan-400">Diagnóstico Gratuito</h3>
-          <p class="text-slate-400 text-sm">Análisis inicial sin compromiso</p>
-        </div>
-      </div>
-      
-      <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-        <a href="mailto:info@manrado.com?subject=Consulta%20Gratuita%20-%20Manrado&body=Hola,%0D%0A%0D%0AMe%20interesa%20agendar%20una%20consulta%20gratuita%20para%20optimizar%20nuestros%20procesos%20financieros.%0D%0A%0D%0ANombre%20de%20la%20empresa:%20%0D%0AMi%20rol:%20%0D%0APrincipal%20desafío:%20%0D%0A%0D%0ASaludos" class="btn-primary glitch-hover">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          Agendar Consulta Gratuita
-        </a>
-        <a href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener noreferrer" class="btn-secondary glitch-hover">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-          Conectar en LinkedIn
-        </a>
-      </div>
-      
-      <div class="mt-8 pt-6 border-t border-slate-700">
-        <p class="text-sm text-slate-400">
-          💡 <strong>Garantía:</strong> Si no encuentras valor en nuestra consulta inicial, no pagas nada.
-        </p>
-      </div>
-    </section>
-  </main>
-
-  <footer class="border-t border-slate-800 mt-16">
-    <div class="container mx-auto px-6 py-6 text-center text-slate-500">
-      <p class="font-pixel-data">&copy; 2025 Manrado. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-
-  <!-- Datos estructurados mejorados -->
+    .kpi{display:flex;align-items:center;gap:.6rem;font-weight:600;}
+    .kpi .dot{width:.6rem;height:.6rem;border-radius:999px;display:inline-block}
+    
+    .section h2{margin:0 0 .5rem;font-size:clamp(1.5rem, 4vw, 2rem); line-height: 1.2;}
+    .muted{color:var(--ink-2)}
+    
+    footer{border-top:1px solid rgba(255,255,255,.06)}
+    .footer{max-width:var(--max);margin:auto;padding:2rem 1rem;color:var(--ink-2);display:grid;gap:.8rem}
+    .pill{display:inline-block;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:.25rem .8rem;color:var(--ink-2);font-size:.9rem;margin-bottom: 1rem;}
+  </style>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": "Manrado - Consultoría en Análisis Financiero",
-    "alternateName": "Manrado",
+    "name": "Manrado",
     "url": "https://manrado.com/",
     "email": "info@manrado.com",
-    "logo": "https://manrado.com/assets/silueta_blanca.ico",
-    "description": "Consultoría especializada en análisis financiero, integración CFDI-bancos-contabilidad y optimización de procesos contables para empresas.",
-    "areaServed": "México",
-    "serviceType": ["Análisis Financiero", "Integración CFDI", "Auditoría Digital", "Optimización Contable"],
-    "priceRange": "Consulta inicial gratuita",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "MX"
-    },
-    "founder": {
-      "@type": "Person",
-      "name": "Miguel Ramírez",
-      "jobTitle": "CEO & Fundador",
-      "description": "Contador Público certificado con especialización en tecnologías financieras"
-    },
-    "sameAs": ["https://www.linkedin.com/in/miguel-ramirez-3700a0196"],
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Servicios de Consultoría Financiera",
-      "itemListElement": [
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Análisis Contable",
-            "description": "Cierres y estados financieros trazables y alineados con SAT"
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Integridad de Datos",
-            "description": "Unificación de CFDI y bancos con sistema contable"
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Soporte a Auditoría",
-            "description": "Paquetes ordenados para dirección o auditores externos"
-          }
-        }
-      ]
-    }
+    "sameAs": [ "https://www.linkedin.com/in/miguel-ramirez-3700a0196" ]
   }
   </script>
+</head>
+<body>
+  <a href="#contenido" class="skip">Saltar al contenido</a>
 
-  <!-- Animación Matrix optimizada -->
-  <script>
-    (function(){
-      const canvas = document.getElementById('matrix-bg');
-      const ctx = canvas.getContext('2d');
-      let width = window.innerWidth;
-      let height = window.innerHeight;
-      let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  <header>
+    <nav class="nav" aria-label="Primaria">
+      <a class="brand" href="#"><span>Manrado<span>.<b></b></span></a>
+      <div class="menu">
+        <a href="#servicios">Servicios</a>
+        <a href="#confianza">Confianza</a>
+        <a href="#contacto">Contacto</a>
+        <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">Contactar</a>
+      </div>
+    </nav>
+  </header>
 
-      const COL_W = 20;
-      const CHAR_H = 20;
-      const SPEED = 50;
-      const bgFade = 'rgba(10,10,26,0.05)';
-      const matrixGreen = getComputedStyle(document.documentElement).getPropertyValue('--matrix-green').trim();
+  <section class="hero" aria-label="Portada">
+    <div class="hero-media" aria-hidden="true">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" alt="Dashboard con gráficas financieras abstractas">
+    </div>
+    <div class="wrap" style="padding:5rem 1rem 6rem">
+      <p class="pill">Análisis de Información Financiera</p>
+      <h1 class="h1">Decisiones precisas basadas<br/>en datos confiables.</h1>
+      <p class="lead">Optimizamos tus procesos a través de la integración de datos (CFDI, bancos, contabilidad). El resultado es información clara para cierres ágiles y auditorías simplificadas.</p>
+      <p style="margin-top:1.5rem"><a class="btn" href="#contacto">¿Hablamos de tu proyecto?</a></p>
+    </div>
+  </section>
 
-      let cols, ypos, rafId = null, lastTs = 0;
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  <main id="contenido" class="wrap" role="main">
+    <section id="servicios" class="section section-padding" aria-labelledby="t-servicios">
+      <h2 id="t-servicios">Nuestros Servicios</h2>
+      <p class="muted">Planes claros y accionables para ordenar la información financiera y acelerar decisiones.</p>
+      <div class="grid grid-3" style="margin-top:1.5rem">
+        <article class="card">
+          <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
+          <h3>Diagnóstico de Cierre</h3><p class="muted">Mapeo de fuentes, brechas y tiempos de corte. Priorización por impacto.</p>
+        </article>
+        <article class="card">
+          <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+          <h3>Automatización Ligera</h3><p class="muted">Flujos para integrar CFDI, bancos y contabilidad con controles básicos.</p>
+        </article>
+        <article class="card">
+          <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+          <h3>Paquetes para Dirección</h3><p class="muted">Estados y anexos listos para revisión o auditoría externa.</p>
+        </article>
+      </div>
+    </section>
 
-      function resize(){
-        width = window.innerWidth;
-        height = window.innerHeight;
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
+    <section id="confianza" class="section section-padding" aria-labelledby="t-confianza">
+        <h2 id="t-confianza">Generamos Confianza</h2>
+        <p class="muted">Nuestros clientes valoran la claridad y el orden que aportamos a sus operaciones.</p>
+        <div class="grid grid-2" style="margin-top:1.5rem">
+            <article class="card">
+                <p class="muted" style="font-style: italic;">"El nivel de orden y claridad que Manrado trajo a nuestros cierres mensuales fue transformador. Ahora tenemos visibilidad total y confianza en los números."</p>
+                <h3 style="margin-top: 1rem; font-size: 1rem;">Directora de Finanzas<br><span class="muted" style="font-size: .9rem;">Startup de E-commerce</span></h3>
+            </article>
+            <article class="card">
+                <p class="muted" style="font-style: italic;">"El proceso de auditoría solía ser nuestra mayor fuente de estrés. Con los paquetes que nos preparan, ahora es un proceso fluido y sin sorpresas."</p>
+                <h3 style="margin-top: 1rem; font-size: 1rem;">Gerente de Contabilidad<br><span class="muted" style="font-size: .9rem;">Empresa de Logística</span></h3>
+            </article>
+        </div>
+    </section>
+    
+    <section class="section section-padding" aria-labelledby="t-resultados">
+      <h2 id="t-resultados">Resultados que Impulsamos</h2>
+      <div class="grid grid-3" style="margin-top:1.5rem">
+        <article class="card">
+          <div class="kpi"><span class="dot" style="background:var(--ok)"></span>AGILIDAD</div>
+          <p class="muted" style="margin-top: .5rem;">Cierres contables más rápidos y eficientes.</p>
+        </article>
+        <article class="card">
+          <div class="kpi"><span class="dot" style="background:var(--warn)"></span>PRECISIÓN</div>
+          <p class="muted" style="margin-top: .5rem;">Integridad de datos y menos retrabajo manual.</p>
+        </article>
+        <article class="card">
+          <div class="kpi"><span class="dot" style="background:var(--accent)"></span>CLARIDAD</div>
+          <p class="muted" style="margin-top: .5rem;">Paquetes listos para decisión y auditoría.</p>
+        </article>
+      </div>
+    </section>
 
-        canvas.width = Math.floor(width * dpr);
-        canvas.height = Math.floor(height * dpr);
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    <section id="contacto" class="section section-padding" aria-labelledby="t-contacto">
+      <h2 id="t-contacto">¿Hablamos de tu proyecto?</h2>
+      <p class="muted">Cuéntanos tu situación y te proponemos un plan claro y accionable.</p>
+      <p style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">
+        <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">info@manrado.com</a>
+        <a class="btn" href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </section>
+  </main>
 
-        cols = Math.floor(width / COL_W) + 1;
-        ypos = new Array(cols).fill(0).map((_, i) => Math.random() * height);
-      }
-
-      function frame(ts){
-        if (!lastTs) lastTs = ts;
-        const dt = (ts - lastTs) / 1000;
-        lastTs = ts;
-
-        ctx.fillStyle = bgFade;
-        ctx.fillRect(0, 0, width, height);
-
-        ctx.fillStyle = matrixGreen;
-        ctx.font = '15pt VT323';
-
-        for (let i = 0; i < cols; i++) {
-          const x = i * COL_W;
-          const y = ypos[i];
-          ctx.fillText(Math.random() < 0.5 ? '0' : '1', x, y);
-
-          const reset = height + CHAR_H;
-          ypos[i] = (y > reset) ? 0 : y + Math.max(CHAR_H, SPEED * dt);
-        }
-        rafId = requestAnimationFrame(frame);
-      }
-
-      function start(){
-        if (reduceMotion) return;
-        if (rafId) cancelAnimationFrame(rafId);
-        lastTs = 0;
-        rafId = requestAnimationFrame(frame);
-      }
-
-      function stop(){
-        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-      }
-
-      let resizeTimer;
-      window.addEventListener('resize', ()=>{
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(resize, 150);
-      });
-      document.addEventListener('visibilitychange', ()=>{
-        if (document.hidden) stop(); else start();
-      });
-      
-      resize();
-      start();
-    })();
-  </script>
+  <footer>
+    <div class="footer">
+      <div>© 2025 Manrado. Todos los derechos reservados.</div>
+      <div class="muted">Contenido alineado con SAT y prácticas contables mexicanas.
+      <span aria-hidden="true">•</span> <a href="#">Volver arriba</a></div>
+    </div>
+  </footer>
 </body>
 </html>
+
