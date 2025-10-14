@@ -13,7 +13,7 @@
   <meta property="og:description" content="Integración CFDI–bancos–contabilidad para cierres más rápidos, menos errores y paquetes listos para auditoría." />
   <meta property="og:url" content="https://manrado.com/" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-159169ácie-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" />
 
   <style>
     :root{
@@ -132,6 +132,43 @@
         .mobile-menu-btn { display: none; }
         .nav-links { display: flex !important; }
     }
+    
+    /* New styles for detailed services section */
+    .service-category {
+        padding: 1.5rem;
+        background: rgba(11, 21, 38, 0.5);
+        border-radius: var(--radius);
+        border: 1px solid var(--muted);
+        display: flex;
+        flex-direction: column;
+    }
+    .service-category h3 {
+        color: var(--accent);
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        border-bottom: 1px solid var(--muted);
+        padding-bottom: 0.5rem;
+    }
+    .service-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex-grow: 1;
+    }
+    .service-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .5rem 0;
+        color: var(--ink-2);
+        font-size: 0.95rem;
+    }
+    .service-list li svg {
+        flex-shrink: 0;
+        margin-top: 4px;
+        color: var(--ok);
+    }
 
     @keyframes moodborder-anim {
         0% { background-position: 200% 0; }
@@ -232,19 +269,60 @@
       </div>
     </section>
 
-    <section id="resultados" class="section section-padding" style="background: var(--bg-2);" aria-labelledby="t-resultados">
+    <section id="servicios-detalle" class="section section-padding" style="background: var(--bg-2);" aria-labelledby="t-servicios-detalle">
+        <div class="wrap">
+            <div style="text-align: center;">
+                <h2 id="t-servicios-detalle">Detalle de Servicios</h2>
+                <p class="muted lead" style="margin-left:auto; margin-right:auto;">Soluciones integrales para la gestión financiera, contable y fiscal de tu negocio.</p>
+            </div>
+          
+            <div class="grid grid-3" style="margin-top:2rem">
+                <!-- Categoría 1: Gestión Fiscal y Contable -->
+                <div class="service-category">
+                    <h3>Gestión Fiscal y Contable</h3>
+                    <ul class="service-list">
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Actualización Contable y Fiscal</strong><br><span class="muted" style="font-size:0.9rem;">Para empresas y personas físicas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Inscripción al SAT</strong><br><span class="muted" style="font-size:0.9rem;">De empresas y personas físicas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Planeación Fiscal</strong><br><span class="muted" style="font-size:0.9rem;">Para empresas y personas físicas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Elaboración de Contabilidad</strong><br><span class="muted" style="font-size:0.9rem;">Cálculos de impuestos y estados financieros.</span></div></li>
+                    </ul>
+                </div>
+                <!-- Categoría 2: Nómina y Recursos Humanos -->
+                <div class="service-category">
+                    <h3>Nómina y Recursos Humanos</h3>
+                    <ul class="service-list">
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Inscripción al IMSS</strong><br><span class="muted" style="font-size:0.9rem;">Registro patronal.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Cálculo Obrero-Patronal</strong><br><span class="muted" style="font-size:0.9rem;">Determinación de cuotas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Gestión de Nóminas</strong><br><span class="muted" style="font-size:0.9rem;">Diseño, elaboración y timbrado.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Impuesto Sobre Nómina</strong><br><span class="muted" style="font-size:0.9rem;">Cálculo e inscripción al padrón.</span></div></li>
+                         <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Administración Laboral</strong><br><span class="muted" style="font-size:0.9rem;">Expedientes y revisión de contratos.</span></div></li>
+                    </ul>
+                </div>
+                <!-- Categoría 3: Cumplimiento y Procesos Especiales -->
+                <div class="service-category">
+                    <h3>Procesos Especiales</h3>
+                     <ul class="service-list">
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Padrón de Importadores</strong><br><span class="muted" style="font-size:0.9rem;">Inscripción y gestión.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Información para Licitaciones</strong><br><span class="muted" style="font-size:0.9rem;">Integración fiscal y financiera.</span></div></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resultados" class="section section-padding" aria-labelledby="t-resultados">
       <div class="wrap">
       <h2 id="t-resultados">Resultados que Impulsamos</h2>
       <div class="grid grid-3" style="margin-top:2rem">
-        <article class="card" style="background: var(--bg);">
+        <article class="card">
           <div class="kpi"><span class="dot" style="background:var(--ok)"></span>AGILIDAD</div>
           <p class="muted" style="margin-top: .5rem;">Cierres contables más rápidos y eficientes.</p>
         </article>
-        <article class="card" style="background: var(--bg);">
+        <article class="card">
           <div class="kpi"><span class="dot" style="background:var(--warn)"></span>PRECISIÓN</div>
           <p class="muted" style="margin-top: .5rem;">Integridad de datos y menos retrabajo manual.</p>
         </article>
-        <article class="card" style="background: var(--bg);">
+        <article class="card">
           <div class="kpi"><span class="dot" style="background:var(--accent)"></span>CLARIDAD</div>
           <p class="muted" style="margin-top: .5rem;">Paquetes listos para decisión y auditoría.</p>
         </article>
