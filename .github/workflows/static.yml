@@ -6,6 +6,10 @@ on:
   push:
     branches: ["main"]
 
+  # Runs on pull requests for preview builds
+  pull_request:
+    branches: ["main"]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -14,16 +18,19 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  pull-requests: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "pages"
+  group: ${{ github.event_name == 'push' && 'pages-deploy' || format('pages-preview-{0}', github.event.pull_request.number) }}
   cancel-in-progress: false
 
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    # Only deploy to GitHub Pages on push to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -41,3 +48,37 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Preview build for pull requests
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-preview-${{ github.event.pull_request.number }}
+          path: '.'
+          retention-days: 7
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = [
+              '✅ Preview build completed for this PR!',
+              '',
+              '📦 Download the preview artifact to test locally:',
+              `- Artifact name: \`pr-preview-${{ github.event.pull_request.number }}\``,
+              `- [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
+              '',
+              '⚠️ Note: GitHub Pages only deploys from the main branch. To see the live preview, this PR needs to be merged.'
+            ].join('\n');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            })

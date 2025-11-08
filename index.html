@@ -221,6 +221,7 @@
       to { transform: translateY(0); opacity: 1; }
     }
   </style>
+  <link rel="stylesheet" href="assets/styles.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -232,13 +233,13 @@
   </script>
 </head>
 <body id="top">
-  <div class="moodborder"></div>
+  <div class="moodborder" aria-hidden="true"></div>
   <a href="#contenido" class="skip">Saltar al contenido</a>
 
   <header>
     <nav class="nav" aria-label="Primaria">
       <a class="brand" href="#top">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M2 7L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M22 7L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -256,7 +257,7 @@
 
       <!-- Mobile Menu Button -->
       <button class="mobile-menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
@@ -285,30 +286,43 @@
       </a>
     </div>
     <div class="wrap" style="padding:6rem 1rem 7rem">
+    <div class="wrap hero-wrap">
       <h1 class="h1">Análisis de Información Financiera.</h1>
       <p class="lead">Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.</p>
-      <p style="margin-top:2rem"><a class="btn" href="#contacto">¿Hablamos de tu proyecto?</a></p>
+
+      <!-- Discrete service tags (interactive, subtle 'easter eggs') -->
+      <ul class="hero-tags" aria-hidden="false" role="list" aria-label="Servicios rápidos">
+        <li class="tag" data-target="0">Análisis Contable</li>
+        <li class="tag" data-target="1">Integridad de Datos</li>
+        <li class="tag" data-target="2">Procesos Eficientes</li>
+        <li class="tag" data-target="3">Soporte a Auditoría</li>
+      </ul>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contacto">¿Hablamos de tu proyecto?</a>
+        <a class="btn btn-ghost hero-login" href="/reports/login" title="Acceder a reportes y métricas">Acceder a reportes</a>
+      </div>
     </div>
   </section>
 
   <main id="contenido" role="main">
     <section id="servicios" class="section section-padding wrap" aria-labelledby="t-servicios">
       <h2 id="t-servicios">Nuestros Servicios / Nuestras Capacidades</h2>
-      <div class="grid grid-4" style="margin-top:2rem">
-        <article class="card">
-          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
+      <div class="grid grid-4 mt-2">
+        <article class="card" data-index="0">
+          <div class="icon" aria-hidden="true"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg></div>
           <h3>Análisis Contable</h3><p class="muted">Cierres y estados financieros trazables y alineados con SAT.</p>
         </article>
-        <article class="card">
-          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></div>
+        <article class="card" data-index="1">
+          <div class="icon" aria-hidden="true"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.54-.54"></path></svg></div>
           <h3>Integridad de Datos</h3><p class="muted">Unificación de CFDI y bancos con tu sistema contable para mayor control.</p>
         </article>
-        <article class="card">
-          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+        <article class="card" data-index="2">
+          <div class="icon" aria-hidden="true"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
           <h3>Procesos Eficientes</h3><p class="muted">Menos tareas repetitivas, menos errores, más tiempo para decidir.</p>
         </article>
-        <article class="card">
-          <div class="icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
+        <article class="card" data-index="3">
+          <div class="icon" aria-hidden="true"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0"></path></svg></div>
           <h3>Soporte a Auditoría</h3><p class="muted">Paquetes ordenados para dirección o auditores externos.</p>
         </article>
       </div>
@@ -370,18 +384,33 @@
         <article class="card">
           <div class="kpi"><span class="dot" style="background:var(--accent)"></span>CLARIDAD</div>
           <p class="muted" style="margin-top: .5rem;">Paquetes listos para decisión y auditoría.</p>
+    <section id="resultados" class="section section-padding results-section" aria-labelledby="t-resultados">
+      <div class="wrap">
+      <h2 id="t-resultados">Resultados que Impulsamos</h2>
+      <div class="grid grid-3 mt-2">
+        <article class="card result-card">
+          <div class="kpi"><span class="dot ok"></span>AGILIDAD</div>
+          <p class="muted mt-1">Cierres contables más rápidos y eficientes.</p>
+        </article>
+        <article class="card result-card">
+          <div class="kpi"><span class="dot warn"></span>PRECISIÓN</div>
+          <p class="muted mt-1">Integridad de datos y menos retrabajo manual.</p>
+        </article>
+        <article class="card result-card">
+          <div class="kpi"><span class="dot accent"></span>CLARIDAD</div>
+          <p class="muted mt-1">Paquetes listos para decisión y auditoría.</p>
         </article>
       </div>
       </div>
     </section>
 
     <section id="contacto" class="section section-padding wrap" aria-labelledby="t-contacto">
-        <div style="text-align: center;">
+        <div class="center">
             <h2 id="t-contacto">¿Hablamos de tu proyecto?</h2>
-            <p class="muted lead" style="margin-left:auto; margin-right:auto;">Cuéntanos tu situación y te proponemos un plan claro y accionable.</p>
-            <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+            <p class="muted lead center">Cuéntanos tu situación y te proponemos un plan claro y accionable.</p>
+            <div class="actions-row mt-2">
                 <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">info@manrado.com</a>
-                <a class="btn" style="background: var(--muted); color: var(--ink);" href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
+                <a class="btn btn-ghost" href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
             </div>
         </div>
     </section>
@@ -418,25 +447,99 @@
       // Smooth scroll for all anchor links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+          // allow external links and mailto
+          const href = this.getAttribute('href');
+          if (!href.startsWith('#')) return;
           e.preventDefault();
           const targetId = this.getAttribute('href');
           const targetElement = document.querySelector(targetId);
           if (targetElement) {
-            targetElement.scrollIntoView({
-              behavior: 'smooth'
-            });
+            targetElement.scrollIntoView({ behavior: 'smooth' });
           }
         });
       });
 
       // Set Copyright Year
       const yearSpan = document.getElementById('copyright-year');
-      if(yearSpan) {
-        yearSpan.textContent = new Date().getFullYear();
+      if(yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
+
+      // Hero tags interaction: subtle hover highlight of service cards
+      const tags = document.querySelectorAll('.hero-tags .tag');
+      const cards = document.querySelectorAll('#servicios .card');
+      tags.forEach(tag => {
+        const idx = Number(tag.getAttribute('data-target'));
+        tag.addEventListener('mouseenter', () => {
+          if (cards[idx]) cards[idx].classList.add('highlight');
+          tag.classList.add('active');
+        });
+        tag.addEventListener('mouseleave', () => {
+          if (cards[idx]) cards[idx].classList.remove('highlight');
+          tag.classList.remove('active');
+        });
+        // click quietly navigates to the service card (smooth scroll)
+        tag.addEventListener('click', () => {
+          if (cards[idx]) cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+
+      // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
+      // (link uses /reports/login - adjust if your auth path differs)
+
+      /* --- Lógica del efecto 'Click Spark' temporal --- */
+      let isSparkEffectEnabled = true;
+      let currentIntervalSeconds = 4;
+      let nextState = 'off';
+
+      function createClickSpark(x, y) {
+        if (!isSparkEffectEnabled) return;
+        
+        const star = document.createElement('span');
+        star.classList.add('click-spark');
+        star.textContent = '✨';
+        
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+        
+        const randomX = (Math.random() - 0.5) * 100;
+        const randomY = (Math.random() - 0.5) * 100;
+        
+        star.style.setProperty('--sparkle-translateX', randomX + 'px');
+        star.style.setProperty('--sparkle-translateY', randomY + 'px');
+        
+        document.body.appendChild(star);
+        
+        star.addEventListener('animationend', () => {
+          star.remove();
+        });
       }
+
+      document.addEventListener('click', function(e) {
+        for (let i = 0; i < 5; i++) {
+          createClickSpark(e.clientX, e.clientY);
+        }
+      });
+
+      function scheduleNextToggle() {
+        const intervalMilliseconds = currentIntervalSeconds * 1000;
+        
+        console.log(`Efecto 'Spark' estará ${nextState === 'on' ? 'ENCENDIDO' : 'APAGADO'} durante ${currentIntervalSeconds} segundos.`);
+        
+        if (nextState === 'off') {
+          isSparkEffectEnabled = false;
+          nextState = 'on';
+        } else {
+          isSparkEffectEnabled = true;
+          nextState = 'off';
+        }
+        
+        setTimeout(scheduleNextToggle, intervalMilliseconds);
+        currentIntervalSeconds *= 2;
+      }
+
+      setTimeout(scheduleNextToggle, 10000);
+
     });
   </script>
 
 </body>
 </html>
-
