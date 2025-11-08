@@ -58,23 +58,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
   // (link uses /reports/login - adjust if your auth path differs)
 
-  /* --- Lógica del efecto 'Click Spark' temporal --- */
-  let isSparkEffectEnabled = true;
-  let currentIntervalSeconds = 4;
-  let nextState = 'off';
-
+  /* --- Lógica del efecto 'Click Spark' --- */
   function createClickSpark(x, y) {
-    if (!isSparkEffectEnabled) return;
+    const colors = ['#1d4ed8', '#3b82f6', '#e2e8f0', '#94a3b8']; // Azul Zafiro, Azul Claro, Blanco/Slate, Gris/Slate
     
     const star = document.createElement('span');
     star.classList.add('click-spark');
-    star.textContent = '✨';
     
     star.style.left = x + 'px';
     star.style.top = y + 'px';
     
+    star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    
     const randomX = (Math.random() - 0.5) * 100;
-    const randomY = (Math.random() - 0.5) * 100;
+    const randomY = (Math.random() - 0.5) * 150;
     
     star.style.setProperty('--sparkle-translateX', randomX + 'px');
     star.style.setProperty('--sparkle-translateY', randomY + 'px');
@@ -91,24 +88,5 @@ document.addEventListener('DOMContentLoaded', function() {
       createClickSpark(e.clientX, e.clientY);
     }
   });
-
-  function scheduleNextToggle() {
-    const intervalMilliseconds = currentIntervalSeconds * 1000;
-    
-    console.log(`Efecto 'Spark' estará ${nextState === 'on' ? 'ENCENDIDO' : 'APAGADO'} durante ${currentIntervalSeconds} segundos.`);
-    
-    if (nextState === 'off') {
-      isSparkEffectEnabled = false;
-      nextState = 'on';
-    } else {
-      isSparkEffectEnabled = true;
-      nextState = 'off';
-    }
-    
-    setTimeout(scheduleNextToggle, intervalMilliseconds);
-    currentIntervalSeconds *= 2;
-  }
-
-  setTimeout(scheduleNextToggle, 10000);
 
 });
