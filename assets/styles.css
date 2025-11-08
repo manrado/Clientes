@@ -605,8 +605,8 @@ footer {
   z-index: 9999;
   font-size: 18px; 
   
-  /* Usamos tu variable de color --cyan que es #00eaff */
-  color: var(--cyan); 
+  /* El color se asigna dinámicamente desde JS para variedad */
+  /* color se establece inline para cada estrella */
 
   /* Animación de la chispa */
   animation: sparkle-animation 0.7s forwards;

@@ -58,27 +58,34 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
   // (link uses /reports/login - adjust if your auth path differs)
 
-  /* --- Inicio: Lógica del efecto 'Click Spark' temporal --- */
+  /* --- Inicio: Lógica del efecto 'Click Spark' optimizada --- */
 
-  let isSparkEffectEnabled = true;
-  let currentIntervalSeconds = 4; // Inicia en 4 segundos
-  let nextState = 'off';
+  // Persistencia: recuperar estado del localStorage
+  const SPARK_STORAGE_KEY = 'manrado_spark_enabled';
+  let isSparkEffectEnabled = localStorage.getItem(SPARK_STORAGE_KEY) !== 'false';
+
+  // Colores acordes a las estrellas (oro, amarillo, blanco, cian)
+  const starColors = ['#ffd700', '#ffed4e', '#ffffff', '#00eaff', '#ffa500'];
 
   // Función para crear una chispa individual
   function createClickSpark(x, y) {
-    if (!isSparkEffectEnabled) return; // No crear chispas si está deshabilitado
+    if (!isSparkEffectEnabled) return;
 
     const star = document.createElement('span');
     star.classList.add('click-spark');
-    star.textContent = '✨'; // ¡El emoji de chispa!
+    star.textContent = '✨';
+
+    // Seleccionar color aleatorio de la paleta de estrellas
+    const randomColor = starColors[Math.floor(Math.random() * starColors.length)];
+    star.style.color = randomColor;
 
     // Posición inicial (donde se hizo clic)
     star.style.left = x + 'px';
     star.style.top = y + 'px';
 
     // Movimiento aleatorio para la animación
-    const randomX = (Math.random() - 0.5) * 100; // Mov. horizontal
-    const randomY = (Math.random() - 0.5) * 100; // Mov. vertical
+    const randomX = (Math.random() - 0.5) * 100;
+    const randomY = (Math.random() - 0.5) * 100;
     
     star.style.setProperty('--sparkle-translateX', randomX + 'px');
     star.style.setProperty('--sparkle-translateY', randomY + 'px');
@@ -91,38 +98,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // 1. Escuchar todos los clics en la página
+  // Escuchar todos los clics en la página (reducido a 3 chispas por mejor rendimiento)
   document.addEventListener('click', function(e) {
-    // Genera 5 chispas por clic
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       createClickSpark(e.clientX, e.clientY);
     }
   });
 
-  // 2. Función recursiva para la lógica de tiempo
-  function scheduleNextToggle() {
-    const intervalMilliseconds = currentIntervalSeconds * 1000;
-    
-    // console.log(`Efecto 'Spark' estará ${nextState === 'on' ? 'ENCENDIDO' : 'APAGADO'} durante ${currentIntervalSeconds} segundos.`);
-
-    if (nextState === 'off') {
-      isSparkEffectEnabled = false;
-      nextState = 'on'; // El próximo estado será 'on'
-    } else {
-      isSparkEffectEnabled = true;
-      nextState = 'off'; // El próximo estado será 'off'
-    }
-    
-    // Programar el siguiente cambio
-    setTimeout(scheduleNextToggle, intervalMilliseconds);
-    
-    // Duplicar el intervalo para la próxima vez (4s, 8s, 16s...)
-    currentIntervalSeconds *= 2;
+  // Guardar estado en localStorage cuando cambie
+  function toggleSparkEffect() {
+    isSparkEffectEnabled = !isSparkEffectEnabled;
+    localStorage.setItem(SPARK_STORAGE_KEY, isSparkEffectEnabled);
   }
 
-  // 3. Iniciar la lógica de tiempo
-  // El efecto está ON por 10 segundos, luego inicia la lógica progresiva.
-  setTimeout(scheduleNextToggle, 10000); // 10 segundos
+  // (Opcional) Exponer función para permitir toggle desde consola o UI
+  window.toggleSparkEffect = toggleSparkEffect;
   
   /* --- Fin: Lógica del efecto 'Click Spark' --- */
 
