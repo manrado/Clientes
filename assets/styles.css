@@ -592,3 +592,34 @@ footer {
     transform: none;
   }
 }
+
+/* --- Estilos para el efecto 'Click Spark' --- */
+.click-spark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 9999;
+  font-size: 18px; 
+  color: var(--cyan-400); 
+  animation: sparkle-animation 0.7s forwards;
+}
+
+@keyframes sparkle-animation {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sparkle-translateX), var(--sparkle-translateY)) scale(0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .click-spark {
+    animation: none;
+    transition: none;
+  }
+}

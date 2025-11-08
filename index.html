@@ -213,6 +213,59 @@
       // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
       // (link uses /reports/login - adjust if your auth path differs)
 
+      /* --- Lógica del efecto 'Click Spark' temporal --- */
+      let isSparkEffectEnabled = true;
+      let currentIntervalSeconds = 4;
+      let nextState = 'off';
+
+      function createClickSpark(x, y) {
+        if (!isSparkEffectEnabled) return;
+        
+        const star = document.createElement('span');
+        star.classList.add('click-spark');
+        star.textContent = '✨';
+        
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+        
+        const randomX = (Math.random() - 0.5) * 100;
+        const randomY = (Math.random() - 0.5) * 100;
+        
+        star.style.setProperty('--sparkle-translateX', randomX + 'px');
+        star.style.setProperty('--sparkle-translateY', randomY + 'px');
+        
+        document.body.appendChild(star);
+        
+        star.addEventListener('animationend', () => {
+          star.remove();
+        });
+      }
+
+      document.addEventListener('click', function(e) {
+        for (let i = 0; i < 5; i++) {
+          createClickSpark(e.clientX, e.clientY);
+        }
+      });
+
+      function scheduleNextToggle() {
+        const intervalMilliseconds = currentIntervalSeconds * 1000;
+        
+        console.log(`Efecto 'Spark' estará ${nextState === 'on' ? 'ENCENDIDO' : 'APAGADO'} durante ${currentIntervalSeconds} segundos.`);
+        
+        if (nextState === 'off') {
+          isSparkEffectEnabled = false;
+          nextState = 'on';
+        } else {
+          isSparkEffectEnabled = true;
+          nextState = 'off';
+        }
+        
+        setTimeout(scheduleNextToggle, intervalMilliseconds);
+        currentIntervalSeconds *= 2;
+      }
+
+      setTimeout(scheduleNextToggle, 10000);
+
     });
   </script>
 
