@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Panel — Reportes</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#f6f8fb;color:#111;margin:0;padding:2rem}
+    .wrap{max-width:900px;margin:2rem auto}
+    header{display:flex;justify-content:space-between;align-items:center}
+    a.btn{background:#0b67c8;color:#fff;padding:.5rem .9rem;border-radius:6px;text-decoration:none}
+    ul{background:#fff;border-radius:8px;padding:1rem;margin-top:1rem;box-shadow:0 6px 20px rgba(10,20,40,.06)}
+    li{padding:.6rem 0;border-bottom:1px solid #f0f3f6}
+    li:last-child{border-bottom:0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Panel de reportes</h1>
+      <a class="btn" href="/reportes/">Cerrar sesión</a>
+    </header>
+
+    <section aria-labelledby="l">
+      <h2 id="l">Reportes disponibles</h2>
+      <p>Haz clic para descargar.</p>
+      <ul>
+        <li><a href="./assets/reporte1.pdf" target="_blank" rel="noopener">Reporte mensual - PDF</a></li>
+        <li><a href="./assets/reporte2.csv" target="_blank" rel="noopener">Datos crudos - CSV</a></li>
+      </ul>
+    </section>
+  </div>
+
+<script>
+if(sessionStorage.getItem('rep_ok') !== '1'){
+  // no autorizado, vuelve al login
+  location.replace('/reportes/');
+}
+
+// cerrar sesión: al hacer click en "Cerrar sesión" se redirige al index y se borra la bandera
+document.querySelector('a[href="/reportes/"]').addEventListener('click', (e)=>{
+  sessionStorage.removeItem('rep_ok');
+  // la redirección se realizará por el href
+});
+</script>
+</body>
+</html>
