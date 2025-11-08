@@ -6,12 +6,13 @@
   --text-primary: #e0e0e0;
   --text-muted: #94a3b8;
   --cyan: #00eaff;
-  --cyan-400: #22d3ee;
+  --cyan-400: #3b82f6;
   --cyan-500: #06b6d4;
   --magenta: #39ff14;
   --blue-soft: #1a1a3a;
   --matrix-green: #39ff14;
-  --accent-professional: #0891b2;
+  --accent-professional: #1d4ed8;
+  --accent-professional-hover: #1e40af;
   --text-secondary: #94a3b8;
   --border-subtle: #334155;
   --slate-200: #e2e8f0;
@@ -345,9 +346,9 @@ header {
 }
 
 .btn-primary:hover {
-  background: #0e7490;
-  border-color: #0e7490;
-  box-shadow: 0 4px 12px rgba(8, 145, 178, 0.4);
+  background: var(--accent-professional-hover);
+  border-color: var(--accent-professional-hover);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4);
 }
 
 .btn-ghost {
@@ -601,9 +602,15 @@ footer {
   pointer-events: none;
   opacity: 0;
   z-index: 9999;
-  font-size: 18px; 
-  color: var(--cyan-400); 
-  animation: sparkle-animation 0.7s forwards;
+
+  /* Nuevos estilos para la partícula */
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-professional); /* Fallback */
+
+  /* Animación (actualizada en el siguiente paso) */
+  animation: sparkle-animation 3s forwards;
 }
 
 @keyframes sparkle-animation {
@@ -613,7 +620,8 @@ footer {
   }
   100% {
     opacity: 0;
-    transform: translate(var(--sparkle-translateX), var(--sparkle-translateY)) scale(0.5);
+    /* La partícula se moverá al 'translateX' aleatorio y -150px hacia arriba */
+    transform: translate(var(--sparkle-translateX), -150px) scale(0.5);
   }
 }
 
