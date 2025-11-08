@@ -594,25 +594,25 @@ footer {
   }
 }
 
-/* --- Estilos para el efecto 'Click Spark' --- */
+/* --- Inicio: Estilos para el efecto 'Click Spark' --- */
+
 .click-spark {
   position: fixed;
   top: 0;
   left: 0;
-  pointer-events: none;
+  pointer-events: none; /* Importante para no bloquear clics */
   opacity: 0;
   z-index: 9999;
+  font-size: 18px; 
+  
+  /* Usamos tu variable de color --cyan que es #00eaff */
+  color: var(--cyan); 
 
-  /* Nuevos estilos para la partícula */
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--accent-professional); /* Fallback */
-
-  /* Animación (actualizada en el siguiente paso) */
-  animation: sparkle-animation 3s forwards;
+  /* Animación de la chispa */
+  animation: sparkle-animation 0.7s forwards;
 }
 
+/* Animación de movimiento y desvanecimiento */
 @keyframes sparkle-animation {
   0% {
     opacity: 1;
@@ -620,14 +620,21 @@ footer {
   }
   100% {
     opacity: 0;
-    /* La partícula se moverá al 'translateX' aleatorio y -150px hacia arriba */
-    transform: translate(var(--sparkle-translateX), -150px) scale(0.5);
+    /* Los valores de translate se asignarán con JS */
+    transform: translate(var(--sparkle-translateX), var(--sparkle-translateY)) scale(0.5);
   }
 }
 
+/* Esta regla @media ya existe en tu archivo.
+  Asegúrate de que .click-spark esté incluido dentro de ella
+  para respetar la configuración de accesibilidad.
+*/
 @media (prefers-reduced-motion: reduce) {
+  /* ... (otros selectores como *, .card:hover, etc.) ... */
+  
   .click-spark {
     animation: none;
     transition: none;
   }
 }
+/* --- Fin: Estilos para el efecto 'Click Spark' --- */
