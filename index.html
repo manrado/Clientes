@@ -287,8 +287,8 @@
     </div>
     <div class="wrap" style="padding:6rem 1rem 7rem">
     <div class="wrap hero-wrap">
-      <h1 class="h1">Análisis de Información Financiera.</h1>
-      <p class="lead">Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.</p>
+      <h1 class="h1">Consultoría Financiera de Excelencia.</h1>
+      <p class="lead">Expertos en CFDI, integración contable y auditoría SAT. Optimizamos tus procesos financieros para cierres más rápidos, menos errores y total preparación para auditoría.</p>
 
       <!-- Discrete service tags (interactive, subtle 'easter eggs') -->
       <ul class="hero-tags" aria-hidden="false" role="list" aria-label="Servicios rápidos">
@@ -369,21 +369,6 @@
         </div>
     </section>
 
-    <section id="resultados" class="section section-padding" aria-labelledby="t-resultados">
-      <div class="wrap">
-      <h2 id="t-resultados">Resultados que Impulsamos</h2>
-      <div class="grid grid-3" style="margin-top:2rem">
-        <article class="card">
-          <div class="kpi"><span class="dot" style="background:var(--ok)"></span>AGILIDAD</div>
-          <p class="muted" style="margin-top: .5rem;">Cierres contables más rápidos y eficientes.</p>
-        </article>
-        <article class="card">
-          <div class="kpi"><span class="dot" style="background:var(--warn)"></span>PRECISIÓN</div>
-          <p class="muted" style="margin-top: .5rem;">Integridad de datos y menos retrabajo manual.</p>
-        </article>
-        <article class="card">
-          <div class="kpi"><span class="dot" style="background:var(--accent)"></span>CLARIDAD</div>
-          <p class="muted" style="margin-top: .5rem;">Paquetes listos para decisión y auditoría.</p>
     <section id="resultados" class="section section-padding results-section" aria-labelledby="t-resultados">
       <div class="wrap">
       <h2 id="t-resultados">Resultados que Impulsamos</h2>
@@ -401,6 +386,35 @@
           <p class="muted mt-1">Paquetes listos para decisión y auditoría.</p>
         </article>
       </div>
+      </div>
+    </section>
+
+    <section id="testimonios" class="section section-padding" style="background: var(--bg-2);" aria-labelledby="t-testimonios">
+      <div class="wrap">
+        <h2 id="t-testimonios">Lo que dicen nuestros clientes</h2>
+        <div class="grid grid-3" style="margin-top: 2rem;">
+          <article class="card testimonial-card">
+            <p class="testimonial-text">"Manrado transformó nuestra operación financiera. La integración de CFDI con nuestros sistemas nos ha permitido reducir el tiempo de cierre mensual en un 40%."</p>
+            <div class="testimonial-author">
+              <strong>Carlos Méndez</strong>
+              <div class="muted">Director de Finanzas, Empresa Manufacturera</div>
+            </div>
+          </article>
+          <article class="card testimonial-card">
+            <p class="testimonial-text">"El soporte en auditoría ha sido excepcional. Llegamos a la revisión anual con toda la documentación perfectamente organizada y trazable."</p>
+            <div class="testimonial-author">
+              <strong>Ana Rodríguez</strong>
+              <div class="muted">CFO, Distribuidora Nacional</div>
+            </div>
+          </article>
+          <article class="card testimonial-card">
+            <p class="testimonial-text">"La precisión en la conciliación de datos y la agilidad en los procesos nos han dado la tranquilidad que necesitábamos para enfocarnos en el crecimiento del negocio."</p>
+            <div class="testimonial-author">
+              <strong>Roberto Silva</strong>
+              <div class="muted">Gerente General, Grupo Comercial</div>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -424,122 +438,7 @@
     </div>
   </footer>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Mobile Menu Toggle
-      const menuBtn = document.querySelector('.mobile-menu-btn');
-      const navLinks = document.querySelector('.nav-links');
-      if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-          const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
-          menuBtn.setAttribute('aria-expanded', !isExpanded);
-          navLinks.classList.toggle('active');
-          // Close menu when a link is clicked
-          navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-              menuBtn.setAttribute('aria-expanded', 'false');
-              navLinks.classList.remove('active');
-            });
-          });
-        });
-      }
-
-      // Smooth scroll for all anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          // allow external links and mailto
-          const href = this.getAttribute('href');
-          if (!href.startsWith('#')) return;
-          e.preventDefault();
-          const targetId = this.getAttribute('href');
-          const targetElement = document.querySelector(targetId);
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      });
-
-      // Set Copyright Year
-      const yearSpan = document.getElementById('copyright-year');
-      if(yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
-
-      // Hero tags interaction: subtle hover highlight of service cards
-      const tags = document.querySelectorAll('.hero-tags .tag');
-      const cards = document.querySelectorAll('#servicios .card');
-      tags.forEach(tag => {
-        const idx = Number(tag.getAttribute('data-target'));
-        tag.addEventListener('mouseenter', () => {
-          if (cards[idx]) cards[idx].classList.add('highlight');
-          tag.classList.add('active');
-        });
-        tag.addEventListener('mouseleave', () => {
-          if (cards[idx]) cards[idx].classList.remove('highlight');
-          tag.classList.remove('active');
-        });
-        // click quietly navigates to the service card (smooth scroll)
-        tag.addEventListener('click', () => {
-          if (cards[idx]) cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-      });
-
-      // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
-      // (link uses /reports/login - adjust if your auth path differs)
-
-      /* --- Lógica del efecto 'Click Spark' temporal --- */
-      let isSparkEffectEnabled = true;
-      let currentIntervalSeconds = 4;
-      let nextState = 'off';
-
-      function createClickSpark(x, y) {
-        if (!isSparkEffectEnabled) return;
-        
-        const star = document.createElement('span');
-        star.classList.add('click-spark');
-        star.textContent = '✨';
-        
-        star.style.left = x + 'px';
-        star.style.top = y + 'px';
-        
-        const randomX = (Math.random() - 0.5) * 100;
-        const randomY = (Math.random() - 0.5) * 100;
-        
-        star.style.setProperty('--sparkle-translateX', randomX + 'px');
-        star.style.setProperty('--sparkle-translateY', randomY + 'px');
-        
-        document.body.appendChild(star);
-        
-        star.addEventListener('animationend', () => {
-          star.remove();
-        });
-      }
-
-      document.addEventListener('click', function(e) {
-        for (let i = 0; i < 5; i++) {
-          createClickSpark(e.clientX, e.clientY);
-        }
-      });
-
-      function scheduleNextToggle() {
-        const intervalMilliseconds = currentIntervalSeconds * 1000;
-        
-        console.log(`Efecto 'Spark' estará ${nextState === 'on' ? 'ENCENDIDO' : 'APAGADO'} durante ${currentIntervalSeconds} segundos.`);
-        
-        if (nextState === 'off') {
-          isSparkEffectEnabled = false;
-          nextState = 'on';
-        } else {
-          isSparkEffectEnabled = true;
-          nextState = 'off';
-        }
-        
-        setTimeout(scheduleNextToggle, intervalMilliseconds);
-        currentIntervalSeconds *= 2;
-      }
-
-      setTimeout(scheduleNextToggle, 10000);
-
-    });
-  </script>
+  <script src="assets/scripts.js" defer></script>
 
 </body>
 </html>
