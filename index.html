@@ -13,8 +13,214 @@
   <meta property="og:description" content="Integración CFDI–bancos–contabilidad para cierres más rápidos, menos errores y paquetes listos para auditoría." />
   <meta property="og:url" content="https://manrado.com/" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-159169ácie-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" />
 
+  <style>
+    :root{
+      --bg:#0b1526; --bg-2:#0f1d36; --ink:#f5f7fb; --ink-2:#c7d0e1; --accent:#5fb3ff; --muted:#1b2b4a; --card:#0e1a2f; --ok:#2ec27e; --warn:#f6c244;
+      --max:1120px; --radius:16px;
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.5}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip:focus{position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.6rem 1rem;border-radius:.5rem;background:#fff;color:#000;z-index:9999}
+    
+    header{position:sticky;top:0;background:linear-gradient(180deg, rgba(11,21,38,.9), rgba(11,21,38,.7));backdrop-filter:saturate(140%) blur(8px);-webkit-backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid rgba(255,255,255,.06);z-index:100}
+    .nav{max-width:var(--max);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem; height: 64px; box-sizing: border-box;}
+    .brand{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.1rem;letter-spacing:.3px}
+    
+    .menu{display:flex;gap:.5rem;align-items:center;}
+    .menu a{padding:.4rem .8rem;border-radius:.5rem;color:var(--ink-2);transition: all .2s ease-in-out;}
+    .menu a:hover{background:var(--muted);color:var(--ink);text-decoration: none;}
+    
+    .btn{display:inline-block;padding:.8rem 1.4rem;border-radius:.75rem;background:var(--accent);color:#071225;font-weight:600;border:1px solid rgba(0,0,0,.1);transition: all .2s ease-in-out;}
+    .btn:hover{text-decoration:none;filter:brightness(1.1);transform: translateY(-2px);}
+    
+    .hero{position:relative;isolation:isolate; background-color: var(--bg);}
+    .hero::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: -2;
+        background: radial-gradient(ellipse at 50% -20%, #17325d 10%, transparent 60%);
+    }
+    .hero-media{position:absolute;inset:0;z-index:-1;opacity:.3; mix-blend-mode: screen;}
+    .hero video,.hero img{object-fit:cover;width:100%;height:100%;display:block}
+    
+    .wrap{max-width:var(--max);margin:auto;padding:2rem 1rem}
+    .section-padding { padding-top: 4rem; padding-bottom: 4rem; }
+    .h1{font-size:clamp(2.4rem,5vw,3.8rem);line-height:1.15;margin:0 0 .8rem;font-weight:800;letter-spacing:-1px;}
+    .lead{color:var(--ink-2);font-size:clamp(1.1rem,2vw,1.25rem);max-width: 65ch;}
+    
+    .grid{display:grid;gap:1.5rem}
+    @media(min-width:1024px){.grid-4{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:768px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:640px){.grid-2{grid-template-columns:repeat(2,1fr)}}
+    
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.5rem;transition: all .3s ease-in-out; display: flex; flex-direction: column;}
+    .card:hover{transform: translateY(-6px); border-color: rgba(95, 179, 255, 0.4);}
+    .card h3{margin:.8rem 0 .4rem;font-size:1.2rem;color: var(--ink);}
+    .card p { margin-top: auto; }
+    .card .icon { color: var(--accent); margin-bottom: 0.5rem; transition: transform .3s ease-in-out; }
+    .card:hover .icon { transform: scale(1.1); }
+
+    .kpi{display:flex;align-items:center;gap:.6rem;font-weight:600;}
+    .kpi .dot{width:.6rem;height:.6rem;border-radius:999px;display:inline-block}
+    
+    .section h2{margin:0 0 .5rem;font-size:clamp(1.8rem, 4vw, 2.5rem); line-height: 1.2;font-weight:700;}
+    .muted{color:var(--ink-2)}
+    
+    footer{border-top:1px solid rgba(255,255,255,.06)}
+    .footer{max-width:var(--max);margin:auto;padding:3rem 1rem;color:var(--ink-2);display:grid;gap:1rem; text-align: center;}
+
+    .moodborder{
+        position:fixed;top:0;left:0;width:100%;height:3px;
+        background: linear-gradient(90deg, var(--accent), var(--ok), var(--warn), var(--accent));
+        background-size: 200% 100%;
+        z-index:9999;
+        animation: moodborder-anim 4s linear infinite;
+    }
+    
+    .hero .btn {
+      animation: pulse-btn 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    
+    /* Discreet login button - Easter egg style */
+    .hero-login {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      opacity: 0.3;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 10;
+    }
+    .hero-login:hover {
+      opacity: 1;
+    }
+    .hero-login a {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      background: rgba(95, 179, 255, 0.1);
+      border: 1px solid rgba(95, 179, 255, 0.2);
+      border-radius: 0.5rem;
+      color: var(--ink-2);
+      font-size: 0.85rem;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .hero-login a:hover {
+      background: rgba(95, 179, 255, 0.15);
+      border-color: rgba(95, 179, 255, 0.4);
+      color: var(--accent);
+    }
+    .hero-login svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .mobile-menu-btn, .desktop-menu { display: none; }
+    
+    /* Mobile Navigation */
+    @media (max-width: 768px) {
+      .desktop-menu { display: none; }
+      .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--ink);
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 1001;
+      }
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 64px; right: 0; left: 0;
+        flex-direction: column;
+        background: rgba(15, 29, 54, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 2rem;
+        gap: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+        animation: slide-down .3s ease-in-out;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .nav-links a {
+        font-size: 1.2rem;
+        text-align: center;
+      }
+      .nav-links .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Desktop Navigation */
+    @media (min-width: 769px) {
+        .desktop-menu { display: flex; }
+        .mobile-menu-btn { display: none; }
+        .nav-links { display: flex !important; }
+    }
+    
+    /* New styles for detailed services section */
+    .service-category {
+        padding: 1.5rem;
+        background: rgba(11, 21, 38, 0.5);
+        border-radius: var(--radius);
+        border: 1px solid var(--muted);
+        display: flex;
+        flex-direction: column;
+    }
+    .service-category h3 {
+        color: var(--accent);
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        border-bottom: 1px solid var(--muted);
+        padding-bottom: 0.5rem;
+    }
+    .service-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex-grow: 1;
+    }
+    .service-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .5rem 0;
+        color: var(--ink-2);
+        font-size: 0.95rem;
+    }
+    .service-list li svg {
+        flex-shrink: 0;
+        margin-top: 4px;
+        color: var(--ok);
+    }
+
+    @keyframes moodborder-anim {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    @keyframes pulse-btn {
+        0% { box-shadow: 0 0 0 0 rgba(95, 179, 255, 0.5); }
+        70% { box-shadow: 0 0 0 12px rgba(95, 179, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(95, 179, 255, 0); }
+    }
+    @keyframes slide-down {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
   <link rel="stylesheet" href="assets/styles.css">
   <script type="application/ld+json">
   {
@@ -70,6 +276,16 @@
     <div class="hero-media" aria-hidden="true">
       <img src="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop" alt="Pantallas con dashboards y análisis de datos financieros.">
     </div>
+    <!-- Discreet login button -->
+    <div class="hero-login">
+      <a href="#login" aria-label="Acceso a reportes">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Reportes</span>
+      </a>
+    </div>
+    <div class="wrap" style="padding:6rem 1rem 7rem">
     <div class="wrap hero-wrap">
       <h1 class="h1">Análisis de Información Financiera.</h1>
       <p class="lead">Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.</p>
@@ -112,6 +328,62 @@
       </div>
     </section>
 
+    <section id="servicios-detalle" class="section section-padding" style="background: var(--bg-2);" aria-labelledby="t-servicios-detalle">
+        <div class="wrap">
+            <div style="text-align: center;">
+                <h2 id="t-servicios-detalle">Detalle de Servicios</h2>
+                <p class="muted lead" style="margin-left:auto; margin-right:auto;">Soluciones integrales para la gestión financiera, contable y fiscal de tu negocio.</p>
+            </div>
+          
+            <div class="grid grid-3" style="margin-top:2rem">
+                <!-- Categoría 1: Gestión Fiscal y Contable -->
+                <div class="service-category">
+                    <h3>Gestión Fiscal y Contable</h3>
+                    <ul class="service-list">
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Actualización Contable y Fiscal</strong><br><span class="muted" style="font-size:0.9rem;">Para empresas y personas físicas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Inscripción al SAT</strong><br><span class="muted" style="font-size:0.9rem;">De empresas y personas físicas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Planeación Fiscal</strong><br><span class="muted" style="font-size:0.9rem;">Para empresas y personas físicas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Elaboración de Contabilidad</strong><br><span class="muted" style="font-size:0.9rem;">Cálculos de impuestos y estados financieros.</span></div></li>
+                    </ul>
+                </div>
+                <!-- Categoría 2: Nómina y Recursos Humanos -->
+                <div class="service-category">
+                    <h3>Nómina y Recursos Humanos</h3>
+                    <ul class="service-list">
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Inscripción al IMSS</strong><br><span class="muted" style="font-size:0.9rem;">Registro patronal.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Cálculo Obrero-Patronal</strong><br><span class="muted" style="font-size:0.9rem;">Determinación de cuotas.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Gestión de Nóminas</strong><br><span class="muted" style="font-size:0.9rem;">Diseño, elaboración y timbrado.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Impuesto Sobre Nómina</strong><br><span class="muted" style="font-size:0.9rem;">Cálculo e inscripción al padrón.</span></div></li>
+                         <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Administración Laboral</strong><br><span class="muted" style="font-size:0.9rem;">Expedientes y revisión de contratos.</span></div></li>
+                    </ul>
+                </div>
+                <!-- Categoría 3: Cumplimiento y Procesos Especiales -->
+                <div class="service-category">
+                    <h3>Procesos Especiales</h3>
+                     <ul class="service-list">
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Padrón de Importadores</strong><br><span class="muted" style="font-size:0.9rem;">Inscripción y gestión.</span></div></li>
+                        <li><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><strong>Información para Licitaciones</strong><br><span class="muted" style="font-size:0.9rem;">Integración fiscal y financiera.</span></div></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resultados" class="section section-padding" aria-labelledby="t-resultados">
+      <div class="wrap">
+      <h2 id="t-resultados">Resultados que Impulsamos</h2>
+      <div class="grid grid-3" style="margin-top:2rem">
+        <article class="card">
+          <div class="kpi"><span class="dot" style="background:var(--ok)"></span>AGILIDAD</div>
+          <p class="muted" style="margin-top: .5rem;">Cierres contables más rápidos y eficientes.</p>
+        </article>
+        <article class="card">
+          <div class="kpi"><span class="dot" style="background:var(--warn)"></span>PRECISIÓN</div>
+          <p class="muted" style="margin-top: .5rem;">Integridad de datos y menos retrabajo manual.</p>
+        </article>
+        <article class="card">
+          <div class="kpi"><span class="dot" style="background:var(--accent)"></span>CLARIDAD</div>
+          <p class="muted" style="margin-top: .5rem;">Paquetes listos para decisión y auditoría.</p>
     <section id="resultados" class="section section-padding results-section" aria-labelledby="t-resultados">
       <div class="wrap">
       <h2 id="t-resultados">Resultados que Impulsamos</h2>
