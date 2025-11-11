@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Acceso — Reportes</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#f6f8fb;color:#111;margin:0;padding:2rem}
+    .card{max-width:520px;margin:3rem auto;padding:1.6rem;border-radius:8px;background:#fff;box-shadow:0 6px 24px rgba(10,20,40,.06)}
+    label{display:block;margin-bottom:.6rem;font-weight:600}
+    input[type="password"]{width:100%;padding:.6rem;border:1px solid #dbe2ea;border-radius:6px;font-size:1rem}
+    button{margin-top:.8rem;padding:.6rem 1rem;border-radius:6px;border:0;background:#0b67c8;color:#fff;font-weight:700;cursor:pointer}
+    p.error{color:#b00;margin-top:.6rem}
+    footer{max-width:520px;margin:1rem auto;color:#666;font-size:.9rem;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="h">
+    <h1 id="h">Acceso a reportes</h1>
+    <p>Introduce la contraseña para ver la sección de reportes.</p>
+
+    <form id="f">
+      <label for="pw">Contraseña</label>
+      <input id="pw" name="pw" type="password" autocomplete="current-password" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <p id="m" class="error" role="alert" aria-live="polite"></p>
+  </div>
+
+  <footer>
+    Si olvidaste la contraseña pide al administrador que reemplace el hash en este archivo.
+  </footer>
+
+<script>
+/*
+  Seguridad: este método es solo para ocultar la sección. No protege archivos si alguien conoce la URL.
+  Para protección real usa Cloudflare Access, Netlify Identity, Firebase Auth o un backend con auth.
+*/
+
+const HASH_OK = "b927fb27679bbc6773c49e54e617be5e52321f8abf665e573103921d23f59f28"; // <-- reemplaza con SHA-256 hex de la contraseña elegida
+
+async function sha256Hex(s){
+  const enc = new TextEncoder().encode(s);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+document.getElementById('f').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  document.getElementById('m').textContent = '';
+  const pw = document.getElementById('pw').value;
+  try {
+    const h = await sha256Hex(pw);
+    if(h === HASH_OK){
+      // marca la sesión y redirige al panel
+      sessionStorage.setItem('rep_ok','1');
+      location.href = '/reportes/panel.html';
+    } else {
+      document.getElementById('m').textContent = 'Contraseña incorrecta.';
+      document.getElementById('pw').value = '';
+      document.getElementById('pw').focus();
+    }
+  } catch(err){
+    document.getElementById('m').textContent = 'Error inesperado.';
+    console.error(err);
+  }
+});
+</script>
+</body>
+</html>
