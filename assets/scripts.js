@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const SPARK_STORAGE_KEY = 'manrado_spark_enabled';
   let isSparkEffectEnabled = localStorage.getItem(SPARK_STORAGE_KEY) !== 'false';
 
-  // Colores acordes a las estrellas (oro, amarillo, blanco, cian)
-  const starColors = ['#ffd700', '#ffed4e', '#ffffff', '#00eaff', '#ffa500'];
+  // Sparkle effect colors (optimized for performance with hardcoded values)
+  const starColors = ['#ffd700', '#ffed4e', '#ffffff', '#06b6d4', '#ffa500'];
 
   // Función para crear una chispa individual
   function createClickSpark(x, y) {
