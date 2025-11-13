@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
   /*
    * ===================================================================
    * Interactive Particle Effect with Isometric 3D Cubes
+   * (Comportamiento de Estela + Explosión de Video)
    * ===================================================================
-   * Physics-based particle system that generates isometric cubes on mousedown
    */
 
   // Canvas setup
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Color palette for cubes
   const colors = ['#007bff', '#ffc107', '#6f42c1', '#fd7e14'];
 
-  // Helper function to shade color for 3D faces
+  // *** AÑADIDO: Helper function to shade color for 3D faces ***
   function shadeColor(color, percent) {
     const num = parseInt(color.replace('#', ''), 16);
     const amt = Math.round(2.55 * percent);
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.friction = 0.98; // Friction to slow down
     }
 
-    // Draw isometric 3D cube
+    // *** REEMPLAZADO: Draw isometric 3D cube (Método Correcto) ***
     draw() {
       if (this.life <= 0) return;
       
@@ -141,37 +141,40 @@ document.addEventListener('DOMContentLoaded', function() {
       const x = this.x;
       const y = this.y;
       
-      // Calculate isometric coordinates
-      const isoWidth = size * 1.2;
-      const isoHeight = size * 0.7;
+      // Colores para las 3 caras
+      const colorTop = this.color;
+      const colorLeft = shadeColor(this.color, -20);
+      const colorRight = shadeColor(this.color, 10);
       
-      // Top face (lighter)
-      ctx.fillStyle = this.color;
+      const isoHeight = size * 0.5; // Altura isométrica
+
+      // Cara superior
+      ctx.fillStyle = colorTop;
       ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + isoWidth, y - isoHeight);
-      ctx.lineTo(x + isoWidth * 2, y);
-      ctx.lineTo(x + isoWidth, y + isoHeight);
+      ctx.moveTo(x, y - isoHeight);
+      ctx.lineTo(x + size, y);
+      ctx.lineTo(x, y + isoHeight);
+      ctx.lineTo(x - size, y);
       ctx.closePath();
       ctx.fill();
-      
-      // Left face (darker)
-      ctx.fillStyle = shadeColor(this.color, -30);
+
+      // Cara izquierda
+      ctx.fillStyle = colorLeft;
       ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + isoWidth, y + isoHeight);
-      ctx.lineTo(x + isoWidth, y + isoHeight + size);
-      ctx.lineTo(x, y + size);
+      ctx.moveTo(x - size, y);
+      ctx.lineTo(x, y + isoHeight);
+      ctx.lineTo(x, y + isoHeight + size);
+      ctx.lineTo(x - size, y + size);
       ctx.closePath();
       ctx.fill();
-      
-      // Right face (medium)
-      ctx.fillStyle = shadeColor(this.color, -15);
+
+      // Cara derecha
+      ctx.fillStyle = colorRight;
       ctx.beginPath();
-      ctx.moveTo(x + isoWidth * 2, y);
-      ctx.lineTo(x + isoWidth, y + isoHeight);
-      ctx.lineTo(x + isoWidth, y + isoHeight + size);
-      ctx.lineTo(x + isoWidth * 2, y + size);
+      ctx.moveTo(x + size, y);
+      ctx.lineTo(x, y + isoHeight);
+      ctx.lineTo(x, y + isoHeight + size);
+      ctx.lineTo(x + size, y + size);
       ctx.closePath();
       ctx.fill();
       
@@ -240,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     requestAnimationFrame(animate);
     
     // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.4)';
+    ctx.fillStyle = 'rgba(11, 21, 38, 0.4)'; // Usamos el color de fondo --bg
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Limit total particles
