@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = Math.random() * 4 + 2; // Random size 2-6px
+      this.size = Math.random() * 3 + 1.5; // Sutil: 1.5-4.5px
       this.type = type; // 'burst', 'trail', o 'dust'
       
       // Calculate velocity based on type
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     update() {
       // Constant fade out
-      this.life -= 0.02;
+      this.life -= 0.03; // Desvanecimiento más rápido
       
       // Apply friction to slow down
       this.vx *= this.friction;
@@ -202,12 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Particle array
   const particles = [];
-  const MAX_PARTICLES = 150; // Maximum particles on screen
+  const MAX_PARTICLES = 75; // Límite sutil
   let frameCounter = 0; // Para el throttle del clic persistente
 
   // Helper function to create particle burst on click
   function createParticleBurst(x, y) {
-    const burstCount = 15 + Math.floor(Math.random() * 6); // 15-20 particles
+    const burstCount = 8 + Math.floor(Math.random() * 4); // 8-11 partículas
     for (let i = 0; i < burstCount; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
       particles.push(new Particle(x, y, color, 'burst'));
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Helper function to create particle trail on mousemove
   function createParticleTrail(x, y) {
-    const trailCount = 1 + Math.floor(Math.random() * 2); // 1-2 particles
+    const trailCount = 1; // 1 partícula
     for (let i = 0; i < trailCount; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
       particles.push(new Particle(x, y, color, 'trail'));
@@ -264,14 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
     requestAnimationFrame(animate);
     
     // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.4)'; // Usamos el color de fondo --bg
+    ctx.fillStyle = 'rgba(11, 21, 38, 0.6)'; // Rastro más corto
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
     // Si el mouse está presionado, genera "polvo"
     if (mouse.isDown) {
       frameCounter++;
-      if (frameCounter % 5 === 0) { // Tasa de generación sutil
+      if (frameCounter % 10 === 0) { // Tasa de generación más sutil
         const color = colors[Math.floor(Math.random() * colors.length)];
         particles.push(new Particle(mouse.x, mouse.y, color, 'dust'));
       }
