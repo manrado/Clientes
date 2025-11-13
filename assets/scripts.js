@@ -79,28 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Mouse state tracking
+  // Mouse state tracking (only for position, no click state)
   const mouse = {
     x: 0,
-    y: 0,
-    isDown: false,
-    radius: 60 // Repulsion radius
+    y: 0
   };
-
-  // Track mouse position
-  document.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  // Track mouse down/up
-  document.addEventListener('mousedown', () => {
-    mouse.isDown = true;
-  });
-
-  document.addEventListener('mouseup', () => {
-    mouse.isDown = false;
-  });
 
   // Color palette for cubes
   const colors = ['#007bff', '#ffc107', '#6f42c1', '#fd7e14'];
@@ -122,19 +105,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Particle class with isometric 3D cube rendering
   class Particle {
-    constructor(x, y, color) {
+    constructor(x, y, color, type) {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = 2 + Math.random() * 4; // Random size 2-6px (more subtle)
+      this.size = Math.random() * 4 + 2; // Random size 2-6px
+      this.type = type; // 'burst' or 'trail'
       
-      // Random velocity for agile dispersion (reduced for subtlety)
-      this.vx = (Math.random() - 0.5) * 4;
-      this.vy = (Math.random() - 0.5) * 4;
+      // Calculate velocity based on type
+      if (type === 'burst') {
+        // Burst: particles shoot out in 360 degrees with moderate speed
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 3 + 1;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+      } else {
+        // Trail: very low random velocity
+        this.vx = (Math.random() - 0.5) * 2;
+        this.vy = (Math.random() - 0.5) * 2;
+      }
       
       this.life = 1; // Opacity from 1 to 0
       this.gravity = 0; // No gravity
-      this.damping = 0.95; // High damping for light bounce
+      this.friction = 0.98; // Friction to slow down
     }
 
     // Draw isometric 3D cube
@@ -186,69 +179,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     update() {
-      // If mouse is not down, fade out (faster fade for subtlety)
-      if (!mouse.isDown) {
-        this.life -= 0.025;
-      }
+      // Constant fade out
+      this.life -= 0.02;
       
-      // Repulsion from cursor
-      const dx = this.x - mouse.x;
-      const dy = this.y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      
-      if (dist < mouse.radius && dist > 0) {
-        const force = (mouse.radius - dist) / mouse.radius;
-        const angle = Math.atan2(dy, dx);
-        this.vx += Math.cos(angle) * force * 0.5;
-        this.vy += Math.sin(angle) * force * 0.5;
-      }
-      
-      // Apply gravity (zero in this case)
-      this.vy += this.gravity;
+      // Apply friction to slow down
+      this.vx *= this.friction;
+      this.vy *= this.friction;
       
       // Update position
       this.x += this.vx;
       this.y += this.vy;
-      
-      // Bounce off edges with damping
-      if (this.x < 0) {
-        this.x = 0;
-        this.vx *= -this.damping;
-      }
-      if (this.x > canvas.width) {
-        this.x = canvas.width;
-        this.vx *= -this.damping;
-      }
-      if (this.y < 0) {
-        this.y = 0;
-        this.vy *= -this.damping;
-      }
-      if (this.y > canvas.height) {
-        this.y = canvas.height;
-        this.vy *= -this.damping;
-      }
     }
   }
 
   // Particle array
   const particles = [];
-  const MAX_PARTICLES = 100; // Reduced for subtle effect
-  let frameCount = 0;
+  const MAX_PARTICLES = 150; // Maximum particles on screen
+
+  // Helper function to create particle burst on click
+  function createParticleBurst(x, y) {
+    const burstCount = 15 + Math.floor(Math.random() * 6); // 15-20 particles
+    for (let i = 0; i < burstCount; i++) {
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particles.push(new Particle(x, y, color, 'burst'));
+    }
+  }
+
+  // Helper function to create particle trail on mousemove
+  function createParticleTrail(x, y) {
+    const trailCount = 1 + Math.floor(Math.random() * 2); // 1-2 particles
+    for (let i = 0; i < trailCount; i++) {
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particles.push(new Particle(x, y, color, 'trail'));
+    }
+  }
+
+  // Throttle mechanism for mousemove
+  let lastTrailTime = 0;
+  const trailThrottle = 40; // milliseconds
+
+  // Add click listener for burst effect
+  document.addEventListener('click', (e) => {
+    createParticleBurst(e.clientX, e.clientY);
+  });
+
+  // Add throttled mousemove listener for trail effect
+  document.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    
+    const now = Date.now();
+    if (now - lastTrailTime >= trailThrottle) {
+      createParticleTrail(e.clientX, e.clientY);
+      lastTrailTime = now;
+    }
+  });
 
   // Animation loop
   function animate() {
     requestAnimationFrame(animate);
     
-    // Motion blur effect - semi-transparent clear (shorter trail)
+    // Motion blur effect - semi-transparent clear
     ctx.fillStyle = 'rgba(11, 21, 38, 0.4)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Generate particles when mouse is down (slower generation for subtlety)
-    if (mouse.isDown && frameCount % 4 === 0) {
-      // Create 1 particle every 4 frames
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      particles.push(new Particle(mouse.x, mouse.y, color));
-    }
     
     // Limit total particles
     while (particles.length > MAX_PARTICLES) {
@@ -266,8 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
         particles.splice(i, 1);
       }
     }
-    
-    frameCount++;
   }
 
   // Start animation
