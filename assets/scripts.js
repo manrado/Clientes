@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = Math.random() * 1.5 + 0.5;
+      this.size = Math.random() * 4 + 2;
       this.type = type;
       
       // Set velocity based on type
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* ==================== PARTICLE MANAGEMENT ==================== */
   const particles = [];
-  const MAX_PARTICLES = 25;
+  const MAX_PARTICLES = 75;
   let frameCounter = 0;
 
   // Create particle burst on click
