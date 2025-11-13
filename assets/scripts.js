@@ -188,45 +188,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     update() {
-      // 1. CICLO DE VIDA: Solo se desvanecen si el mouse NO está presionado
-      if (!mouse.isDown) {
-        this.life -= 0.04; // Desvanecimiento más rápido
-      }
+      // 1. CICLO DE VIDA: Desvanecimiento constante
+      this.life -= 0.05; // Desvanecimiento constante
       
-      // 2. FÍSICA: Repulsión del cursor (RESTAURADA)
-      if (mouse.x !== undefined) {
-        const dx = this.x - mouse.x;
-        const dy = this.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < mouse.radius + this.size) {
-          // Colisión detectada
-          const angle = Math.atan2(dy, dx);
-          // Impulsar lejos del cursor
-          this.vx = Math.cos(angle) * 3; // Velocidad de repulsión sutil
-          this.vy = Math.sin(angle) * 3;
-        }
-      }
-
-      // 3. FÍSICA: Rebote en bordes (RESTAURADO)
-      if (this.x + this.size > canvas.width) {
-        this.x = canvas.width - this.size;
-        this.vx *= -this.damping;
-      }
-      if (this.x - this.size < 0) {
-        this.x = this.size;
-        this.vx *= -this.damping;
-      }
-      if (this.y + this.size > canvas.height) {
-        this.y = canvas.height - this.size;
-        this.vy *= -this.damping;
-      }
-      if (this.y - this.size < 0) {
-        this.y = this.size;
-        this.vy *= -this.damping;
-      }
+      // 2. FRICCIÓN: Frenado suave
+      this.vx *= 0.98; // Fricción
+      this.vy *= 0.98; // Fricción
       
-      // 4. ACTUALIZAR POSICIÓN
+      // 3. ACTUALIZAR POSICIÓN
       this.x += this.vx;
       this.y += this.vy;
     }
@@ -283,8 +252,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function animate() {
     requestAnimationFrame(animate);
     
-    // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.7)'; // Rastro MUY corto
+    // Clear background completely - no motion blur
+    ctx.fillStyle = '#0b1526'; // Color --bg (Sin rastro)
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
