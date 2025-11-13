@@ -222,6 +222,17 @@
     }
     
 
+    /* Particle Canvas Styles */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9998;
+      pointer-events: none;
+    }
+
   </style>
   <link rel="stylesheet" href="assets/styles.css">
   <script type="application/ld+json">
@@ -235,6 +246,7 @@
   </script>
 </head>
 <body id="top">
+  <canvas id="particle-canvas"></canvas>
   <div class="moodborder" aria-hidden="true"></div>
   <a href="#contenido" class="skip">Saltar al contenido</a>
 
@@ -412,13 +424,5 @@
   </footer>
 
   <script src="assets/scripts.js" defer></script>
-  
-  <!-- 
-    ADICIÓN DEL CONTENEDOR: 
-    Este elemento funcionará como el contexto de renderizado
-    para las partículas 'sparkle'.
-    La clase ManradoSparkleEffect (definida en JS) lo utilizará como objetivo.
-  -->
-  <div id="sparkle-container"></div>
 </body>
 </html>
