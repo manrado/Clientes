@@ -79,10 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Mouse state tracking (only for position, no click state)
+  // Mouse state tracking (Posición Y ESTADO del clic)
   const mouse = {
     x: 0,
-    y: 0
+    y: 0,
+    isDown: false // Añadido para rastrear el clic persistente
   };
 
   // Color palette for cubes
@@ -110,19 +111,23 @@ document.addEventListener('DOMContentLoaded', function() {
       this.y = y;
       this.color = color;
       this.size = Math.random() * 4 + 2; // Random size 2-6px
-      this.type = type; // 'burst' or 'trail'
+      this.type = type; // 'burst', 'trail', o 'dust'
       
       // Calculate velocity based on type
       if (type === 'burst') {
-        // Burst: particles shoot out in 360 degrees with moderate speed
+        // 'burst' (explosión de clic): velocidad moderada en 360 grados
         const angle = Math.random() * Math.PI * 2;
         const speed = Math.random() * 3 + 1;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
+      } else if (type === 'trail') {
+        // 'trail' (estela de mousemove): velocidad muy baja
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = (Math.random() - 0.5) * 1.5;
       } else {
-        // Trail: very low random velocity
+        // 'dust' (clic persistente): flujo suave hacia arriba
         this.vx = (Math.random() - 0.5) * 2;
-        this.vy = (Math.random() - 0.5) * 2;
+        this.vy = Math.random() * -1 - 0.5; // Ligero impulso hacia arriba
       }
       
       this.life = 1; // Opacity from 1 to 0
@@ -198,6 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Particle array
   const particles = [];
   const MAX_PARTICLES = 150; // Maximum particles on screen
+  let frameCounter = 0; // Para el throttle del clic persistente
 
   // Helper function to create particle burst on click
   function createParticleBurst(x, y) {
@@ -221,12 +227,14 @@ document.addEventListener('DOMContentLoaded', function() {
   let lastTrailTime = 0;
   const trailThrottle = 40; // milliseconds
 
-  // Add click listener for burst effect
+  // --- NUEVOS LISTENERS HÍBRIDOS ---
+
+  // 1. Clic (Explosión)
   document.addEventListener('click', (e) => {
     createParticleBurst(e.clientX, e.clientY);
   });
 
-  // Add throttled mousemove listener for trail effect
+  // 2. Movimiento (Estela)
   document.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
@@ -237,6 +245,19 @@ document.addEventListener('DOMContentLoaded', function() {
       lastTrailTime = now;
     }
   });
+  
+  // 3. Clic Persistente (Estado)
+  document.addEventListener('mousedown', (e) => {
+    mouse.isDown = true;
+    mouse.x = e.clientX; // Actualizar posición en mousedown
+    mouse.y = e.clientY;
+  });
+  
+  document.addEventListener('mouseup', (e) => {
+    mouse.isDown = false;
+  });
+  // --- FIN DE LISTENERS ---
+
 
   // Animation loop
   function animate() {
@@ -246,6 +267,17 @@ document.addEventListener('DOMContentLoaded', function() {
     ctx.fillStyle = 'rgba(11, 21, 38, 0.4)'; // Usamos el color de fondo --bg
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    // --- LÓGICA DE CLIC PERSISTENTE ---
+    // Si el mouse está presionado, genera "polvo"
+    if (mouse.isDown) {
+      frameCounter++;
+      if (frameCounter % 5 === 0) { // Tasa de generación sutil
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        particles.push(new Particle(mouse.x, mouse.y, color, 'dust'));
+      }
+    }
+    // --- FIN LÓGICA DE CLIC PERSISTENTE ---
+
     // Limit total particles
     while (particles.length > MAX_PARTICLES) {
       particles.shift();
