@@ -58,100 +58,100 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
   // (link uses /reports/login - adjust if your auth path differs)
 
-  /* --- Inicio: Efecto de Partículas Sutil Basado en DOM (ManradoSparkleEffect) --- */
-
-  /**
-   * ManradoSparkleEffect
-   * Clase que implementa un efecto de partículas sutil y profesional,
-   * fundamentado en el DOM en lugar de canvas para reducir el costo computacional.
-   * Las partículas se activan mediante clicks del usuario.
+  /*
+   * ===================================================================
+   * INICIO: Efecto Sutil "Sparkle" (ManradoSparkleEffect)
+   * ===================================================================
+   * Basado en la idea "PERFECCIONA ESTA IDEA" del usuario.
    */
   class ManradoSparkleEffect {
-    constructor(containerId) {
-      this.container = document.getElementById(containerId);
-      if (!this.container) {
-        console.warn(`Container with id '${containerId}' not found`);
-        return;
+      constructor() {
+          this.container = document.getElementById('sparkle-container');
+          if (!this.container) {
+              console.warn('ManradoSparkleEffect: No se encontró el #sparkle-container. Creando uno.');
+              this.container = document.createElement('div');
+              this.container.id = 'sparkle-container';
+              document.body.appendChild(this.container);
+          }
+          
+          // Paleta de colores adaptada al tema Boreal/SynthWave del CSS
+          this.colors = [
+              '#4ce9d9', // --accent
+              '#72f1b8', // --ok
+              '#f97e72', // --warn
+              '#7ed0ff', // (Color de terminal brillante)
+              '#ffffff'  // --ink
+          ];
+          this.init();
       }
-      
-      // Paleta de colores profesionales (tonos azules y cian)
-      this.colors = ['#3b82f6', '#06b6d4', '#1d4ed8', '#0ea5e9', '#60a5fa'];
-      
-      // Vincular el evento de click a todo el documento
-      this.bindEvents();
-    }
-    
-    /**
-     * Vincula el evento de click al documento
-     */
-    bindEvents() {
-      document.addEventListener('click', (e) => {
-        this.createSparkles(e.clientX, e.clientY);
-      });
-    }
-    
-    /**
-     * Crea múltiples partículas sparkle en la posición especificada
-     * @param {number} x - Coordenada X del click
-     * @param {number} y - Coordenada Y del click
-     */
-    createSparkles(x, y) {
-      // Generar entre 4-6 partículas por click para un efecto sutil
-      const count = Math.floor(Math.random() * 3) + 4;
-      
-      for (let i = 0; i < count; i++) {
-        this.createSparkle(x, y);
+
+      init() {
+          document.addEventListener('click', (e) => {
+              if (e.clientX === 0 && e.clientY === 0) return;
+              this.createSparkleBurst(e.clientX, e.clientY);
+          });
       }
-    }
-    
-    /**
-     * Crea una partícula sparkle individual
-     * @param {number} x - Coordenada X de origen
-     * @param {number} y - Coordenada Y de origen
-     */
-    createSparkle(x, y) {
-      const sparkle = document.createElement('div');
-      sparkle.className = 'manrado-sparkle';
-      
-      // Seleccionar color aleatorio de la paleta
-      const color = this.colors[Math.floor(Math.random() * this.colors.length)];
-      sparkle.style.color = color;
-      
-      // Posicionar en el punto de origen
-      sparkle.style.left = `${x}px`;
-      sparkle.style.top = `${y}px`;
-      
-      // Calcular trayectoria aleatoria
-      // Fase 1: Desplazamiento inicial (expansión)
-      const angle = Math.random() * Math.PI * 2;
-      const distance1 = Math.random() * 30 + 20; // 20-50px
-      const tx = Math.cos(angle) * distance1;
-      const ty = Math.sin(angle) * distance1;
-      
-      // Fase 2: Desplazamiento final (continuación en la misma dirección)
-      const distance2 = Math.random() * 40 + 30; // 30-70px adicionales
-      const txEnd = Math.cos(angle) * (distance1 + distance2);
-      const tyEnd = Math.sin(angle) * (distance1 + distance2);
-      
-      // Establecer variables CSS para la animación
-      sparkle.style.setProperty('--tx', `${tx}px`);
-      sparkle.style.setProperty('--ty', `${ty}px`);
-      sparkle.style.setProperty('--tx-end', `${txEnd}px`);
-      sparkle.style.setProperty('--ty-end', `${tyEnd}px`);
-      
-      // Añadir al contenedor
-      this.container.appendChild(sparkle);
-      
-      // Remover el elemento después de que la animación termine (1s)
-      setTimeout(() => {
-        sparkle.remove();
-      }, 1000);
-    }
+
+      createSparkleBurst(x, y) {
+          const sparkleCount = 8 + Math.floor(Math.random() * 5);
+          
+          for (let i = 0; i < sparkleCount; i++) {
+              this.createSparkle(x, y, i, sparkleCount);
+          }
+      }
+
+      createSparkle(x, y, index, sparkleCount) {
+          const sparkle = document.createElement('div');
+          sparkle.className = 'manrado-sparkle';
+          
+          // Propiedades aleatorias
+          const angle = (index / sparkleCount) * Math.PI * 2;
+          const distance = 30 + Math.random() * 70;
+          const finalDistance = distance * (1.5 + Math.random() * 1.5);
+          
+          const tx = Math.cos(angle) * distance;
+          const ty = Math.sin(angle) * distance;
+          const txEnd = Math.cos(angle) * finalDistance;
+          const tyEnd = Math.sin(angle) * finalDistance;
+
+          // Aplicar propiedades CSS
+          sparkle.style.setProperty('--tx', `${tx}px`);
+          sparkle.style.setProperty('--ty', `${ty}px`);
+          sparkle.style.setProperty('--tx-end', `${txEnd}px`);
+          sparkle.style.setProperty('--ty-end', `${tyEnd}px`);
+          
+          const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+          sparkle.style.color = color;
+          
+          sparkle.style.left = `${x - 3}px`; // offset para centrar
+          sparkle.style.top = `${y - 3}px`; // offset para centrar
+          
+          const duration = 0.8 + Math.random() * 0.4;
+          sparkle.style.animationDuration = `${duration}s`;
+          if (index % 2 === 0) {
+              sparkle.style.animationDelay = `${index * 0.02}s`;
+          }
+
+          this.container.appendChild(sparkle);
+
+          // Limpieza automática
+          setTimeout(() => {
+              if (sparkle.parentNode) {
+                  sparkle.parentNode.removeChild(sparkle);
+              }
+          }, duration * 1000 + 100);
+      }
   }
-  
-  // Instanciar el efecto
-  new ManradoSparkleEffect('sparkle-container');
-  
-  /* --- Fin: Efecto de Partículas Sutil --- */
+
+  // Inicializar el efecto DESPUÉS del listener principal del DOM
+  // Esta es una forma segura de añadir la inicialización
+  // sin crear un segundo listener.
+  if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => new ManradoSparkleEffect());
+  } else {
+      // El DOM ya está cargado, inicializar directamente.
+      new ManradoSparkleEffect();
+  }
+  /* --- Fin: Efecto Sutil "Sparkle" --- */
 
 });
