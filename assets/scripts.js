@@ -283,9 +283,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function animate() {
     requestAnimationFrame(animate);
     
-    // Clear background completely - no motion blur
-    ctx.fillStyle = '#0b1526'; // Color --bg (Limpio, sin rastro)
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Clear background completely - transparent background for particles
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
     // Si el mouse está presionado, genera "polvo"
