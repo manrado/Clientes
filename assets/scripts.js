@@ -283,7 +283,11 @@ document.addEventListener('DOMContentLoaded', function() {
   function animate() {
     requestAnimationFrame(animate);
     
-    // Clear background completely - transparent background for particles
+    // Clear background completely - no motion blur
+    // ctx.fillStyle = '#0b1526'; // <-- ELIMINADO
+    // ctx.fillRect(0, 0, canvas.width, canvas.height); // <-- ELIMINADO
+
+    // CORRECCIÓN: Usar clearRect para un fondo 100% transparente
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
