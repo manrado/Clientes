@@ -58,236 +58,100 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
   // (link uses /reports/login - adjust if your auth path differs)
 
-  /* --- Inicio: Efecto de Partículas Interactivas con Cubos Isométricos --- */
+  /* --- Inicio: Efecto de Partículas Sutil Basado en DOM (ManradoSparkleEffect) --- */
 
-  // Configuración del Canvas
-  const canvas = document.getElementById('particle-canvas');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  
-  // Paleta de colores para los cubos
-  const cubeColors = ['#007bff', '#ffc107', '#6f42c1', '#fd7e14'];
-  
-  // Estado del mouse
-  const mouse = {
-    x: 0,
-    y: 0,
-    isDown: false,
-    radius: 60 // Radio de repulsión
-  };
-  
-  // Array de partículas
-  let particles = [];
-  const MAX_PARTICLES = 250;
-  let frameCounter = 0;
-  
-  // Función para redimensionar el canvas
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  
-  // Función auxiliar para oscurecer/aclarar colores (para las caras del cubo)
-  function shadeColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (
-      0x1000000 +
-      (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-      (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-      (B < 255 ? (B < 1 ? 0 : B) : 255)
-    ).toString(16).slice(1);
-  }
-  
-  // Clase Particle para los cubos isométricos
-  class Particle {
-    constructor(x, y, color) {
-      this.x = x;
-      this.y = y;
-      this.color = color;
-      this.size = Math.random() * 15 + 10; // Tamaño entre 10-25px
+  /**
+   * ManradoSparkleEffect
+   * Clase que implementa un efecto de partículas sutil y profesional,
+   * fundamentado en el DOM en lugar de canvas para reducir el costo computacional.
+   * Las partículas se activan mediante clicks del usuario.
+   */
+  class ManradoSparkleEffect {
+    constructor(containerId) {
+      this.container = document.getElementById(containerId);
+      if (!this.container) {
+        console.warn(`Container with id '${containerId}' not found`);
+        return;
+      }
       
-      // Velocidad inicial aleatoria
-      this.vx = (Math.random() - 0.5) * 6;
-      this.vy = (Math.random() - 0.5) * 6;
+      // Paleta de colores profesionales (tonos azules y cian)
+      this.colors = ['#3b82f6', '#06b6d4', '#1d4ed8', '#0ea5e9', '#60a5fa'];
       
-      // Físicas
-      this.gravity = 0.15;
-      this.damping = 0.8;
-      this.life = 1; // Opacidad (1 = visible, 0 = invisible)
-      this.fadeRate = 0.015; // Velocidad de difuminado
+      // Vincular el evento de click a todo el documento
+      this.bindEvents();
     }
     
-    // Dibuja un cubo isométrico 3D
-    draw() {
-      if (this.life <= 0) return;
-      
-      ctx.save();
-      ctx.globalAlpha = this.life;
-      
-      const size = this.size;
-      const h = size * 0.866; // altura isométrica
-      
-      // Colores para las 3 caras (superior, izquierda, derecha)
-      const colorTop = shadeColor(this.color, 20);
-      const colorLeft = shadeColor(this.color, -10);
-      const colorRight = shadeColor(this.color, -30);
-      
-      // Cara superior (rombo)
-      ctx.beginPath();
-      ctx.moveTo(this.x, this.y);
-      ctx.lineTo(this.x + size, this.y + size * 0.5);
-      ctx.lineTo(this.x, this.y + size);
-      ctx.lineTo(this.x - size, this.y + size * 0.5);
-      ctx.closePath();
-      ctx.fillStyle = colorTop;
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      
-      // Cara izquierda
-      ctx.beginPath();
-      ctx.moveTo(this.x - size, this.y + size * 0.5);
-      ctx.lineTo(this.x, this.y + size);
-      ctx.lineTo(this.x, this.y + size + h);
-      ctx.lineTo(this.x - size, this.y + h + size * 0.5);
-      ctx.closePath();
-      ctx.fillStyle = colorLeft;
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      ctx.stroke();
-      
-      // Cara derecha
-      ctx.beginPath();
-      ctx.moveTo(this.x, this.y + size);
-      ctx.lineTo(this.x + size, this.y + size * 0.5);
-      ctx.lineTo(this.x + size, this.y + h + size * 0.5);
-      ctx.lineTo(this.x, this.y + size + h);
-      ctx.closePath();
-      ctx.fillStyle = colorRight;
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      ctx.stroke();
-      
-      ctx.restore();
+    /**
+     * Vincula el evento de click al documento
+     */
+    bindEvents() {
+      document.addEventListener('click', (e) => {
+        this.createSparkles(e.clientX, e.clientY);
+      });
     }
     
-    // Actualiza la física y posición de la partícula
-    update() {
-      // Si el mouse no está presionado, comienza a difuminarse
-      if (!mouse.isDown) {
-        this.life -= this.fadeRate;
+    /**
+     * Crea múltiples partículas sparkle en la posición especificada
+     * @param {number} x - Coordenada X del click
+     * @param {number} y - Coordenada Y del click
+     */
+    createSparkles(x, y) {
+      // Generar entre 4-6 partículas por click para un efecto sutil
+      const count = Math.floor(Math.random() * 3) + 4;
+      
+      for (let i = 0; i < count; i++) {
+        this.createSparkle(x, y);
       }
+    }
+    
+    /**
+     * Crea una partícula sparkle individual
+     * @param {number} x - Coordenada X de origen
+     * @param {number} y - Coordenada Y de origen
+     */
+    createSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'manrado-sparkle';
       
-      // Aplica gravedad
-      this.vy += this.gravity;
+      // Seleccionar color aleatorio de la paleta
+      const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+      sparkle.style.color = color;
       
-      // Colisión con el cursor (repulsión circular)
-      const dx = this.x - mouse.x;
-      const dy = this.y - mouse.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      // Posicionar en el punto de origen
+      sparkle.style.left = `${x}px`;
+      sparkle.style.top = `${y}px`;
       
-      if (distance < mouse.radius + this.size) {
-        // Normalizar el vector de distancia
-        const angle = Math.atan2(dy, dx);
-        const targetX = mouse.x + Math.cos(angle) * (mouse.radius + this.size);
-        const targetY = mouse.y + Math.sin(angle) * (mouse.radius + this.size);
-        
-        // Aplicar fuerza de repulsión
-        const force = (mouse.radius + this.size - distance) / (mouse.radius + this.size);
-        this.vx += (targetX - this.x) * force * 0.5;
-        this.vy += (targetY - this.y) * force * 0.5;
-      }
+      // Calcular trayectoria aleatoria
+      // Fase 1: Desplazamiento inicial (expansión)
+      const angle = Math.random() * Math.PI * 2;
+      const distance1 = Math.random() * 30 + 20; // 20-50px
+      const tx = Math.cos(angle) * distance1;
+      const ty = Math.sin(angle) * distance1;
       
-      // Actualiza posición
-      this.x += this.vx;
-      this.y += this.vy;
+      // Fase 2: Desplazamiento final (continuación en la misma dirección)
+      const distance2 = Math.random() * 40 + 30; // 30-70px adicionales
+      const txEnd = Math.cos(angle) * (distance1 + distance2);
+      const tyEnd = Math.sin(angle) * (distance1 + distance2);
       
-      // Rebote en los bordes con damping
-      if (this.x - this.size < 0) {
-        this.x = this.size;
-        this.vx *= -this.damping;
-      } else if (this.x + this.size > canvas.width) {
-        this.x = canvas.width - this.size;
-        this.vx *= -this.damping;
-      }
+      // Establecer variables CSS para la animación
+      sparkle.style.setProperty('--tx', `${tx}px`);
+      sparkle.style.setProperty('--ty', `${ty}px`);
+      sparkle.style.setProperty('--tx-end', `${txEnd}px`);
+      sparkle.style.setProperty('--ty-end', `${tyEnd}px`);
       
-      if (this.y - this.size < 0) {
-        this.y = this.size;
-        this.vy *= -this.damping;
-      } else if (this.y + this.size + this.size * 0.866 > canvas.height) {
-        this.y = canvas.height - this.size - this.size * 0.866;
-        this.vy *= -this.damping;
-      }
+      // Añadir al contenedor
+      this.container.appendChild(sparkle);
+      
+      // Remover el elemento después de que la animación termine (1s)
+      setTimeout(() => {
+        sparkle.remove();
+      }, 1000);
     }
   }
   
-  // Listeners del mouse
-  window.addEventListener('mousedown', (e) => {
-    mouse.isDown = true;
-  });
+  // Instanciar el efecto
+  new ManradoSparkleEffect('sparkle-container');
   
-  window.addEventListener('mouseup', (e) => {
-    mouse.isDown = false;
-  });
-  
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-  
-  // Listener de redimensionamiento
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-  
-  // Bucle de animación
-  function animate() {
-    requestAnimationFrame(animate);
-    
-    // Limpieza con motion blur para efecto suave
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.2)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Crear nuevas partículas si el mouse está presionado
-    if (mouse.isDown) {
-      frameCounter++;
-      // Crear 2-3 partículas cada 3 frames
-      if (frameCounter % 3 === 0) {
-        for (let i = 0; i < 2; i++) {
-          if (particles.length < MAX_PARTICLES) {
-            const color = cubeColors[Math.floor(Math.random() * cubeColors.length)];
-            particles.push(new Particle(mouse.x, mouse.y, color));
-          }
-        }
-      }
-    }
-    
-    // Limitar el número de partículas (eliminar las más antiguas)
-    if (particles.length > MAX_PARTICLES) {
-      particles = particles.slice(particles.length - MAX_PARTICLES);
-    }
-    
-    // Actualizar y dibujar partículas (iterar hacia atrás para poder eliminar)
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.update();
-      p.draw();
-      
-      // Eliminar partículas que se han difuminado completamente
-      if (p.life <= 0) {
-        particles.splice(i, 1);
-      }
-    }
-  }
-  
-  // Iniciar la animación
-  animate();
-  
-  /* --- Fin: Efecto de Partículas Interactivas --- */
+  /* --- Fin: Efecto de Partículas Sutil --- */
 
 });
