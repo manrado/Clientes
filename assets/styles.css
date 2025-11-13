@@ -603,3 +603,79 @@ footer {
   }
 }
 
+/*
+ * ==========================================================
+ * Definiciones de Estilo para el efecto de partículas sutil
+ * (ManradoSparkleEffect)
+ * ==========================================================
+ */
+
+/* * .manrado-sparkle: Define la entidad de partícula individual.
+ * - position: fixed -> Establece un posicionamiento fijo relativo al viewport.
+ * - pointer-events: none -> CRÍTICO: Garantiza que las partículas no intercepten
+ * eventos de puntero, permitiendo la interacción con elementos subyacentes.
+ * - z-index: 9999 -> Asegura la renderización por encima de la mayoría
+ * del contenido de la interfaz.
+ * - animation -> Establece la vinculación con la animación 'manrado-sparkle-fly'.
+ */
+.manrado-sparkle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: manrado-sparkle-fly 1s ease-out forwards;
+}
+
+/* * .manrado-sparkle::before: Genera el efecto de luminiscencia o "blur".
+ * - 'currentColor' es empleado para que el pseudoelemento herede
+ * automáticamente el valor de color asignado a la partícula (definido vía JS).
+ * - 'filter: blur(2px)' genera el resplandor sutil.
+ */
+.manrado-sparkle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: currentColor;
+    border-radius: 50%;
+    filter: blur(2px);
+}
+
+/* * @keyframes manrado-sparkle-fly: Define la cinética de la partícula.
+ * - 0% (Inicio): Instanciación en el punto de origen, opacidad total, escala 1.
+ * - 20% (Expansión): Transición a la posición inicial de trayectoria (definida por --tx, --ty),
+ * incremento de escala (scale(1.2)) y rotación, simulando una explosión inicial.
+ * - 100% (Fin): Transición al destino final (definido por --tx-end, --ty-end),
+ * reducción de escala (scale(0.3)) y desvanecimiento (opacity: 0) al completar la rotación.
+ * * La implementación se basa en el uso de variables CSS (var(...))
+ * que son controladas mediante JavaScript para asignar
+ * una trayectoria y destino únicos a cada instancia de partícula.
+ */
+@keyframes manrado-sparkle-fly {
+    0% {
+        opacity: 1;
+        transform: 
+            translate(0, 0) 
+            scale(1)
+            rotate(0deg);
+    }
+    20% {
+        opacity: 0.9;
+        transform: 
+            translate(var(--tx), var(--ty)) 
+            scale(1.2)
+            rotate(90deg);
+    }
+    100% {
+        opacity: 0;
+        transform: 
+            translate(var(--tx-end), var(--ty-end)) 
+            scale(0.3)
+            rotate(360deg);
+    }
+}
+
