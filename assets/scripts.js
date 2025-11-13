@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     x: 0,
     y: 0,
     isDown: false, // Añadido para rastrear el clic persistente
-    radius: 60 // Radio de repulsión del cursor
+    radius: 40 // Radio de repulsión SUTIL
   };
 
   // Color palette for cubes
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = Math.random() * 3 + 1.5; // Sutil: 1.5-4.5px
+      this.size = Math.random() * 2 + 1; // Sutil: 1-3px
       this.type = type; // 'burst', 'trail', o 'dust'
       
       // Calculate velocity based on type
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     update() {
       // 1. CICLO DE VIDA: Solo se desvanecen si el mouse NO está presionado
       if (!mouse.isDown) {
-        this.life -= 0.03; // Desvanecimiento más rápido
+        this.life -= 0.04; // Desvanecimiento más rápido
       }
       
       // 2. FÍSICA: Repulsión del cursor (RESTAURADA)
@@ -234,12 +234,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Particle array
   const particles = [];
-  const MAX_PARTICLES = 75; // Límite sutil
+  const MAX_PARTICLES = 40; // Límite MUY sutil
   let frameCounter = 0; // Para el throttle del clic persistente
 
   // Helper function to create particle burst on click
   function createParticleBurst(x, y) {
-    const burstCount = 8 + Math.floor(Math.random() * 4); // 8-11 partículas
+    const burstCount = 5 + Math.floor(Math.random() * 4); // 5-8 partículas
     for (let i = 0; i < burstCount; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
       particles.push(new Particle(x, y, color, 'burst'));
@@ -284,14 +284,14 @@ document.addEventListener('DOMContentLoaded', function() {
     requestAnimationFrame(animate);
     
     // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.6)'; // Rastro más corto
+    ctx.fillStyle = 'rgba(11, 21, 38, 0.7)'; // Rastro MUY corto
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
     // Si el mouse está presionado, genera "polvo"
     if (mouse.isDown) {
       frameCounter++;
-      if (frameCounter % 10 === 0) { // Tasa de generación más sutil
+      if (frameCounter % 15 === 0) { // Tasa de generación MUY sutil
         const color = colors[Math.floor(Math.random() * colors.length)];
         particles.push(new Particle(mouse.x, mouse.y, color, 'dust'));
       }
