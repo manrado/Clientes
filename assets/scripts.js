@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     x: 0,
     y: 0,
     isDown: false, // Añadido para rastrear el clic persistente
-    radius: 40 // Radio de repulsión SUTIL
+    radius: 30 // Radio de repulsión MUY SUTIL
   };
 
   // Color palette for cubes
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = Math.random() * 2 + 1; // Sutil: 1-3px
+      this.size = Math.random() * 1.5 + 0.5; // Sutil: 0.5-2px
       this.type = type; // 'burst', 'trail', o 'dust'
       
       // Calculate velocity based on type
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Particle array
   const particles = [];
-  const MAX_PARTICLES = 40; // Límite MUY sutil
+  const MAX_PARTICLES = 25; // Límite MUY sutil
   let frameCounter = 0; // Para el throttle del clic persistente
 
   // Helper function to create particle burst on click
@@ -283,15 +283,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function animate() {
     requestAnimationFrame(animate);
     
-    // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.7)'; // Rastro MUY corto
+    // Clear background completely - no motion blur
+    ctx.fillStyle = '#0b1526'; // Color --bg (Limpio, sin rastro)
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
     // Si el mouse está presionado, genera "polvo"
     if (mouse.isDown) {
       frameCounter++;
-      if (frameCounter % 15 === 0) { // Tasa de generación MUY sutil
+      if (frameCounter % 25 === 0) { // Tasa de generación MUY sutil
         const color = colors[Math.floor(Math.random() * colors.length)];
         particles.push(new Particle(mouse.x, mouse.y, color, 'dust'));
       }
