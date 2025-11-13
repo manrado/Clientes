@@ -83,7 +83,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const mouse = {
     x: 0,
     y: 0,
-    isDown: false // Añadido para rastrear el clic persistente
+    isDown: false, // Añadido para rastrear el clic persistente
+    radius: 60 // Radio de repulsión del cursor
   };
 
   // Color palette for cubes
@@ -132,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       this.life = 1; // Opacity from 1 to 0
       this.gravity = 0; // No gravity
-      this.friction = 0.98; // Friction to slow down
+      this.damping = 0.95; // Factor de rebote (poca fricción, flotan)
     }
 
     // *** REEMPLAZADO: Draw isometric 3D cube (Método Correcto) ***
@@ -187,14 +188,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     update() {
-      // Constant fade out
-      this.life -= 0.03; // Desvanecimiento más rápido
+      // 1. CICLO DE VIDA: Solo se desvanecen si el mouse NO está presionado
+      if (!mouse.isDown) {
+        this.life -= 0.03; // Desvanecimiento más rápido
+      }
       
-      // Apply friction to slow down
-      this.vx *= this.friction;
-      this.vy *= this.friction;
+      // 2. FÍSICA: Repulsión del cursor (RESTAURADA)
+      if (mouse.x !== undefined) {
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < mouse.radius + this.size) {
+          // Colisión detectada
+          const angle = Math.atan2(dy, dx);
+          // Impulsar lejos del cursor
+          this.vx = Math.cos(angle) * 3; // Velocidad de repulsión sutil
+          this.vy = Math.sin(angle) * 3;
+        }
+      }
+
+      // 3. FÍSICA: Rebote en bordes (RESTAURADO)
+      if (this.x + this.size > canvas.width) {
+        this.x = canvas.width - this.size;
+        this.vx *= -this.damping;
+      }
+      if (this.x - this.size < 0) {
+        this.x = this.size;
+        this.vx *= -this.damping;
+      }
+      if (this.y + this.size > canvas.height) {
+        this.y = canvas.height - this.size;
+        this.vy *= -this.damping;
+      }
+      if (this.y - this.size < 0) {
+        this.y = this.size;
+        this.vy *= -this.damping;
+      }
       
-      // Update position
+      // 4. ACTUALIZAR POSICIÓN
       this.x += this.vx;
       this.y += this.vy;
     }
@@ -214,18 +246,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Helper function to create particle trail on mousemove
-  function createParticleTrail(x, y) {
-    const trailCount = 1; // 1 partícula
-    for (let i = 0; i < trailCount; i++) {
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      particles.push(new Particle(x, y, color, 'trail'));
-    }
-  }
+  // ELIMINADO: Ya no se crea estela en mousemove
+  // function createParticleTrail(x, y) { ... }
 
-  // Throttle mechanism for mousemove
-  let lastTrailTime = 0;
-  const trailThrottle = 40; // milliseconds
+  // ELIMINADO: Throttle de mousemove ya no es necesario
+  // let lastTrailTime = 0;
+  // const trailThrottle = 40; 
 
   // --- NUEVOS LISTENERS HÍBRIDOS ---
 
@@ -234,16 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
     createParticleBurst(e.clientX, e.clientY);
   });
 
-  // 2. Movimiento (Estela)
+  // 2. Movimiento (SOLO actualiza posición del cursor, NO CREA partículas)
   document.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
-    
-    const now = Date.now();
-    if (now - lastTrailTime >= trailThrottle) {
-      createParticleTrail(e.clientX, e.clientY);
-      lastTrailTime = now;
-    }
   });
   
   // 3. Clic Persistente (Estado)
