@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     update() {
       // 1. CICLO DE VIDA: Solo se desvanecen si el mouse NO está presionado
       if (!mouse.isDown) {
-        this.life -= 0.015; // Desvanecimiento más lento (para ver el rebote)
+        this.life -= 0.04; // Desvanecimiento más rápido
       }
       
       // 2. FÍSICA: Repulsión del cursor (RESTAURADA)
