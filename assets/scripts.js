@@ -55,103 +55,224 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Hero 'Acceder a reportes' is a discreet button that should lead users to login for reports
-  // (link uses /reports/login - adjust if your auth path differs)
-
   /*
    * ===================================================================
-   * INICIO: Efecto Sutil "Sparkle" (ManradoSparkleEffect)
+   * Interactive Particle Effect with Isometric 3D Cubes
    * ===================================================================
-   * Basado en la idea "PERFECCIONA ESTA IDEA" del usuario.
+   * Physics-based particle system that generates isometric cubes on mousedown
    */
-  class ManradoSparkleEffect {
-      constructor() {
-          this.container = document.getElementById('sparkle-container');
-          if (!this.container) {
-              console.warn('ManradoSparkleEffect: No se encontró el #sparkle-container. Creando uno.');
-              this.container = document.createElement('div');
-              this.container.id = 'sparkle-container';
-              document.body.appendChild(this.container);
-          }
-          
-          // Paleta de colores adaptada al tema Boreal/SynthWave del CSS
-          this.colors = [
-              '#4ce9d9', // --accent
-              '#72f1b8', // --ok
-              '#f97e72', // --warn
-              '#7ed0ff', // (Color de terminal brillante)
-              '#ffffff'  // --ink
-          ];
-          this.init();
-      }
 
-      init() {
-          document.addEventListener('click', (e) => {
-              if (e.clientX === 0 && e.clientY === 0) return;
-              this.createSparkleBurst(e.clientX, e.clientY);
-          });
-      }
+  // Canvas setup
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) {
+    console.warn('Particle canvas not found');
+    return;
+  }
+  
+  const ctx = canvas.getContext('2d');
+  
+  // Resize canvas to fill window
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-      createSparkleBurst(x, y) {
-          const sparkleCount = 8 + Math.floor(Math.random() * 5);
-          
-          for (let i = 0; i < sparkleCount; i++) {
-              this.createSparkle(x, y, i, sparkleCount);
-          }
-      }
+  // Mouse state tracking
+  const mouse = {
+    x: 0,
+    y: 0,
+    isDown: false,
+    radius: 60 // Repulsion radius
+  };
 
-      createSparkle(x, y, index, sparkleCount) {
-          const sparkle = document.createElement('div');
-          sparkle.className = 'manrado-sparkle';
-          
-          // Propiedades aleatorias
-          const angle = (index / sparkleCount) * Math.PI * 2;
-          const distance = 30 + Math.random() * 70;
-          const finalDistance = distance * (1.5 + Math.random() * 1.5);
-          
-          const tx = Math.cos(angle) * distance;
-          const ty = Math.sin(angle) * distance;
-          const txEnd = Math.cos(angle) * finalDistance;
-          const tyEnd = Math.sin(angle) * finalDistance;
+  // Track mouse position
+  document.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
 
-          // Aplicar propiedades CSS
-          sparkle.style.setProperty('--tx', `${tx}px`);
-          sparkle.style.setProperty('--ty', `${ty}px`);
-          sparkle.style.setProperty('--tx-end', `${txEnd}px`);
-          sparkle.style.setProperty('--ty-end', `${tyEnd}px`);
-          
-          const color = this.colors[Math.floor(Math.random() * this.colors.length)];
-          sparkle.style.color = color;
-          
-          sparkle.style.left = `${x - 3}px`; // offset para centrar
-          sparkle.style.top = `${y - 3}px`; // offset para centrar
-          
-          const duration = 0.8 + Math.random() * 0.4;
-          sparkle.style.animationDuration = `${duration}s`;
-          if (index % 2 === 0) {
-              sparkle.style.animationDelay = `${index * 0.02}s`;
-          }
+  // Track mouse down/up
+  document.addEventListener('mousedown', () => {
+    mouse.isDown = true;
+  });
 
-          this.container.appendChild(sparkle);
+  document.addEventListener('mouseup', () => {
+    mouse.isDown = false;
+  });
 
-          // Limpieza automática
-          setTimeout(() => {
-              if (sparkle.parentNode) {
-                  sparkle.parentNode.removeChild(sparkle);
-              }
-          }, duration * 1000 + 100);
-      }
+  // Color palette for cubes
+  const colors = ['#007bff', '#ffc107', '#6f42c1', '#fd7e14'];
+
+  // Helper function to shade color for 3D faces
+  function shadeColor(color, percent) {
+    const num = parseInt(color.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return '#' + (
+      0x1000000 +
+      (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+      (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+      (B < 255 ? (B < 1 ? 0 : B) : 255)
+    ).toString(16).slice(1);
   }
 
-  // Inicializar el efecto DESPUÉS del listener principal del DOM
-  // Esta es una forma segura de añadir la inicialización
-  // sin crear un segundo listener.
-  if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', () => new ManradoSparkleEffect());
-  } else {
-      // El DOM ya está cargado, inicializar directamente.
-      new ManradoSparkleEffect();
+  // Particle class with isometric 3D cube rendering
+  class Particle {
+    constructor(x, y, color) {
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.size = 4 + Math.random() * 8; // Random size 4-12px
+      
+      // Random velocity for agile dispersion
+      this.vx = (Math.random() - 0.5) * 8;
+      this.vy = (Math.random() - 0.5) * 8;
+      
+      this.life = 1; // Opacity from 1 to 0
+      this.gravity = 0; // No gravity
+      this.damping = 0.95; // High damping for light bounce
+    }
+
+    // Draw isometric 3D cube
+    draw() {
+      if (this.life <= 0) return;
+      
+      ctx.save();
+      ctx.globalAlpha = this.life;
+      
+      const size = this.size;
+      const x = this.x;
+      const y = this.y;
+      
+      // Calculate isometric coordinates
+      const isoWidth = size * 1.2;
+      const isoHeight = size * 0.7;
+      
+      // Top face (lighter)
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + isoWidth, y - isoHeight);
+      ctx.lineTo(x + isoWidth * 2, y);
+      ctx.lineTo(x + isoWidth, y + isoHeight);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Left face (darker)
+      ctx.fillStyle = shadeColor(this.color, -30);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + isoWidth, y + isoHeight);
+      ctx.lineTo(x + isoWidth, y + isoHeight + size);
+      ctx.lineTo(x, y + size);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Right face (medium)
+      ctx.fillStyle = shadeColor(this.color, -15);
+      ctx.beginPath();
+      ctx.moveTo(x + isoWidth * 2, y);
+      ctx.lineTo(x + isoWidth, y + isoHeight);
+      ctx.lineTo(x + isoWidth, y + isoHeight + size);
+      ctx.lineTo(x + isoWidth * 2, y + size);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.restore();
+    }
+
+    update() {
+      // If mouse is not down, fade out
+      if (!mouse.isDown) {
+        this.life -= 0.015;
+      }
+      
+      // Repulsion from cursor
+      const dx = this.x - mouse.x;
+      const dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist < mouse.radius && dist > 0) {
+        const force = (mouse.radius - dist) / mouse.radius;
+        const angle = Math.atan2(dy, dx);
+        this.vx += Math.cos(angle) * force * 0.5;
+        this.vy += Math.sin(angle) * force * 0.5;
+      }
+      
+      // Apply gravity (zero in this case)
+      this.vy += this.gravity;
+      
+      // Update position
+      this.x += this.vx;
+      this.y += this.vy;
+      
+      // Bounce off edges with damping
+      if (this.x < 0) {
+        this.x = 0;
+        this.vx *= -this.damping;
+      }
+      if (this.x > canvas.width) {
+        this.x = canvas.width;
+        this.vx *= -this.damping;
+      }
+      if (this.y < 0) {
+        this.y = 0;
+        this.vy *= -this.damping;
+      }
+      if (this.y > canvas.height) {
+        this.y = canvas.height;
+        this.vy *= -this.damping;
+      }
+    }
   }
-  /* --- Fin: Efecto Sutil "Sparkle" --- */
+
+  // Particle array
+  const particles = [];
+  const MAX_PARTICLES = 300;
+  let frameCount = 0;
+
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    // Motion blur effect - semi-transparent clear
+    ctx.fillStyle = 'rgba(11, 21, 38, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Generate particles when mouse is down
+    if (mouse.isDown && frameCount % 2 === 0) {
+      // Create 5 particles every 2 frames
+      for (let i = 0; i < 5; i++) {
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        particles.push(new Particle(mouse.x, mouse.y, color));
+      }
+    }
+    
+    // Limit total particles
+    while (particles.length > MAX_PARTICLES) {
+      particles.shift();
+    }
+    
+    // Update and draw particles (iterate backwards for safe removal)
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.update();
+      p.draw();
+      
+      // Remove dead particles
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+      }
+    }
+    
+    frameCount++;
+  }
+
+  // Start animation
+  animate();
 
 });
