@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     update() {
       // 1. CICLO DE VIDA: Solo se desvanecen si el mouse NO está presionado
       if (!mouse.isDown) {
-        this.life -= 0.05; // Desvanecimiento más rápido
+        this.life -= 0.015; // Desvanecimiento más lento (para ver el rebote)
       }
       
       // 2. FÍSICA: Repulsión del cursor (RESTAURADA)
@@ -283,8 +283,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function animate() {
     requestAnimationFrame(animate);
     
-    // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.85)'; // Rastro MUY corto
+    // Clear background completely - no motion blur
+    ctx.fillStyle = '#0b1526'; // Color --bg (Limpio, sin rastro)
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // --- LÓGICA DE CLIC PERSISTENTE ---
