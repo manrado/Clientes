@@ -1,69 +1,136 @@
+/**
+ * Manrado Landing Page - Interactive Scripts
+ * Clean, modern JavaScript with enhanced UX
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
-  // Mobile Menu Toggle
+  
+  /* ==================== MOBILE MENU TOGGLE ==================== */
   const menuBtn = document.querySelector('.mobile-menu-btn');
   const navLinks = document.querySelector('.nav-links');
+  
   if (menuBtn && navLinks) {
+    // Toggle menu on button click
     menuBtn.addEventListener('click', () => {
       const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
       menuBtn.setAttribute('aria-expanded', !isExpanded);
       navLinks.classList.toggle('active');
-      // Close menu when a link is clicked
-      navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          menuBtn.setAttribute('aria-expanded', 'false');
-          navLinks.classList.remove('active');
-        });
+      
+      // Update aria-label
+      menuBtn.setAttribute('aria-label', !isExpanded ? 'Cerrar menú' : 'Abrir menú');
+    });
+    
+    // Close menu when clicking on any link
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuBtn.setAttribute('aria-label', 'Abrir menú');
+        navLinks.classList.remove('active');
       });
+    });
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuBtn.setAttribute('aria-label', 'Abrir menú');
+        navLinks.classList.remove('active');
+        menuBtn.focus();
+      }
     });
   }
 
-  // Smooth scroll for all anchor links
+  /* ==================== SMOOTH SCROLL FOR ANCHOR LINKS ==================== */
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      // allow external links and mailto
+    anchor.addEventListener('click', function(e) {
       const href = this.getAttribute('href');
-      if (!href.startsWith('#')) return;
+      
+      // Skip if href is just "#" or doesn't start with "#"
+      if (href === '#' || !href.startsWith('#')) return;
+      
+      // Skip mailto and external links
+      if (this.getAttribute('href').includes('mailto:') || 
+          this.getAttribute('href').includes('http')) return;
+      
       e.preventDefault();
-      const targetId = this.getAttribute('href');
+      const targetId = href;
       const targetElement = document.querySelector(targetId);
+      
       if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth' });
+        targetElement.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+        
+        // Set focus to target for accessibility
+        targetElement.setAttribute('tabindex', '-1');
+        targetElement.focus();
       }
     });
   });
 
-  // Set Copyright Year
+  /* ==================== COPYRIGHT YEAR ==================== */
   const yearSpan = document.getElementById('copyright-year');
-  if(yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
+  if (yearSpan) {
+    yearSpan.textContent = new Date().getFullYear();
+  }
 
-  // Hero tags interaction: subtle hover highlight of service cards
+  /* ==================== HERO TAGS INTERACTION ==================== */
+  // Hero tags highlight and scroll to corresponding service cards
   const tags = document.querySelectorAll('.hero-tags .tag');
-  const cards = document.querySelectorAll('#servicios .card');
+  const serviceCards = document.querySelectorAll('#servicios .card[data-index]');
+  
   tags.forEach(tag => {
-    const idx = Number(tag.getAttribute('data-target'));
+    const targetIndex = Number(tag.getAttribute('data-target'));
+    
+    // Add keyboard accessibility
+    tag.setAttribute('tabindex', '0');
+    tag.setAttribute('role', 'button');
+    tag.setAttribute('aria-label', `Ver servicio: ${tag.textContent}`);
+    
+    // Hover: highlight corresponding card
     tag.addEventListener('mouseenter', () => {
-      if (cards[idx]) cards[idx].classList.add('highlight');
+      if (serviceCards[targetIndex]) {
+        serviceCards[targetIndex].classList.add('highlight');
+      }
       tag.classList.add('active');
     });
+    
     tag.addEventListener('mouseleave', () => {
-      if (cards[idx]) cards[idx].classList.remove('highlight');
+      if (serviceCards[targetIndex]) {
+        serviceCards[targetIndex].classList.remove('highlight');
+      }
       tag.classList.remove('active');
     });
-    // click quietly navigates to the service card (smooth scroll)
-    tag.addEventListener('click', () => {
-      if (cards[idx]) cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Click/Enter: smooth scroll to service card
+    const scrollToCard = () => {
+      if (serviceCards[targetIndex]) {
+        serviceCards[targetIndex].scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        
+        // Brief highlight effect
+        serviceCards[targetIndex].classList.add('highlight');
+        setTimeout(() => {
+          serviceCards[targetIndex].classList.remove('highlight');
+        }, 2000);
+      }
+    };
+    
+    tag.addEventListener('click', scrollToCard);
+    tag.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        scrollToCard();
+      }
     });
   });
 
-  /*
-   * ===================================================================
-   * Interactive Particle Effect with Isometric 3D Cubes
-   * (Comportamiento de Estela + Explosión de Video)
-   * ===================================================================
-   */
-
-  // Canvas setup
+  /* ==================== PARTICLE CANVAS EFFECT ==================== */
   const canvas = document.getElementById('particle-canvas');
+  
   if (!canvas) {
     console.warn('Particle canvas not found');
     return;
@@ -76,67 +143,64 @@ document.addEventListener('DOMContentLoaded', function() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
+  
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Mouse state tracking (Posición Y ESTADO del clic)
+  // Mouse tracking
   const mouse = {
     x: 0,
     y: 0,
-    isDown: false, // Añadido para rastrear el clic persistente
-    radius: 30 // Radio de repulsión MUY SUTIL
+    isDown: false,
+    radius: 30
   };
 
-  // Color palette for cubes
-  const colors = ['#007bff', '#ffc107', '#6f42c1', '#fd7e14'];
+  // Color palette
+  const colors = ['#5fb3ff', '#2ec27e', '#f6c244', '#7c5cff'];
 
-  // *** AÑADIDO: Helper function to shade color for 3D faces ***
+  // Helper function to shade color for 3D effect
   function shadeColor(color, percent) {
     const num = parseInt(color.replace('#', ''), 16);
     const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
+    const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
+    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+    
     return '#' + (
       0x1000000 +
-      (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-      (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-      (B < 255 ? (B < 1 ? 0 : B) : 255)
+      R * 0x10000 +
+      G * 0x100 +
+      B
     ).toString(16).slice(1);
   }
 
-  // Particle class with isometric 3D cube rendering
+  /* ==================== PARTICLE CLASS ==================== */
   class Particle {
     constructor(x, y, color, type) {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = Math.random() * 1.5 + 0.5; // Sutil: 0.5-2px
-      this.type = type; // 'burst', 'trail', o 'dust'
+      this.size = Math.random() * 1.5 + 0.5;
+      this.type = type;
       
-      // Calculate velocity based on type
+      // Set velocity based on type
       if (type === 'burst') {
-        // 'burst' (explosión de clic): velocidad moderada en 360 grados
+        // Explosion on click
         const angle = Math.random() * Math.PI * 2;
         const speed = Math.random() * 3 + 1;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-      } else if (type === 'trail') {
-        // 'trail' (estela de mousemove): velocidad muy baja
-        this.vx = (Math.random() - 0.5) * 1.5;
-        this.vy = (Math.random() - 0.5) * 1.5;
       } else {
-        // 'dust' (clic persistente): flujo suave hacia arriba
+        // Gentle upward drift for sustained click
         this.vx = (Math.random() - 0.5) * 2;
-        this.vy = Math.random() * -1 - 0.5; // Ligero impulso hacia arriba
+        this.vy = Math.random() * -1 - 0.5;
       }
       
-      this.life = 1; // Opacity from 1 to 0
-      this.gravity = 0; // No gravity
-      this.damping = 0.95; // Factor de rebote (poca fricción, flotan)
+      this.life = 1;
+      this.damping = 0.95;
     }
 
-    // *** REEMPLAZADO: Draw isometric 3D cube (Método Correcto) ***
+    // Draw isometric 3D cube
     draw() {
       if (this.life <= 0) return;
       
@@ -147,14 +211,14 @@ document.addEventListener('DOMContentLoaded', function() {
       const x = this.x;
       const y = this.y;
       
-      // Colores para las 3 caras
+      // Colors for 3 faces
       const colorTop = this.color;
       const colorLeft = shadeColor(this.color, -20);
       const colorRight = shadeColor(this.color, 10);
       
-      const isoHeight = size * 0.5; // Altura isométrica
+      const isoHeight = size * 0.5;
 
-      // Cara superior
+      // Top face
       ctx.fillStyle = colorTop;
       ctx.beginPath();
       ctx.moveTo(x, y - isoHeight);
@@ -164,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ctx.closePath();
       ctx.fill();
 
-      // Cara izquierda
+      // Left face
       ctx.fillStyle = colorLeft;
       ctx.beginPath();
       ctx.moveTo(x - size, y);
@@ -174,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ctx.closePath();
       ctx.fill();
 
-      // Cara derecha
+      // Right face
       ctx.fillStyle = colorRight;
       ctx.beginPath();
       ctx.moveTo(x + size, y);
@@ -188,27 +252,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     update() {
-      // 1. CICLO DE VIDA: Solo se desvanecen si el mouse NO está presionado
+      // Fade out when not clicking
       if (!mouse.isDown) {
-        this.life -= 0.04; // Desvanecimiento más rápido
+        this.life -= 0.04;
       }
       
-      // 2. FÍSICA: Repulsión del cursor (RESTAURADA)
+      // Gentle repulsion from cursor
       if (mouse.x !== undefined) {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < mouse.radius + this.size) {
-          // Colisión detectada
           const angle = Math.atan2(dy, dx);
-          // Impulsar lejos del cursor
-          this.vx = Math.cos(angle) * 3; // Velocidad de repulsión sutil
+          this.vx = Math.cos(angle) * 3;
           this.vy = Math.sin(angle) * 3;
         }
       }
 
-      // 3. FÍSICA: Rebote en bordes (RESTAURADO)
+      // Bounce off edges
       if (this.x + this.size > canvas.width) {
         this.x = canvas.width - this.size;
         this.vx *= -this.damping;
@@ -226,84 +288,72 @@ document.addEventListener('DOMContentLoaded', function() {
         this.vy *= -this.damping;
       }
       
-      // 4. ACTUALIZAR POSICIÓN
+      // Update position
       this.x += this.vx;
       this.y += this.vy;
     }
   }
 
-  // Particle array
+  /* ==================== PARTICLE MANAGEMENT ==================== */
   const particles = [];
-  const MAX_PARTICLES = 25; // Límite MUY sutil
-  let frameCounter = 0; // Para el throttle del clic persistente
+  const MAX_PARTICLES = 25;
+  let frameCounter = 0;
 
-  // Helper function to create particle burst on click
+  // Create particle burst on click
   function createParticleBurst(x, y) {
-    const burstCount = 5 + Math.floor(Math.random() * 4); // 5-8 partículas
+    const burstCount = 5 + Math.floor(Math.random() * 4);
     for (let i = 0; i < burstCount; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
       particles.push(new Particle(x, y, color, 'burst'));
     }
   }
 
-  // ELIMINADO: Ya no se crea estela en mousemove
-  // function createParticleTrail(x, y) { ... }
-
-  // ELIMINADO: Throttle de mousemove ya no es necesario
-  // let lastTrailTime = 0;
-  // const trailThrottle = 40; 
-
-  // --- NUEVOS LISTENERS HÍBRIDOS ---
-
-  // 1. Clic (Explosión)
+  /* ==================== EVENT LISTENERS ==================== */
+  
+  // Click creates burst
   document.addEventListener('click', (e) => {
     createParticleBurst(e.clientX, e.clientY);
   });
 
-  // 2. Movimiento (SOLO actualiza posición del cursor, NO CREA partículas)
+  // Track mouse position
   document.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
   });
   
-  // 3. Clic Persistente (Estado)
+  // Track mouse down/up state
   document.addEventListener('mousedown', (e) => {
     mouse.isDown = true;
-    mouse.x = e.clientX; // Actualizar posición en mousedown
+    mouse.x = e.clientX;
     mouse.y = e.clientY;
   });
   
-  document.addEventListener('mouseup', (e) => {
+  document.addEventListener('mouseup', () => {
     mouse.isDown = false;
   });
-  // --- FIN DE LISTENERS ---
 
-
-  // Animation loop
+  /* ==================== ANIMATION LOOP ==================== */
   function animate() {
     requestAnimationFrame(animate);
     
-    // Clear background completely - no motion blur
-    // CORRECCIÓN: Usar clearRect para un fondo 100% transparente
+    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // --- LÓGICA DE CLIC PERSISTENTE ---
-    // Si el mouse está presionado, genera "polvo"
+    // Generate particles on sustained click
     if (mouse.isDown) {
       frameCounter++;
-      if (frameCounter % 25 === 0) { // Tasa de generación MUY sutil
+      if (frameCounter % 25 === 0) {
         const color = colors[Math.floor(Math.random() * colors.length)];
         particles.push(new Particle(mouse.x, mouse.y, color, 'dust'));
       }
     }
-    // --- FIN LÓGICA DE CLIC PERSISTENTE ---
 
     // Limit total particles
     while (particles.length > MAX_PARTICLES) {
       particles.shift();
     }
     
-    // Update and draw particles (iterate backwards for safe removal)
+    // Update and draw particles
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.update();
@@ -318,5 +368,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Start animation
   animate();
-
 });
