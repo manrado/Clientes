@@ -634,7 +634,7 @@ footer {
   height: 3px;
   background: linear-gradient(90deg, var(--accent), var(--ok), var(--warn), var(--accent));
   background-size: 200% 100%;
-  z-index: 9998;
+  z-index: 9999;
   animation: moodborder-anim 4s linear infinite;
 }
 
@@ -645,7 +645,7 @@ footer {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
+  z-index: 9998;
   pointer-events: none;
 }
 
