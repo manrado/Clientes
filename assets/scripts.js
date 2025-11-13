@@ -126,11 +126,11 @@ document.addEventListener('DOMContentLoaded', function() {
       this.x = x;
       this.y = y;
       this.color = color;
-      this.size = 4 + Math.random() * 8; // Random size 4-12px
+      this.size = 2 + Math.random() * 4; // Random size 2-6px (more subtle)
       
-      // Random velocity for agile dispersion
-      this.vx = (Math.random() - 0.5) * 8;
-      this.vy = (Math.random() - 0.5) * 8;
+      // Random velocity for agile dispersion (reduced for subtlety)
+      this.vx = (Math.random() - 0.5) * 4;
+      this.vy = (Math.random() - 0.5) * 4;
       
       this.life = 1; // Opacity from 1 to 0
       this.gravity = 0; // No gravity
@@ -186,9 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     update() {
-      // If mouse is not down, fade out
+      // If mouse is not down, fade out (faster fade for subtlety)
       if (!mouse.isDown) {
-        this.life -= 0.015;
+        this.life -= 0.025;
       }
       
       // Repulsion from cursor
@@ -232,24 +232,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Particle array
   const particles = [];
-  const MAX_PARTICLES = 300;
+  const MAX_PARTICLES = 100; // Reduced for subtle effect
   let frameCount = 0;
 
   // Animation loop
   function animate() {
     requestAnimationFrame(animate);
     
-    // Motion blur effect - semi-transparent clear
-    ctx.fillStyle = 'rgba(11, 21, 38, 0.2)';
+    // Motion blur effect - semi-transparent clear (shorter trail)
+    ctx.fillStyle = 'rgba(11, 21, 38, 0.4)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Generate particles when mouse is down
-    if (mouse.isDown && frameCount % 2 === 0) {
-      // Create 5 particles every 2 frames
-      for (let i = 0; i < 5; i++) {
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        particles.push(new Particle(mouse.x, mouse.y, color));
-      }
+    // Generate particles when mouse is down (slower generation for subtlety)
+    if (mouse.isDown && frameCount % 4 === 0) {
+      // Create 1 particle every 4 frames
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particles.push(new Particle(mouse.x, mouse.y, color));
     }
     
     // Limit total particles
