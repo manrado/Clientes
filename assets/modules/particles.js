@@ -1,6 +1,14 @@
 import { qs } from './dom.js';
 
-export function initParticleCanvas(selector = '#particle-canvas') {
+/**
+ * Initialize the particle canvas.
+ * Options (optional):
+ * - maxParticles: number (default: 75)
+ * - poolMax: number (default: 200)
+ * - colors: array of color strings
+ * - mouseRadius: number (default: 30)
+ */
+export function initParticleCanvas(selector = '#particle-canvas', options = {}) {
   const canvas = qs(selector);
   if (!canvas) return { stop: () => {} };
   const ctx = canvas.getContext('2d');
@@ -12,8 +20,14 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  const mouse = { x: 0, y: 0, isDown: false, radius: 30 };
-  const colors = ['#5fb3ff', '#2ec27e', '#f6c244', '#7c5cff'];
+  // Allow configuration via options or data-attributes on the canvas
+  const dataset = canvas.dataset || {};
+  const defaultColors = ['#5fb3ff', '#2ec27e', '#f6c244', '#7c5cff'];
+  const maxParticles = Number(options.maxParticles ?? dataset.maxParticles ?? 75);
+  const poolMax = Number(options.poolMax ?? dataset.poolMax ?? 200);
+  const colors = options.colors ?? dataset.colors ? dataset.colors.split(',') : defaultColors;
+  const mouseRadius = Number(options.mouseRadius ?? dataset.mouseRadius ?? 30);
+  const mouse = { x: 0, y: 0, isDown: false, radius: mouseRadius };
 
   function shadeColor(color, percent) {
     const num = parseInt(color.replace('#', ''), 16);
@@ -75,9 +89,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   }
 
-  const particles = []; const MAX_PARTICLES = 75; let frameCounter = 0; let running = true; let rafId = null;
+  const particles = []; let frameCounter = 0; let running = true; let rafId = null;
   // Particle pooling
-  const pool = []; const POOL_MAX = 200;
+  const pool = []; const POOL_MAX = poolMax;
 
   function createParticle(x, y, color, type) {
     let p = null;
@@ -103,7 +117,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     rafId = requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (mouse.isDown) { frameCounter++; if (frameCounter % 25 === 0) { const color = colors[Math.floor(Math.random() * colors.length)]; createParticle(mouse.x, mouse.y, color, 'dust'); }}
-    while (particles.length > MAX_PARTICLES) { const removed = particles.shift(); if (removed && pool.length < POOL_MAX) { removed.recycle(); pool.push(removed); } }
+    while (particles.length > maxParticles) { const removed = particles.shift(); if (removed && pool.length < POOL_MAX) { removed.recycle(); pool.push(removed); } }
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i]; p.update(canvas, mouse); p.draw(ctx);
       if (p.life <= 0) {
