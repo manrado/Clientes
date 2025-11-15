@@ -1,0 +1,5 @@
+# Development dependencies for the project (optional)
+# Usage: pip install -r requirements-dev.txt
+pre-commit>=2.20
+flake8>=6.0
+pytest>=8.0
