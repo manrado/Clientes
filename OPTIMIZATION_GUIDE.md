@@ -11,17 +11,17 @@ This document outlines the strategic improvements implemented for the Manrado fi
 - **Benefit**: Better browser caching, reduced HTML size, improved maintainability
 
 ### 2. Video Optimization Recommendations
-- **Current State**: 
+- **Current State**:
   - `video.mp4`: 8.86MB
   - `video.gif`: 5.51MB
 - **Recommendations**:
   ```bash
   # Compress video using FFmpeg
   ffmpeg -i assets/video.mp4 -vcodec libx264 -crf 28 -preset slow assets/video-optimized.mp4
-  
+
   # Create WebM version for better compression
   ffmpeg -i assets/video.mp4 -c:v libvpx-vp9 -crf 30 -b:v 0 assets/video.webm
-  
+
   # Create optimized poster image
   ffmpeg -i assets/video.mp4 -ss 00:00:01 -vframes 1 -q:v 2 assets/poster.jpg
   ```
@@ -167,6 +167,6 @@ The implemented changes successfully balance the need for visual differentiation
 
 Key success metrics will be:
 - Increased time on site
-- Higher email engagement rates  
+- Higher email engagement rates
 - More qualified consultation requests
 - Improved search engine rankings for financial consulting keywords
