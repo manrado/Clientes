@@ -34,6 +34,22 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       } else { this.vx = (Math.random() - 0.5) * 2; this.vy = Math.random() * -1 - 0.5; }
       this.life = 1; this.damping = 0.95;
     }
+    reset(x, y, color, type) {
+      this.x = x; this.y = y; this.color = color; this.size = Math.random() * 4 + 2; this.type = type;
+      if (type === 'burst') {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 3 + 1;
+        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+      } else {
+        this.vx = (Math.random() - 0.5) * 2; this.vy = Math.random() * -1 - 0.5;
+      }
+      this.life = 1; this.damping = 0.95;
+    }
+    recycle() {
+      // Optional: clean up references
+      this.life = 0;
+      this.x = 0; this.y = 0; this.vx = 0; this.vy = 0;
+    }
     draw(ctx) {
       if (this.life <= 0) return;
       ctx.save(); ctx.globalAlpha = this.life;
@@ -60,12 +76,25 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   }
 
   const particles = []; const MAX_PARTICLES = 75; let frameCounter = 0; let running = true; let rafId = null;
+  // Particle pooling
+  const pool = []; const POOL_MAX = 200;
+
+  function createParticle(x, y, color, type) {
+    let p = null;
+    if (pool.length) {
+      p = pool.pop();
+      p.reset(x, y, color, type);
+    } else {
+      p = new Particle(x, y, color, type);
+    }
+    particles.push(p);
+  }
 
   function createParticleBurst(x, y) {
     const burstCount = 5 + Math.floor(Math.random() * 4);
     for (let i = 0; i < burstCount; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
-      particles.push(new Particle(x, y, color, 'burst'));
+      createParticle(x, y, color, 'burst');
     }
   }
 
@@ -73,10 +102,14 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     if (!running) return;
     rafId = requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (mouse.isDown) { frameCounter++; if (frameCounter % 25 === 0) { const color = colors[Math.floor(Math.random() * colors.length)]; particles.push(new Particle(mouse.x, mouse.y, color, 'dust')); }}
-    while (particles.length > MAX_PARTICLES) { particles.shift(); }
+    if (mouse.isDown) { frameCounter++; if (frameCounter % 25 === 0) { const color = colors[Math.floor(Math.random() * colors.length)]; createParticle(mouse.x, mouse.y, color, 'dust'); }}
+    while (particles.length > MAX_PARTICLES) { const removed = particles.shift(); if (removed && pool.length < POOL_MAX) { removed.recycle(); pool.push(removed); } }
     for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i]; p.update(canvas, mouse); p.draw(ctx); if (p.life <= 0) particles.splice(i, 1);
+      const p = particles[i]; p.update(canvas, mouse); p.draw(ctx);
+      if (p.life <= 0) {
+        const [removed] = particles.splice(i, 1);
+        if (removed && pool.length < POOL_MAX) { removed.recycle(); pool.push(removed); }
+      }
     }
   }
 
