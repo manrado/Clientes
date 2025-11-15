@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <!-- Brand / Logo -->
+  <symbol id="icon-brand" viewBox="0 0 24 24">
+    <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M2 7L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M22 7L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M12 22V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <!-- Menu Icon -->
+  <symbol id="icon-menu" viewBox="0 0 24 24">
+    <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <!-- Login / Reports Icon -->
+  <symbol id="icon-login" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V9a2 2 0 012-2h2a2 2 0 012 2v10" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M14 14a2 2 0 002 2h2a2 2 0 002-2" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20 5v14" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+
+  <!-- Service icons (simple variants) -->
+  <symbol id="icon-service-box" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none" />
+  </symbol>
+
+  <symbol id="icon-service-chain" viewBox="0 0 24 24">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.54-.54" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <symbol id="icon-service-process" viewBox="0 0 24 24">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <symbol id="icon-service-file" viewBox="0 0 24 24">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <!-- Check / success icon for service list -->
+  <symbol id="icon-check" viewBox="0 0 24 24">
+    <path d="M9 12.75L11.25 15 15 9.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+</svg>
