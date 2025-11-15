@@ -102,3 +102,17 @@ Esto facilita verificar tamaño de activos, estructura semántica, accesibilidad
 ## Nota: Refactor de Frontend (SVG Sprite y JS Modules)
 
 Se agregó un refactor en la rama `refactor/svg-sprite-and-scripts` que extrae los SVGs a un sprite y reorganiza `assets/scripts.js` como módulos ES (files in `assets/modules/`). Si trabajas en la UI, revisa `dev/PR_REFRACTOR_SVG_MODULES.md` para detalles y pruebas manuales.
+
+
+## Configuración de partículas
+Puedes ajustar el número máximo de partículas y el tamaño del pool a través de los atributos de `canvas` o mediante `options` en el `initParticleCanvas`.
+
+Ejemplo (en `index.html`):
+```html
+<canvas id="particle-canvas" data-max-particles="75" data-pool-max="200" data-colors="#5fb3ff,#2ec27e,#f6c244,#7c5cff" data-mouse-radius="30"></canvas>
+```
+
+O puedes invocar la API con opciones desde `assets/scripts.js`:
+```js
+initParticleCanvas('#particle-canvas', { maxParticles: 100, poolMax: 300, colors: ['#5fb3ff', '#2ec27e'] });
+```

@@ -3,6 +3,7 @@
 This PR extracts inline SVG icons into a shared sprite and modularizes `assets/scripts.js` into `assets/modules/`.
 
 ## What changed
+
 - Added `assets/icons.svg` a shared icon sprite (symbols).
 - Converted inline SVGs in `index.html` to `<svg><use href="/assets/icons.svg#icon-name"></use></svg>` references.
 - Created JS modules under `assets/modules/`: `dom.js`, `menu.js`, `hero-tags.js`, `smooth-scroll.js`, `particles.js`.
@@ -10,8 +11,10 @@ This PR extracts inline SVG icons into a shared sprite and modularizes `assets/s
 - Updated `index.html` script tag to `<script type="module">`.
 - Updated `href` for report link to `/reportes/index.html` and added `aria-hidden` to `#nav-links` element.
 - Implemented particle pooling in `assets/modules/particles.js` to reduce object allocations and GC pressure.
+- Exposed configurable options for the particle system via `initParticleCanvas(selector, options)` and canvas data-attributes (`data-max-particles`, `data-pool-max`, `data-colors`, `data-mouse-radius`).
 
 ## Testing checklist (manual)
+
 1. Start the local server: `.\dev\start-server.ps1` (or `python -m http.server`) and navigate to `http://localhost:PORT`.
 2. Visual: Verify all icons render (header, menu, service cards, service list checks).
 3. Mobile menu: open/close; verify `aria-expanded` and `aria-hidden` toggles and focus trap using keyboard.
@@ -22,5 +25,6 @@ This PR extracts inline SVG icons into a shared sprite and modularizes `assets/s
 7. Lint (optional): If repo uses eslint/prettier, run `npm run lint`.
 
 ## Notes
+
 - The sprite is referenced as `/assets/icons.svg#id`. If the project is served under a subpath, update references to relative paths accordingly.
 - For older browsers or non-module environments, consider adding a fallback or transpilation pipeline.
