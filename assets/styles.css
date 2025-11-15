@@ -679,6 +679,78 @@ footer {
 }
 
 /* ==================== RESPONSIVE - MOBILE ==================== */
+/* ==================== FOOTER: LINKS ==================== */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+}
+
+.footer-links a {
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color var(--transition-base);
+}
+
+.footer-links a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* ==================== HERO SUB-CTA (NUEVO) ==================== */
+.hero-sub-cta {
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  color: var(--ink-2);
+  max-width: 65ch;
+  margin: var(--spacing-xl) 0 0;
+}
+
+/* Ajuste para el contenedor de botones del hero */
+.hero-actions {
+  margin-top: var(--spacing-lg);
+}
+
+/* ==================== FLOATING ACTION BUTTON (NUEVO) ==================== */
+.fab-contact {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: 100;
+
+  display: inline-block;
+  padding: 0.85rem 1.5rem;
+  border-radius: 2rem; /* Más redondeado para un FAB */
+  background: var(--accent);
+  color: #071225;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: all var(--transition-base);
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(95, 179, 255, 0.4);
+}
+
+.fab-contact:hover {
+  text-decoration: none;
+  filter: brightness(1.15);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(95, 179, 255, 0.5);
+}
+
+.fab-contact:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  transform: translateY(-3px) scale(1.02);
+}
+
+.fab-contact:active {
+  transform: translateY(0) scale(1);
+}
+
+/* ==================== ANIMATIONS ==================== */
 @media (max-width: 768px) {
   /* Hide desktop menu, show mobile button */
   .desktop-menu {
@@ -743,6 +815,14 @@ footer {
   /* Footer */
   .footer {
     padding: var(--spacing-xl) var(--spacing-md);
+  }
+
+  /* Ajuste del FAB para móviles */
+  .fab-contact {
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
   }
 }
 

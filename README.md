@@ -1,3 +1,54 @@
+# Manrado — Análisis de Información Financiera
+
+Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.
+
+## Nuestros Servicios
+
+Brindamos soluciones integrales para la gestión financiera, contable y fiscal de tu negocio.
+
+* **Análisis Contable**: Cierres y estados financieros trazables y alineados con SAT.
+* **Integridad de Datos**: Unificación de CFDI y bancos con tu sistema contable.
+* **Procesos Eficientes**: Menos tareas repetitivas, menos errores, más tiempo para decidir.
+* **Soporte a Auditoría**: Paquetes ordenados para dirección o auditores externos.
+
+## Contacto
+
+* **Sitio Web**: [manrado.com](https://manrado.com)
+* **Email**: [info@manrado.com](mailto:info@manrado.com?subject=Consulta%20Manrado)
+# Manrado — Análisis de Información Financiera
+
+Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.
+
+## Nuestros Servicios
+
+Brindamos soluciones integrales para la gestión financiera, contable y fiscal de tu negocio.
+
+* **Análisis Contable**: Cierres y estados financieros trazables y alineados con SAT.
+* **Integridad de Datos**: Unificación de CFDI y bancos con tu sistema contable.
+* **Procesos Eficientes**: Menos tareas repetitivas, menos errores, más tiempo para decidir.
+* **Soporte a Auditoría**: Paquetes ordenados para dirección o auditores externos.
+
+## Contacto
+
+* **Sitio Web**: [manrado.com](https://manrado.com)
+* **Email**: [info@manrado.com](mailto:info@manrado.com?subject=Consulta%20Manrado)
+# Manrado — Análisis de Información Financiera
+
+Integración CFDI–bancos–contabilidad + procesos eficientes = cierres más rápidos, menos errores y paquetes listos para auditoría.
+
+## Nuestros Servicios
+
+Brindamos soluciones integrales para la gestión financiera, contable y fiscal de tu negocio.
+
+* **Análisis Contable**: Cierres y estados financieros trazables y alineados con SAT.
+* **Integridad de Datos**: Unificación de CFDI y bancos con tu sistema contable.
+* **Procesos Eficientes**: Menos tareas repetitivas, menos errores, más tiempo para decidir.
+* **Soporte a Auditoría**: Paquetes ordenados para dirección o auditores externos.
+
+## Contacto
+
+* **Sitio Web**: [manrado.com](https://manrado.com)
+* **Email**: [info@manrado.com](mailto:info@manrado.com?subject=Consulta%20Manrado)
 # Clientes
 Contacto al servicio de Informacion financiera
 

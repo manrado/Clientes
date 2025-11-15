@@ -44,7 +44,6 @@
       <div class="menu desktop-menu">
         <a href="#servicios">Servicios</a>
         <a href="#resultados">Resultados</a>
-        <a class="btn" href="#contacto">Contactar</a>
       </div>
 
       <!-- Mobile Menu Button -->
@@ -58,7 +57,6 @@
       <div class="menu nav-links" id="nav-links" aria-hidden="true">
         <a href="#servicios">Servicios</a>
         <a href="#resultados">Resultados</a>
-        <a href="#contacto">Contacto</a>
         <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">Enviar Correo</a>
       </div>
     </nav>
@@ -89,8 +87,9 @@
         <li class="tag" data-target="3">Soporte a Auditoría</li>
       </ul>
 
+      <p class="hero-sub-cta">Cuéntanos tu situación y te proponemos un plan claro y accionable.</p>
+
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#contacto">¿Hablamos de tu proyecto?</a>
         <a class="btn btn-ghost hero-login" href="/reportes/index.html" title="Acceder a reportes y métricas">Acceder a reportes</a>
       </div>
     </div>
@@ -180,20 +179,19 @@
       </div>
     </section>
 
-    <section id="contacto" class="section section-padding wrap" aria-labelledby="t-contacto">
-        <div class="center">
-            <h2 id="t-contacto">¿Hablamos de tu proyecto?</h2>
-            <p class="muted lead center">Cuéntanos tu situación y te proponemos un plan claro y accionable.</p>
-            <div class="actions-row mt-2">
-                <a class="btn" href="mailto:info@manrado.com?subject=Consulta%20Manrado">info@manrado.com</a>
-                <a class="btn btn-ghost" href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
-            </div>
-        </div>
-    </section>
+    <!-- Contacto moved to floating FAB for a leaner page layout -->
+    <a href="mailto:info@manrado.com?subject=Consulta%20Manrado" class="fab-contact btn btn-primary" aria-label="Enviar correo a Manrado">
+      ¿Hablamos de tu proyecto?
+    </a>
   </main>
 
   <footer>
     <div class="footer">
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/miguel-ramirez-3700a0196" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/manrado/Clientes" target="_blank" rel="noopener">GitHub</a>
+      </div>
+
       <div>© <span id="copyright-year"></span> Manrado. Todos los derechos reservados.</div>
       <div class="muted">Contenido alineado con SAT y prácticas contables mexicanas.
       <span aria-hidden="true">•</span> <a href="#top">Volver arriba</a></div>
