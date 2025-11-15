@@ -45,7 +45,7 @@ html, body {
   line-height: 1.6;
   scroll-behavior: smooth;
 }
-
+/* ... (estilos base sin cambios) ... */
 * {
   box-sizing: border-box;
 }
@@ -67,6 +67,7 @@ a:focus-visible {
 }
 
 /* ==================== SKIP LINK (Accessibility) ==================== */
+/* ... (skip link sin cambios) ... */
 .skip {
   position: absolute;
   left: -9999px;
@@ -104,6 +105,7 @@ a:focus-visible {
 }
 
 /* ==================== HEADER & NAVIGATION ==================== */
+/* ... (header sin cambios) ... */
 header {
   position: sticky;
   top: 0;
@@ -197,6 +199,7 @@ header {
 }
 
 /* ==================== BUTTONS ==================== */
+/* ... (botones sin cambios) ... */
 .btn {
   display: inline-block;
   padding: 0.85rem 1.5rem;
@@ -254,7 +257,7 @@ header {
   display: flex;
   align-items: center;
 }
-
+/* ... (hero::before sin cambios) ... */
 .hero::before {
   content: "";
   position: absolute;
@@ -270,8 +273,8 @@ header {
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.6;
-  mix-blend-mode: screen;
+  opacity: 0.5; /* CAMBIADO: Reducido de 0.6 para oscurecer */
+  mix-blend-mode: soft-light; /* CAMBIADO: de 'screen' para mejor contraste */
 }
 
 .hero video,
@@ -284,6 +287,7 @@ header {
 
 .hero-content {
   padding: 5rem var(--spacing-md) 6.25rem; /* Slightly reduced top padding for improved vertical balance */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); /* AÑADIDO: Sombra de texto para legibilidad */
 }
 
 .hero-login {
@@ -294,7 +298,7 @@ header {
   transition: opacity var(--transition-slow), transform var(--transition-base);
   z-index: 999; /* ensure it sits above hero media */
 }
-
+/* ... (hero-login sin cambios) ... */
 .hero-login:hover {
   opacity: 1;
 }
@@ -342,7 +346,7 @@ header {
   background: rgba(95, 179, 255, 0.1);
   border: 1px solid rgba(95, 179, 255, 0.2);
   border-radius: 2rem;
-  color: var(--ink-2);
+  color: var(--ink); /* CAMBIADO: de --ink-2 para más brillo */
   font-size: 0.875rem;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -356,7 +360,7 @@ header {
   color: var(--accent);
   transform: translateY(-2px);
 }
-
+/* ... (hero-tags sin cambios) ... */
 .hero-tags .tag:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -369,6 +373,7 @@ header {
 }
 
 /* ==================== LAYOUT UTILITIES ==================== */
+/* ... (layout sin cambios) ... */
 .wrap {
   max-width: var(--max);
   margin: auto;
@@ -411,7 +416,7 @@ header {
 }
 
 .lead {
-  color: var(--ink-2);
+  color: var(--ink); /* CAMBIADO: de --ink-2 para más brillo */
   font-size: clamp(1.1rem, 2vw, 1.25rem);
   line-height: 1.6;
   max-width: 65ch;
@@ -420,6 +425,7 @@ header {
 .lead.center {
   margin-left: auto;
   margin-right: auto;
+  color: var(--ink-2); /* Mantenemos el color más tenue para esta clase específica */
 }
 
 .section h2 {
@@ -435,6 +441,7 @@ header {
 }
 
 /* ==================== GRID SYSTEM ==================== */
+/* ... (grid sin cambios) ... */
 .grid {
   display: grid;
   gap: var(--spacing-lg);
@@ -459,6 +466,7 @@ header {
 }
 
 /* ==================== CARDS ==================== */
+/* ... (cards sin cambios) ... */
 .card {
   background: var(--card);
   border: 1px solid rgba(255,255,255,0.06);
@@ -554,6 +562,7 @@ header {
 }
 
 /* ==================== SERVICES SECTION ==================== */
+/* ... (services sin cambios) ... */
 .service-category {
   padding: var(--spacing-lg);
   background: rgba(11, 21, 38, 0.5);
@@ -607,6 +616,7 @@ header {
 }
 
 /* ==================== CONTACT SECTION ==================== */
+/* ... (contact sin cambios) ... */
 .actions-row {
   display: flex;
   gap: var(--spacing-md);
@@ -615,6 +625,7 @@ header {
 }
 
 /* ==================== FOOTER ==================== */
+/* ... (footer sin cambios) ... */
 footer {
   border-top: 1px solid rgba(255,255,255,0.06);
   background: var(--bg);
@@ -641,6 +652,7 @@ footer {
 }
 
 /* ==================== DECORATIVE ELEMENTS ==================== */
+/* ... (decorations sin cambios) ... */
 .moodborder {
   position: fixed;
   top: 0;
@@ -665,6 +677,7 @@ footer {
 }
 
 /* ==================== ANIMATIONS ==================== */
+/* ... (animations sin cambios) ... */
 @keyframes moodborder-anim {
   0% {
     background-position: 200% 0;
@@ -742,7 +755,7 @@ footer {
 /* ==================== HERO SUB-CTA (NUEVO) ==================== */
 .hero-sub-cta {
   font-size: clamp(1rem, 1.8vw, 1.15rem);
-  color: var(--ink-2);
+  color: var(--ink); /* CAMBIADO: de --ink-2 para más brillo */
   max-width: 65ch;
   margin: var(--spacing-md) 0 0; /* Reduce top margin after removing redundant button */
 }
@@ -756,7 +769,7 @@ footer {
   bottom: var(--spacing-lg);
   right: var(--spacing-lg);
   z-index: 100;
-
+/* ... (fab-contact sin cambios) ... */
   display: inline-block;
   padding: 0.85rem 1.5rem;
   border-radius: 2rem; /* Más redondeado para un FAB */
@@ -790,6 +803,7 @@ footer {
 
 /* ==================== ANIMATIONS ==================== */
 @media (max-width: 768px) {
+  /* ... (media query de móvil sin cambios) ... */
   /* Hide desktop menu, show mobile button */
   .desktop-menu {
     display: none;
@@ -860,6 +874,7 @@ footer {
 
 /* ==================== RESPONSIVE - TABLET ==================== */
 @media (min-width: 769px) and (max-width: 1023px) {
+  /* ... (media query de tablet sin cambios) ... */
   .hero-content {
     padding: 5rem var(--spacing-lg) 6rem;
   }
@@ -871,6 +886,7 @@ footer {
 
 /* ==================== RESPONSIVE - DESKTOP ==================== */
 @media (min-width: 769px) {
+  /* ... (media query de desktop sin cambios) ... */
   .desktop-menu {
     display: flex;
   }
@@ -885,6 +901,7 @@ footer {
 }
 
 @media (min-width: 1024px) {
+  /* ... (media query de desktop grande sin cambios) ... */
   .section-padding {
     padding-top: 5rem;
     padding-bottom: 5rem;
@@ -900,6 +917,7 @@ footer {
 }
 
 /* ==================== ACCESSIBILITY ==================== */
+/* ... (accesibilidad sin cambios) ... */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
