@@ -491,6 +491,14 @@ header {
   transition: transform var(--transition-slow);
 }
 
+/* Svg icon utility */
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  stroke: currentColor;
+  fill: none;
+}
+
 .card:hover .icon {
   transform: scale(1.15) rotate(5deg);
 }
