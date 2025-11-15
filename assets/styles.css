@@ -90,6 +90,19 @@ a:focus-visible {
   font-weight: 600;
 }
 
+/* Screen-reader-only helper (visually hidden but accessible) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 /* ==================== HEADER & NAVIGATION ==================== */
 header {
   position: sticky;
@@ -489,8 +502,8 @@ header {
 .icon {
   display: inline-block;
   vertical-align: middle;
-  stroke: currentColor;
-  fill: none;
+  /* Intentionally let individual symbols decide stroke/fill (remove global stroke/fill)
+     New social icons are filled shapes and should use their own fill="currentColor" */
 }
 
 .card:hover .icon {
@@ -683,9 +696,42 @@ footer {
 
 .footer-links a {
   color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color var(--transition-base);
+  padding: 0.75rem; /* give social links a bit more space */
+  min-width: 40px;
+  min-height: 40px;
+  transition: color var(--transition-base), background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+/* Individual social link shapes: GitHub is circular; LinkedIn is a rounded square */
+.footer-links a[aria-label="GitHub"] {
+  border-radius: 999px;
+}
+
+.footer-links a[aria-label="LinkedIn"] {
+  border-radius: 0.5rem;
+}
+
+/* Hover & focus styles for social icons */
+.footer-links a[aria-label="GitHub"]:hover,
+.footer-links a[aria-label="GitHub"]:focus-visible {
+  background: rgba(255,255,255,0.08);
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+.footer-links a[aria-label="LinkedIn"]:hover,
+.footer-links a[aria-label="LinkedIn"]:focus-visible {
+  background: rgba(95,179,255,0.18);
+  color: #071225; /* dark text on light blue background */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(95,179,255,0.14);
 }
 
 .footer-links a:hover {
