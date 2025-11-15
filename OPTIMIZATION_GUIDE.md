@@ -136,6 +136,11 @@ Added thought leadership content:
 3. **Video Compression**: Implement recommended optimizations
 4. **CDN Setup**: Use CDN for static assets
 
+### Hero and Visual Balance
+- Adjusted hero overlay settings: switched blend mode to `screen`, reduced radial vignette opacity and exposed a CSS variable `--hero-overlay` to tweak darkness without editing JSX/HTML.
+- Added `--hero-image-brightness` variable so the hero image brightness can be tuned quickly and tested across multiple image variants.
+- Recommendation: A/B test small opacity values (0.25–0.45) and `filter: brightness(0.9–1.05)` per image to find the sweet spot for contrast vs. image visibility.
+
 ### Long-term Improvements:
 1. **Progressive Web App**: Add offline capabilities
 2. **Analytics**: Implement Google Analytics 4 with conversion tracking

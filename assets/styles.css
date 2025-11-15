@@ -33,6 +33,10 @@
   --transition-fast: 0.15s ease-in-out;
   --transition-base: 0.2s ease-in-out;
   --transition-slow: 0.3s ease-in-out;
+  /* Hero overlay control (balance the background image darkness vs. text contrast) */
+  --hero-overlay: rgba(11, 21, 38, 0.30);
+  /* Hero image brightness filter (allows quick tweaks per design) */
+  --hero-image-brightness: 1;
 }
 
 /* ==================== BASE STYLES ==================== */
@@ -266,15 +270,21 @@ header {
   right: 0;
   bottom: 0;
   z-index: -2;
-  background: radial-gradient(ellipse at 50% -20%, #17325d 10%, transparent 60%);
+  /* Use a weaker, semi-transparent overlay so the background image reads more clearly
+     while keeping the center feel of the radial vignette */
+  background: radial-gradient(ellipse at 50% -20%, rgba(23, 50, 93, 0.20) 10%, transparent 60%),
+              linear-gradient(to bottom, var(--hero-overlay), rgba(11,21,38,0.0) 55%);
 }
 
 .hero-media {
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.5; /* CAMBIADO: Reducido de 0.6 para oscurecer */
-  mix-blend-mode: soft-light; /* CAMBIADO: de 'screen' para mejor contraste */
+  /* Increase the image opacity so it reads brighter against the softer overlay */
+  opacity: 0.78; /* Ajuste: subir de 0.5 a 0.78 para recuperar luminosidad */
+  /* Use 'screen' to guarantee the image lightens under the overlay rather than darker
+     'soft-light' can make images darker depending on their colors */
+  mix-blend-mode: screen; /* Mejor contraste con el texto y un fondo menos oscuro */
 }
 
 .hero video,
@@ -283,6 +293,7 @@ header {
   width: 100%;
   height: 100%;
   display: block;
+  filter: brightness(var(--hero-image-brightness));
 }
 
 .hero-content {
@@ -370,6 +381,22 @@ header {
   background: rgba(95, 179, 255, 0.25);
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* Responsive tweaks: on smaller screens we slightly darken the overlay to retain
+   text contrast and ensure legibility where images might be busier. On larger
+   screens we favor the image and make the overlay subtler. */
+@media (max-width: 640px) {
+  .hero::before {
+    background: radial-gradient(ellipse at 50% -20%, rgba(23, 50, 93, 0.32) 10%, transparent 60%),
+                linear-gradient(to bottom, rgba(11,21,38,0.42), rgba(11,21,38,0.0) 55%);
+  }
+  .hero-media {
+    opacity: 0.68; /* Slightly darker on small viewports for legibility */
+  }
+  .hero-content {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+  }
 }
 
 /* ==================== LAYOUT UTILITIES ==================== */
