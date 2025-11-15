@@ -9,6 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	initHeroTags();
 	initSmoothScroll();
 	initParticleCanvas('#particle-canvas');
+	// FAB keyboard accessibility (Enter/Space to open mailto)
+	const fab = document.querySelector('.fab-contact');
+	if (fab) {
+		fab.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				// Trigger native click behavior (mailto)
+				fab.click();
+			}
+		});
+	}
 
 	// COPYRIGHT YEAR
 	const yearSpan = document.getElementById('copyright-year');
