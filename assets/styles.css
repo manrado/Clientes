@@ -270,16 +270,16 @@ header {
 }
 
 .hero-content {
-  padding: 6rem var(--spacing-md) 7rem;
+  padding: 5rem var(--spacing-md) 6.25rem; /* Slightly reduced top padding for improved vertical balance */
 }
 
 .hero-login {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  opacity: 0.35;
-  transition: opacity var(--transition-slow);
-  z-index: 10;
+  opacity: 0.9; /* make it more visible and less faint */
+  transition: opacity var(--transition-slow), transform var(--transition-base);
+  z-index: 999; /* ensure it sits above hero media */
 }
 
 .hero-login:hover {
@@ -290,12 +290,12 @@ header {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.6rem 1rem;
-  background: rgba(95, 179, 255, 0.1);
-  border: 1px solid rgba(95, 179, 255, 0.2);
+  padding: 0.55rem 1rem;
+  background: rgba(95, 179, 255, 0.14); /* slightly stronger */
+  border: 1px solid rgba(95, 179, 255, 0.26);
   border-radius: 0.5rem;
-  color: var(--ink-2);
-  font-size: 0.85rem;
+  color: var(--ink);
+  font-size: 0.9rem;
   text-decoration: none;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -303,21 +303,15 @@ header {
 }
 
 .hero-login a:hover {
-  background: rgba(95, 179, 255, 0.15);
-  border-color: rgba(95, 179, 255, 0.4);
+  background: rgba(95, 179, 255, 0.20);
+  border-color: rgba(95, 179, 255, 0.5);
   color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .hero-login svg {
   width: 16px;
   height: 16px;
-}
-
-.hero-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-xl);
-  flex-wrap: wrap;
 }
 
 /* Hero Tags - Interactive subtle elements */
@@ -704,13 +698,11 @@ footer {
   font-size: clamp(1rem, 1.8vw, 1.15rem);
   color: var(--ink-2);
   max-width: 65ch;
-  margin: var(--spacing-xl) 0 0;
+  margin: var(--spacing-md) 0 0; /* Reduce top margin after removing redundant button */
 }
 
 /* Ajuste para el contenedor de botones del hero */
-.hero-actions {
-  margin-top: var(--spacing-lg);
-}
+
 
 /* ==================== FLOATING ACTION BUTTON (NUEVO) ==================== */
 .fab-contact {
@@ -799,13 +791,7 @@ footer {
     padding: 4rem var(--spacing-md) 5rem;
   }
 
-  .hero-actions {
-    flex-direction: column;
-  }
 
-  .hero-actions .btn {
-    width: 100%;
-  }
 
   /* Service categories stack */
   .service-category {
