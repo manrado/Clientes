@@ -32,7 +32,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   // Configuration - Professional vibrant colors, engaging interaction
   const config = {
-    maxParticles: isMobile ? 150 : 300,  // Reduced on mobile for performance
+    maxParticles: isMobile ? 120 : 250,  // Balanced for performance
     colors: [
       '#60a5fa',              // Brand accent blue (primary)
       '#3b82f6',              // Vivid blue
@@ -44,28 +44,29 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       '#06b6d4',              // Cyan accent
     ],
 
-    // Physics - smooth, professional, engaging
-    gravity: 0.025,           // Slightly stronger gravity
-    friction: 0.992,          // Smooth deceleration
-    groundFriction: 0.92,     // Natural floor slide
-    bounciness: 0.5,          // Satisfying bounces
-    maxVelocity: 6,           // Dynamic but controlled
+    // Physics - smooth, professional, harmonious
+    gravity: 0.02,            // Gentle gravity
+    friction: 0.994,          // Smooth deceleration
+    groundFriction: 0.9,      // Natural floor slide
+    bounciness: 0.45,         // Subtle bounces
+    maxVelocity: 5,           // Controlled movement
 
     // Cursor influence (NO click) - push existing cubes
-    cursorPushRadius: 100,
-    cursorPushForce: 0.4,
+    cursorPushRadius: 90,
+    cursorPushForce: 0.35,
 
     // Spawning (ONLY with click) - at cursor position
-    spawnInterval: isMobile ? 50 : 35,  // Slower on mobile
-    spawnPerTick: 1,          // Cubes per spawn tick
-    dragSpawnDistance: isMobile ? 12 : 8,  // Less dense on mobile
+    spawnInterval: isMobile ? 45 : 30,
+    spawnPerTick: 1,
+    dragSpawnDistance: isMobile ? 10 : 6,
 
-    // Cube sizes - varied for visual interest
-    minSize: 5,
-    maxSize: 8,
+    // Cube sizes - MORE VARIED for visual depth
+    minSize: 3,               // Smaller minimum
+    maxSize: 12,              // Larger maximum
+    sizeDistribution: 0.6,    // Bias toward smaller cubes (0-1)
 
     // Life settings
-    groundedLifeMultiplier: 3, // Cubes on ground decay faster
+    groundedLifeMultiplier: 2.5,
 
     // Spatial grid for collision optimization
     gridCellSize: 25,         // Size of each grid cell
@@ -108,11 +109,17 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     lastSpawnTime: 0,        // For continuous spawn while holding
   };
 
-  // Helper to verify click is truly active (double-check protection)
+  // Helper to verify click is PHYSICALLY active
   const isClickActive = () => {
-    return mouse.isDown === true &&
-           mouse.clickStartTime > 0 &&
-           (performance.now() - mouse.clickStartTime) < 60000; // Max 1 min
+    // Must have explicit mousedown event recorded
+    if (mouse.isDown !== true) return false;
+    if (mouse.clickStartTime <= 0) return false;
+    // Timeout safety (prevents zombie states)
+    if ((performance.now() - mouse.clickStartTime) > 30000) {
+      resetMouseState();
+      return false;
+    }
+    return true;
   };
 
   // Helper to check if element is interactive (should not spawn particles)
@@ -158,24 +165,28 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.active = true;
       this.grounded = false;
 
-      // Varied sizes for depth perception
-      this.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
-      this.mass = 0.5 + this.size * 0.05;
-      this.lifeDecay = 0.0015 + Math.random() * 0.001;  // Moderate life
+      // Varied sizes with bias toward smaller cubes (more natural distribution)
+      const sizeRand = Math.pow(Math.random(), config.sizeDistribution);
+      this.size = config.minSize + sizeRand * (config.maxSize - config.minSize);
+      this.mass = 0.3 + this.size * 0.08;  // Mass scales with size
 
-      this.isoHeight = this.size * 0.6;
+      // Smaller cubes live longer, larger fade faster
+      const sizeRatio = (this.size - config.minSize) / (config.maxSize - config.minSize);
+      this.lifeDecay = 0.001 + sizeRatio * 0.002;
+
+      this.isoHeight = this.size * 0.55;
       this.life = 1;
       this.rotation = Math.random() * PI2;
-      this.rotationSpeed = (Math.random() - 0.5) * 0.01;
+      this.rotationSpeed = (Math.random() - 0.5) * 0.015 * (1 - sizeRatio * 0.5);  // Smaller spin faster
 
-      // Natural initial velocity - gentle spread from cursor
+      // Natural initial velocity - smaller cubes spread more
       const angle = Math.random() * PI2;
-      const speed = 0.3 + Math.random() * 0.5;
-      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.15;
-      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.15 - 0.3;  // Slight upward
+      const speed = (0.2 + Math.random() * 0.4) * (1.5 - sizeRatio * 0.5);
+      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.12;
+      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.12 - 0.2;
 
       // Quick appearance animation
-      this.scale = 0.3;
+      this.scale = 0.2;
       this.targetScale = 1;
 
       return this;
@@ -292,16 +303,20 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       // Skip if too small
       if (scale < 0.05) return;
 
+      // Size-based depth effect - smaller cubes appear further away
+      const sizeRatio = (size - config.minSize) / (config.maxSize - config.minSize);
+      const sizeDepth = 0.7 + sizeRatio * 0.3;  // Smaller = more transparent
+
       // Parallax depth effect - cubes lower on screen appear slightly larger
-      const depthScale = 0.85 + (y / canvasHeight) * 0.3;
+      const depthScale = 0.85 + (y / canvasHeight) * 0.25;
       const finalScale = scale * depthScale;
 
-      // Corporate opacity - visible but elegant, with depth fade
+      // Elegant opacity based on life, size, and position
       const lifeEased = life * life;
-      const depthAlpha = 0.7 + (y / canvasHeight) * 0.3;  // Closer = more opaque
-      ctx.globalAlpha = lifeEased * 0.85 * Math.min(finalScale * 1.5, 1) * depthAlpha;
+      const depthAlpha = 0.6 + (y / canvasHeight) * 0.4;
+      ctx.globalAlpha = lifeEased * 0.8 * sizeDepth * Math.min(finalScale * 1.2, 1) * depthAlpha;
 
-      // Scaled size for smooth appear/disappear with depth
+      // Scaled size for smooth appear/disappear
       const s = size * finalScale;
       const ih = isoHeight * finalScale;
 
@@ -509,13 +524,13 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     // Smooth cursor velocity
     const rawVx = mouse.x - mouse.prevX;
     const rawVy = mouse.y - mouse.prevY;
-    smoothVx += (rawVx - smoothVx) * 0.4;
-    smoothVy += (rawVy - smoothVy) * 0.4;
+    smoothVx += (rawVx - smoothVx) * 0.35;
+    smoothVy += (rawVy - smoothVy) * 0.35;
     mouse.vx = smoothVx;
     mouse.vy = smoothVy;
 
-    // ONLY spawn when clicking (single verification point)
-    if (isClickActive() && mouse.x >= 0) {
+    // ONLY spawn when PHYSICALLY clicking (strict verification)
+    if (isClickActive() && mouse.x >= 0 && mouse.y >= 0) {
       spawnAtCursor();
       trySpawnOnDrag();
     }
@@ -527,7 +542,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     // Collisions every frame for smooth physics
     handleCollisions();
 
-    // Update and draw particles (optimized removal with swap-remove)
+    // Update and draw particles - sort by size for depth effect (smaller = further = draw first)
+    active.sort((a, b) => a.size - b.size);
+
     for (let i = active.length - 1; i >= 0; i--) {
       const p = active[i];
       p.update(w, h);
@@ -538,7 +555,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         active[i] = active[active.length - 1];
         active.pop();
       } else {
-        p.draw(ctx, h);  // Pass canvas height for parallax effect
+        p.draw(ctx, h);
       }
     }
   };
@@ -637,6 +654,11 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   const onTouchEnd = () => resetMouseState();
 
+  // ENSURE CLEAN INITIAL STATE - no clicks active on load
+  resetMouseState();
+  mouse.x = -1000;
+  mouse.y = -1000;
+
   // Attach listeners - document for mousedown since canvas has pointer-events: none
   document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mousemove', onMouseMove);
@@ -650,6 +672,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Also reset on pointerup and pointercancel for better coverage
   window.addEventListener('pointerup', onMouseUp);
   window.addEventListener('pointercancel', resetMouseState);
+  // Extra safety: reset on dragstart (user might drag something)
+  document.addEventListener('dragstart', resetMouseState);
 
   // Touch events for mobile
   document.addEventListener('touchstart', onTouchStart, { passive: false });
@@ -657,12 +681,15 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   document.addEventListener('touchend', onTouchEnd);
   document.addEventListener('touchcancel', onTouchEnd);
 
+  // Start animation
   animate();
 
   return {
     stop() {
       running = false;
       resetMouseState();
+      mouse.x = -1000;
+      mouse.y = -1000;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mousemove', onMouseMove);
@@ -674,6 +701,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       document.removeEventListener('contextmenu', onContextMenu);
       window.removeEventListener('pointerup', onMouseUp);
       window.removeEventListener('pointercancel', resetMouseState);
+      document.removeEventListener('dragstart', resetMouseState);
       document.removeEventListener('touchstart', onTouchStart);
       document.removeEventListener('touchmove', onTouchMove);
       document.removeEventListener('touchend', onTouchEnd);
