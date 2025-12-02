@@ -298,11 +298,11 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Spawn cubes at cursor position while click is held
   const spawnAtCursor = () => {
     if (!mouse.isDown || mouse.x < 0) return;
-    
+
     const now = performance.now();
     if (now - mouse.lastSpawnTime < config.spawnInterval) return;
     mouse.lastSpawnTime = now;
-    
+
     // Spawn at exact cursor position with tiny variance
     for (let i = 0; i < config.spawnPerTick; i++) {
       const ox = (Math.random() - 0.5) * 6;
