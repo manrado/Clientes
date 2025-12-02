@@ -1,13 +1,10 @@
 import { qs } from './dom.js';
 
 /**
- * Particle canvas with click-triggered isometric cubes.
- * Cubes appear on click, float organically, and fade away gradually.
- * @param {string} selector - Canvas element selector
- * @param {Object} options - Configuration options
- * @param {number} [options.maxParticles=80] - Maximum particles allowed
- * @param {string[]} [options.colors] - Array of hex color strings
- * @param {number} [options.mouseRadius=60] - Interaction radius for agitation
+ * Particle canvas with cursor-traced isometric cubes.
+ * Cubes spawn along the cursor path while mouse is pressed.
+ * Intensity depends on cursor dwell time at each position.
+ * Particles interact and create dust when colliding.
  */
 export function initParticleCanvas(selector = '#particle-canvas', options = {}) {
   const canvas = qs(selector);
@@ -16,7 +13,6 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
   const ctx = canvas.getContext('2d', { alpha: true });
   const PI2 = Math.PI * 2;
 
-  // Canvas resize handler
   const resizeCanvas = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -26,12 +22,11 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
 
   // Configuration
   const config = {
-    maxParticles: Number(options.maxParticles ?? canvas.dataset?.maxParticles ?? 80),
-    colors: options.colors ?? (canvas.dataset?.colors?.split(',') ?? ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa']),
-    mouseRadius: Number(options.mouseRadius ?? canvas.dataset?.mouseRadius ?? 60),
+    maxParticles: 120,
+    colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa'],
   };
 
-  // Pre-compute shaded colors for each base color
+  // Pre-compute shaded colors
   const colorCache = new Map();
   const getColorSet = (color) => {
     if (!colorCache.has(color)) {
@@ -44,13 +39,6 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     return colorCache.get(color);
   };
 
-  const mouse = { x: -1000, y: -1000, isDown: false };
-  let time = 0;
-  let frameCounter = 0;
-  let running = true;
-  let rafId = null;
-
-  // Utility: shade a hex color
   function shadeColor(color, percent) {
     const num = parseInt(color.slice(1), 16);
     const amt = Math.round(2.55 * percent);
@@ -60,83 +48,105 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     return `#${((1 << 24) | (R << 16) | (G << 8) | B).toString(16).slice(1)}`;
   }
 
-  // Particle class with pooling support
+  // Mouse state with path tracking
+  const mouse = {
+    x: -1000,
+    y: -1000,
+    prevX: -1000,
+    prevY: -1000,
+    isDown: false,
+    dwellTime: 0,        // How long cursor stays in same area
+    lastSpawnX: -1000,
+    lastSpawnY: -1000,
+  };
+
+  let time = 0;
+  let running = true;
+  let rafId = null;
+
+  // Particle types: 'cube' (main), 'dust' (collision effect), 'spark' (quick click)
   class Particle {
     constructor() {
       this.active = false;
     }
 
-    init(x, y, color, isBurst) {
+    init(x, y, color, type, intensity = 1) {
       this.x = x;
       this.y = y;
       this.color = color;
       this.colors = getColorSet(color);
-      this.size = 3 + Math.random() * 5;
+      this.type = type;
+      this.active = true;
+
+      // Size varies by type and intensity
+      if (type === 'dust') {
+        this.size = 1.5 + Math.random() * 2;
+        this.lifeDecay = 0.03 + Math.random() * 0.02;
+      } else if (type === 'spark') {
+        this.size = 2 + Math.random() * 3;
+        this.lifeDecay = 0.025;
+      } else {
+        // cube - size influenced by intensity (dwell time)
+        this.size = 3 + Math.random() * 4 + intensity * 2;
+        this.lifeDecay = 0.008 + (1 - intensity * 0.5) * 0.01;
+      }
+
       this.isoHeight = this.size * 0.5;
       this.life = 1;
-      this.active = true;
 
       // Physics
       this.phase = Math.random() * PI2;
-      this.amplitude = 0.05 + Math.random() * 0.2;
-      this.frequency = 0.01 + Math.random() * 0.03;
+      this.amplitude = 0.05 + Math.random() * 0.15;
+      this.frequency = 0.01 + Math.random() * 0.02;
 
-      if (isBurst) {
+      if (type === 'dust') {
+        // Dust spreads outward from collision
         const angle = Math.random() * PI2;
-        const speed = 1 + Math.random() * 2.5;
+        const speed = 0.5 + Math.random() * 1.5;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.lifeDecay = 0.012;
+      } else if (type === 'spark') {
+        // Quick burst on click
+        const angle = Math.random() * PI2;
+        const speed = 1.5 + Math.random() * 2;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
       } else {
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 1.2 - 0.3;
-        this.lifeDecay = 0.018;
+        // Cubes float gently upward
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = -0.2 - Math.random() * 0.5;
       }
+
       return this;
     }
 
-    update(w, h, mouseX, mouseY, mouseDown, t) {
+    update(w, h, t) {
       this.life -= this.lifeDecay;
       if (this.life <= 0) {
         this.active = false;
         return;
       }
 
-      // Mouse agitation
-      if (mouseDown && mouseX > 0) {
-        const dx = this.x - mouseX;
-        const dy = this.y - mouseY;
-        const distSq = dx * dx + dy * dy;
-        const maxDist = config.mouseRadius + this.size;
+      // Organic oscillation
+      const osc = Math.sin(t * this.frequency + this.phase) * this.amplitude;
+      this.vx = this.vx * 0.98 + osc * 0.05;
+      this.vy = this.vy * 0.98 + Math.cos(t * this.frequency * 0.7 + this.phase) * this.amplitude * 0.03;
 
-        if (distSq < maxDist * maxDist && distSq > 0) {
-          const dist = Math.sqrt(distSq);
-          const force = (1 - dist / maxDist) * 2;
-          const invDist = 1 / dist;
-          this.vx += dx * invDist * force;
-          this.vy += dy * invDist * force;
-        }
-      }
-
-      // Damping + oscillation
-      this.vx = this.vx * 0.97 + Math.sin(t * this.frequency + this.phase) * this.amplitude * 0.1;
-      this.vy = this.vy * 0.97 + Math.cos(t * this.frequency * 0.7 + this.phase) * this.amplitude * 0.05;
-
-      // Boundary bounce
+      // Soft boundaries
       const s = this.size;
-      if (this.x + s > w) { this.x = w - s; this.vx *= -0.5; }
-      else if (this.x - s < 0) { this.x = s; this.vx *= -0.5; }
-      if (this.y + s > h) { this.y = h - s; this.vy *= -0.5; }
-      else if (this.y - s < 0) { this.y = s; this.vy *= -0.5; }
+      if (this.x + s > w) { this.x = w - s; this.vx *= -0.3; }
+      else if (this.x - s < 0) { this.x = s; this.vx *= -0.3; }
+      if (this.y + s > h) { this.y = h - s; this.vy *= -0.3; }
+      else if (this.y - s < 0) { this.y = s; this.vy *= -0.3; }
 
       this.x += this.vx;
       this.y += this.vy;
     }
 
     draw(ctx) {
-      const { x, y, size, isoHeight, colors, life } = this;
+      const { x, y, size, isoHeight, colors, life, type } = this;
 
-      ctx.globalAlpha = life * 0.9;
+      ctx.globalAlpha = life * (type === 'dust' ? 0.6 : 0.9);
 
       // Top face
       ctx.fillStyle = colors.top;
@@ -167,20 +177,95 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     }
   }
 
-  // Particle pool for object reuse
+  // Particle management
   const pool = [];
   const active = [];
 
-  const getParticle = (x, y, color, isBurst) => {
+  const getParticle = (x, y, color, type, intensity) => {
     const p = pool.length > 0 ? pool.pop() : new Particle();
-    return p.init(x, y, color, isBurst);
+    return p.init(x, y, color, type, intensity);
   };
 
-  const createBurst = (x, y) => {
-    const count = 5 + (Math.random() * 4) | 0;
+  const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
+
+  // Spawn cubes along cursor path with interpolation
+  const spawnAlongPath = (x1, y1, x2, y2, intensity) => {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 1) {
+      // Cursor stationary - spawn at position with higher intensity
+      if (Math.random() < 0.3 + intensity * 0.4) {
+        const offsetX = (Math.random() - 0.5) * 10;
+        const offsetY = (Math.random() - 0.5) * 10;
+        active.push(getParticle(x2 + offsetX, y2 + offsetY, randomColor(), 'cube', intensity));
+      }
+      return;
+    }
+
+    // Interpolate along the path
+    const step = Math.max(8, 20 - intensity * 10); // Denser spawn with more intensity
+    const steps = Math.ceil(dist / step);
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const px = x1 + dx * t;
+      const py = y1 + dy * t;
+
+      // Probability influenced by intensity
+      if (Math.random() < 0.4 + intensity * 0.3) {
+        const offsetX = (Math.random() - 0.5) * 6;
+        const offsetY = (Math.random() - 0.5) * 6;
+        active.push(getParticle(px + offsetX, py + offsetY, randomColor(), 'cube', intensity * 0.7));
+      }
+    }
+  };
+
+  // Create spark burst on quick click
+  const createSpark = (x, y) => {
+    const count = 3 + (Math.random() * 3) | 0;
     for (let i = 0; i < count; i++) {
-      const color = config.colors[(Math.random() * config.colors.length) | 0];
-      active.push(getParticle(x, y, color, true));
+      active.push(getParticle(x, y, randomColor(), 'spark', 0.5));
+    }
+  };
+
+  // Check for particle collisions and spawn dust
+  const checkCollisions = () => {
+    const len = active.length;
+    for (let i = 0; i < len; i++) {
+      const a = active[i];
+      if (!a.active || a.type === 'dust') continue;
+
+      for (let j = i + 1; j < len; j++) {
+        const b = active[j];
+        if (!b.active || b.type === 'dust') continue;
+
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const distSq = dx * dx + dy * dy;
+        const minDist = (a.size + b.size) * 0.8;
+
+        if (distSq < minDist * minDist && distSq > 0) {
+          // Collision detected - spawn dust
+          const midX = (a.x + b.x) / 2;
+          const midY = (a.y + b.y) / 2;
+
+          if (active.length < config.maxParticles - 2) {
+            active.push(getParticle(midX, midY, randomColor(), 'dust', 0.3));
+          }
+
+          // Push particles apart
+          const dist = Math.sqrt(distSq);
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const push = 0.3;
+          a.vx += nx * push;
+          a.vy += ny * push;
+          b.vx -= nx * push;
+          b.vy -= ny * push;
+        }
+      }
     }
   };
 
@@ -194,10 +279,35 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     ctx.clearRect(0, 0, w, h);
     time++;
 
-    // Generate dust while holding click
-    if (mouse.isDown && mouse.x > 0 && ++frameCounter % 8 === 0) {
-      const color = config.colors[(Math.random() * config.colors.length) | 0];
-      active.push(getParticle(mouse.x, mouse.y, color, false));
+    // Spawn particles along cursor path while mouse is down
+    if (mouse.isDown && mouse.x > 0) {
+      // Calculate dwell time (how long cursor stays in same area)
+      const moveDist = Math.sqrt(
+        (mouse.x - mouse.lastSpawnX) ** 2 +
+        (mouse.y - mouse.lastSpawnY) ** 2
+      );
+
+      if (moveDist < 5) {
+        mouse.dwellTime = Math.min(mouse.dwellTime + 0.02, 1);
+      } else {
+        mouse.dwellTime = Math.max(mouse.dwellTime - 0.05, 0.1);
+      }
+
+      // Spawn along path from previous to current position
+      if (time % 2 === 0) { // Every 2 frames
+        spawnAlongPath(mouse.prevX, mouse.prevY, mouse.x, mouse.y, mouse.dwellTime);
+        mouse.lastSpawnX = mouse.x;
+        mouse.lastSpawnY = mouse.y;
+      }
+    }
+
+    // Update previous position
+    mouse.prevX = mouse.x;
+    mouse.prevY = mouse.y;
+
+    // Collision detection (throttled)
+    if (time % 5 === 0) {
+      checkCollisions();
     }
 
     // Enforce particle limit
@@ -210,7 +320,7 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     // Update and draw
     for (let i = active.length - 1; i >= 0; i--) {
       const p = active[i];
-      p.update(w, h, mouse.x, mouse.y, mouse.isDown, time);
+      p.update(w, h, time);
 
       if (!p.active) {
         active.splice(i, 1);
@@ -221,12 +331,45 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     }
   };
 
-  // Event handlers
-  const onClick = (e) => createBurst(e.clientX, e.clientY);
-  const onMouseMove = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; };
-  const onMouseDown = (e) => { mouse.isDown = true; mouse.x = e.clientX; mouse.y = e.clientY; };
-  const onMouseUp = () => { mouse.isDown = false; };
-  const onMouseLeave = () => { mouse.x = -1000; mouse.y = -1000; mouse.isDown = false; };
+  // Track click duration for spark vs trail
+  let clickStart = 0;
+
+  const onMouseDown = (e) => {
+    mouse.isDown = true;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.prevX = e.clientX;
+    mouse.prevY = e.clientY;
+    mouse.lastSpawnX = e.clientX;
+    mouse.lastSpawnY = e.clientY;
+    mouse.dwellTime = 0.2;
+    clickStart = Date.now();
+  };
+
+  const onMouseUp = (e) => {
+    const clickDuration = Date.now() - clickStart;
+
+    // Quick click (< 150ms) creates a spark burst
+    if (clickDuration < 150 && mouse.x > 0) {
+      createSpark(mouse.x, mouse.y);
+    }
+
+    mouse.isDown = false;
+    mouse.dwellTime = 0;
+  };
+
+  const onMouseMove = (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  };
+
+  const onMouseLeave = () => {
+    mouse.x = -1000;
+    mouse.y = -1000;
+    mouse.isDown = false;
+    mouse.dwellTime = 0;
+  };
+
   const onVisibilityChange = () => {
     if (document.hidden) {
       running = false;
@@ -238,7 +381,6 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
   };
 
   // Attach listeners
-  document.addEventListener('click', onClick);
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mouseup', onMouseUp);
@@ -247,12 +389,10 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
 
   animate();
 
-  // Cleanup function
   return {
     stop() {
       running = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-      document.removeEventListener('click', onClick);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mouseup', onMouseUp);
