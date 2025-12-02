@@ -1,154 +1,267 @@
 import { qs } from './dom.js';
 
 /**
- * Initialize the particle canvas.
- * Options (optional):
- * - maxParticles: number (default: 75)
- * - poolMax: number (default: 200)
- * - colors: array of color strings
- * - mouseRadius: number (default: 30)
+ * Particle canvas with click-triggered isometric cubes.
+ * Cubes appear on click, float organically, and fade away gradually.
+ * @param {string} selector - Canvas element selector
+ * @param {Object} options - Configuration options
+ * @param {number} [options.maxParticles=80] - Maximum particles allowed
+ * @param {string[]} [options.colors] - Array of hex color strings
+ * @param {number} [options.mouseRadius=60] - Interaction radius for agitation
  */
 export function initParticleCanvas(selector = '#particle-canvas', options = {}) {
   const canvas = qs(selector);
   if (!canvas) return { stop: () => {} };
-  const ctx = canvas.getContext('2d');
 
-  function resizeCanvas() {
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const PI2 = Math.PI * 2;
+
+  // Canvas resize handler
+  const resizeCanvas = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  }
+  };
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Allow configuration via options or data-attributes on the canvas
-  const dataset = canvas.dataset || {};
-  const defaultColors = ['#5fb3ff', '#2ec27e', '#f6c244', '#7c5cff'];
-  const maxParticles = Number(options.maxParticles ?? dataset.maxParticles ?? 75);
-  const poolMax = Number(options.poolMax ?? dataset.poolMax ?? 200);
-  const colors = options.colors ?? dataset.colors ? dataset.colors.split(',') : defaultColors;
-  const mouseRadius = Number(options.mouseRadius ?? dataset.mouseRadius ?? 30);
-  const mouse = { x: 0, y: 0, isDown: false, radius: mouseRadius };
+  // Configuration
+  const config = {
+    maxParticles: Number(options.maxParticles ?? canvas.dataset?.maxParticles ?? 80),
+    colors: options.colors ?? (canvas.dataset?.colors?.split(',') ?? ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa']),
+    mouseRadius: Number(options.mouseRadius ?? canvas.dataset?.mouseRadius ?? 60),
+  };
 
+  // Pre-compute shaded colors for each base color
+  const colorCache = new Map();
+  const getColorSet = (color) => {
+    if (!colorCache.has(color)) {
+      colorCache.set(color, {
+        top: color,
+        left: shadeColor(color, -25),
+        right: shadeColor(color, 15),
+      });
+    }
+    return colorCache.get(color);
+  };
+
+  const mouse = { x: -1000, y: -1000, isDown: false };
+  let time = 0;
+  let frameCounter = 0;
+  let running = true;
+  let rafId = null;
+
+  // Utility: shade a hex color
   function shadeColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
+    const num = parseInt(color.slice(1), 16);
     const amt = Math.round(2.55 * percent);
     const R = Math.max(0, Math.min(255, (num >> 16) + amt));
-    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
-    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    const G = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + amt));
+    const B = Math.max(0, Math.min(255, (num & 0xff) + amt));
+    return `#${((1 << 24) | (R << 16) | (G << 8) | B).toString(16).slice(1)}`;
   }
 
+  // Particle class with pooling support
   class Particle {
-    constructor(x, y, color, type) {
-      this.x = x; this.y = y; this.color = color; this.size = Math.random() * 4 + 2; this.type = type;
-      if (type === 'burst') {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 1;
-        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
-      } else { this.vx = (Math.random() - 0.5) * 2; this.vy = Math.random() * -1 - 0.5; }
-      this.life = 1; this.damping = 0.95;
+    constructor() {
+      this.active = false;
     }
-    reset(x, y, color, type) {
-      this.x = x; this.y = y; this.color = color; this.size = Math.random() * 4 + 2; this.type = type;
-      if (type === 'burst') {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 1;
-        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+
+    init(x, y, color, isBurst) {
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.colors = getColorSet(color);
+      this.size = 3 + Math.random() * 5;
+      this.isoHeight = this.size * 0.5;
+      this.life = 1;
+      this.active = true;
+
+      // Physics
+      this.phase = Math.random() * PI2;
+      this.amplitude = 0.05 + Math.random() * 0.2;
+      this.frequency = 0.01 + Math.random() * 0.03;
+
+      if (isBurst) {
+        const angle = Math.random() * PI2;
+        const speed = 1 + Math.random() * 2.5;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.lifeDecay = 0.012;
       } else {
-        this.vx = (Math.random() - 0.5) * 2; this.vy = Math.random() * -1 - 0.5;
+        this.vx = (Math.random() - 0.5) * 1.2;
+        this.vy = (Math.random() - 0.5) * 1.2 - 0.3;
+        this.lifeDecay = 0.018;
       }
-      this.life = 1; this.damping = 0.95;
+      return this;
     }
-    recycle() {
-      // Optional: clean up references
-      this.life = 0;
-      this.x = 0; this.y = 0; this.vx = 0; this.vy = 0;
+
+    update(w, h, mouseX, mouseY, mouseDown, t) {
+      this.life -= this.lifeDecay;
+      if (this.life <= 0) {
+        this.active = false;
+        return;
+      }
+
+      // Mouse agitation
+      if (mouseDown && mouseX > 0) {
+        const dx = this.x - mouseX;
+        const dy = this.y - mouseY;
+        const distSq = dx * dx + dy * dy;
+        const maxDist = config.mouseRadius + this.size;
+
+        if (distSq < maxDist * maxDist && distSq > 0) {
+          const dist = Math.sqrt(distSq);
+          const force = (1 - dist / maxDist) * 2;
+          const invDist = 1 / dist;
+          this.vx += dx * invDist * force;
+          this.vy += dy * invDist * force;
+        }
+      }
+
+      // Damping + oscillation
+      this.vx = this.vx * 0.97 + Math.sin(t * this.frequency + this.phase) * this.amplitude * 0.1;
+      this.vy = this.vy * 0.97 + Math.cos(t * this.frequency * 0.7 + this.phase) * this.amplitude * 0.05;
+
+      // Boundary bounce
+      const s = this.size;
+      if (this.x + s > w) { this.x = w - s; this.vx *= -0.5; }
+      else if (this.x - s < 0) { this.x = s; this.vx *= -0.5; }
+      if (this.y + s > h) { this.y = h - s; this.vy *= -0.5; }
+      else if (this.y - s < 0) { this.y = s; this.vy *= -0.5; }
+
+      this.x += this.vx;
+      this.y += this.vy;
     }
+
     draw(ctx) {
-      if (this.life <= 0) return;
-      ctx.save(); ctx.globalAlpha = this.life;
-      const size = this.size; const x = this.x; const y = this.y;
-      const colorTop = this.color; const colorLeft = shadeColor(this.color, -20); const colorRight = shadeColor(this.color, 10);
-      const isoHeight = size * 0.5;
-      ctx.fillStyle = colorTop; ctx.beginPath(); ctx.moveTo(x, y - isoHeight); ctx.lineTo(x + size, y); ctx.lineTo(x, y + isoHeight); ctx.lineTo(x - size, y); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = colorLeft; ctx.beginPath(); ctx.moveTo(x - size, y); ctx.lineTo(x, y + isoHeight); ctx.lineTo(x, y + isoHeight + size); ctx.lineTo(x - size, y + size); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = colorRight; ctx.beginPath(); ctx.moveTo(x + size, y); ctx.lineTo(x, y + isoHeight); ctx.lineTo(x, y + isoHeight + size); ctx.lineTo(x + size, y + size); ctx.closePath(); ctx.fill();
-      ctx.restore();
-    }
-    update(canvas, mouse) {
-      if (!mouse.isDown) { this.life -= 0.04 }
-      if (mouse.x !== undefined) {
-        const dx = this.x - mouse.x; const dy = this.y - mouse.y; const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouse.radius + this.size) { const angle = Math.atan2(dy, dx); this.vx = Math.cos(angle) * 3; this.vy = Math.sin(angle) * 3; }
-      }
-      if (this.x + this.size > canvas.width) { this.x = canvas.width - this.size; this.vx *= -this.damping; }
-      if (this.x - this.size < 0) { this.x = this.size; this.vx *= -this.damping; }
-      if (this.y + this.size > canvas.height) { this.y = canvas.height - this.size; this.vy *= -this.damping; }
-      if (this.y - this.size < 0) { this.y = this.size; this.vy *= -this.damping; }
-      this.x += this.vx; this.y += this.vy;
-    }
-  }
+      const { x, y, size, isoHeight, colors, life } = this;
 
-  const particles = []; let frameCounter = 0; let running = true; let rafId = null;
-  // Particle pooling
-  const pool = []; const POOL_MAX = poolMax;
+      ctx.globalAlpha = life * 0.9;
 
-  function createParticle(x, y, color, type) {
-    let p = null;
-    if (pool.length) {
-      p = pool.pop();
-      p.reset(x, y, color, type);
-    } else {
-      p = new Particle(x, y, color, type);
-    }
-    particles.push(p);
-  }
+      // Top face
+      ctx.fillStyle = colors.top;
+      ctx.beginPath();
+      ctx.moveTo(x, y - isoHeight);
+      ctx.lineTo(x + size, y);
+      ctx.lineTo(x, y + isoHeight);
+      ctx.lineTo(x - size, y);
+      ctx.fill();
 
-  function createParticleBurst(x, y) {
-    const burstCount = 5 + Math.floor(Math.random() * 4);
-    for (let i = 0; i < burstCount; i++) {
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      createParticle(x, y, color, 'burst');
+      // Left face
+      ctx.fillStyle = colors.left;
+      ctx.beginPath();
+      ctx.moveTo(x - size, y);
+      ctx.lineTo(x, y + isoHeight);
+      ctx.lineTo(x, y + isoHeight + size);
+      ctx.lineTo(x - size, y + size);
+      ctx.fill();
+
+      // Right face
+      ctx.fillStyle = colors.right;
+      ctx.beginPath();
+      ctx.moveTo(x + size, y);
+      ctx.lineTo(x, y + isoHeight);
+      ctx.lineTo(x, y + isoHeight + size);
+      ctx.lineTo(x + size, y + size);
+      ctx.fill();
     }
   }
 
-  function animate() {
+  // Particle pool for object reuse
+  const pool = [];
+  const active = [];
+
+  const getParticle = (x, y, color, isBurst) => {
+    const p = pool.length > 0 ? pool.pop() : new Particle();
+    return p.init(x, y, color, isBurst);
+  };
+
+  const createBurst = (x, y) => {
+    const count = 5 + (Math.random() * 4) | 0;
+    for (let i = 0; i < count; i++) {
+      const color = config.colors[(Math.random() * config.colors.length) | 0];
+      active.push(getParticle(x, y, color, true));
+    }
+  };
+
+  // Animation loop
+  const animate = () => {
     if (!running) return;
     rafId = requestAnimationFrame(animate);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (mouse.isDown) { frameCounter++; if (frameCounter % 25 === 0) { const color = colors[Math.floor(Math.random() * colors.length)]; createParticle(mouse.x, mouse.y, color, 'dust'); }}
-    while (particles.length > maxParticles) { const removed = particles.shift(); if (removed && pool.length < POOL_MAX) { removed.recycle(); pool.push(removed); } }
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i]; p.update(canvas, mouse); p.draw(ctx);
-      if (p.life <= 0) {
-        const [removed] = particles.splice(i, 1);
-        if (removed && pool.length < POOL_MAX) { removed.recycle(); pool.push(removed); }
+
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    time++;
+
+    // Generate dust while holding click
+    if (mouse.isDown && mouse.x > 0 && ++frameCounter % 8 === 0) {
+      const color = config.colors[(Math.random() * config.colors.length) | 0];
+      active.push(getParticle(mouse.x, mouse.y, color, false));
+    }
+
+    // Enforce particle limit
+    while (active.length > config.maxParticles) {
+      const removed = active.shift();
+      removed.active = false;
+      pool.push(removed);
+    }
+
+    // Update and draw
+    for (let i = active.length - 1; i >= 0; i--) {
+      const p = active[i];
+      p.update(w, h, mouse.x, mouse.y, mouse.isDown, time);
+
+      if (!p.active) {
+        active.splice(i, 1);
+        pool.push(p);
+      } else {
+        p.draw(ctx);
       }
     }
-  }
+  };
 
-  // Event listeners
-  document.addEventListener('click', (e) => createParticleBurst(e.clientX, e.clientY));
-  document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  document.addEventListener('mousedown', (e) => { mouse.isDown = true; mouse.x = e.clientX; mouse.y = e.clientY; });
-  document.addEventListener('mouseup', () => { mouse.isDown = false; });
-
-  // Visibility handling
-  function onVisibilityChange() {
+  // Event handlers
+  const onClick = (e) => createBurst(e.clientX, e.clientY);
+  const onMouseMove = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+  const onMouseDown = (e) => { mouse.isDown = true; mouse.x = e.clientX; mouse.y = e.clientY; };
+  const onMouseUp = () => { mouse.isDown = false; };
+  const onMouseLeave = () => { mouse.x = -1000; mouse.y = -1000; mouse.isDown = false; };
+  const onVisibilityChange = () => {
     if (document.hidden) {
-      running = false; if (rafId) cancelAnimationFrame(rafId); rafId = null;
-    } else {
-      if (!running) { running = true; animate(); }
+      running = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    } else if (!running) {
+      running = true;
+      animate();
     }
-  }
+  };
+
+  // Attach listeners
+  document.addEventListener('click', onClick);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mouseleave', onMouseLeave);
   document.addEventListener('visibilitychange', onVisibilityChange);
 
   animate();
 
+  // Cleanup function
   return {
     stop() {
-      running = false; if (rafId) cancelAnimationFrame(rafId); rafId = null;
+      running = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mouseleave', onMouseLeave);
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('resize', resizeCanvas);
+      active.length = 0;
+      pool.length = 0;
+      colorCache.clear();
     }
   };
 }
