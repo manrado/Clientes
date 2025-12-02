@@ -24,31 +24,30 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - perfected cosmic physics
+  // Configuration - natural physics, many small cubes
   const config = {
-    maxParticles: 100,
+    maxParticles: 200,        // Many cubes
     colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6', '#38bdf8'],
 
-    // Physics - ultra smooth
-    gravity: 0.008,           // Whisper gravity
-    friction: 0.9975,         // Near-frictionless glide
-    groundFriction: 0.965,    // Silky ground slide
-    bounciness: 0.6,          // Springy bounces
-    maxVelocity: 8,           // Velocity cap for smoothness
+    // Physics - natural, organic
+    gravity: 0.015,           // Light but present
+    friction: 0.992,          // Natural air resistance
+    groundFriction: 0.95,     // Smooth floor slide
+    bounciness: 0.5,          // Gentle bounces
+    maxVelocity: 6,           // Smooth cap
 
-    // Cursor as force field (NO click)
-    cursorFieldRadius: 100,   // Generous influence zone
-    cursorFieldForce: 0.25,   // Smooth push
-    cursorMomentumTransfer: 0.12, // How much cursor momentum transfers
+    // Cursor PUSH (NO click) - push existing cubes
+    cursorPushRadius: 70,
+    cursorPushForce: 0.4,
 
-    // Cursor as generator (WITH click)
-    spawnRadius: 20,
-    clickSpawnCount: 4,
-    dragSpawnDistance: 16,
+    // Cursor SPAWN (WITH click) - generate many small cubes
+    clickSpawnCount: 8,       // Many per click
+    dragSpawnDistance: 10,    // Denser trail
+    dragSpawnCount: 3,        // Per drag step
 
-    // Collision explosions (WITH click)
-    collisionSpawnChance: 0.35,
-    maxCollisionSpawns: 2,
+    // Cube sizes - small and uniform
+    minSize: 2,
+    maxSize: 4,
   };
 
   // Pre-compute shaded colors
@@ -105,47 +104,24 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.active = true;
       this.grounded = false;
 
-      // Size based on type - more variety
-      if (type === 'dust') {
-        this.size = 0.8 + Math.random() * 1.5;
-        this.mass = 0.15;
-        this.lifeDecay = 0.025 + Math.random() * 0.01;
-      } else {
-        // Cube - varied sizes for visual interest
-        const sizeVariant = Math.random();
-        if (sizeVariant < 0.3) {
-          this.size = 2.5 + Math.random() * 2; // Small
-        } else if (sizeVariant < 0.8) {
-          this.size = 4 + Math.random() * 3; // Medium
-        } else {
-          this.size = 6 + Math.random() * 3; // Large
-        }
-        this.size += intensity * 1.2;
-        this.mass = 0.3 + this.size * 0.025;
-        this.lifeDecay = 0.0018 + Math.random() * 0.0012; // Much longer life
-      }
+      // Small, uniform cubes
+      this.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
+      this.mass = 0.4 + this.size * 0.05;
+      this.lifeDecay = 0.002 + Math.random() * 0.001;
 
       this.isoHeight = this.size * 0.5;
       this.life = 1;
       this.rotation = Math.random() * PI2;
-      this.rotationSpeed = (Math.random() - 0.5) * 0.015; // Slow spin
+      this.rotationSpeed = (Math.random() - 0.5) * 0.02;
 
-      // Initial velocity - silky smooth launch
-      if (type === 'dust') {
-        const angle = Math.random() * PI2;
-        const speed = 0.1 + Math.random() * 0.3;
-        this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed - 0.1;
-      } else {
-        // Elegant radial burst with cursor influence
-        const angle = Math.random() * PI2;
-        const speed = 0.15 + Math.random() * 0.25;
-        this.vx = Math.cos(angle) * speed + mouse.vx * 0.06;
-        this.vy = Math.sin(angle) * speed - 0.08 + mouse.vy * 0.06;
-      }
+      // Natural initial velocity - gentle spread
+      const angle = Math.random() * PI2;
+      const speed = 0.3 + Math.random() * 0.5;
+      this.vx = Math.cos(angle) * speed + mouse.vx * 0.1;
+      this.vy = Math.sin(angle) * speed * 0.5 - 0.2 + mouse.vy * 0.1;
 
-      // Easing values for smooth animations
-      this.scale = 0.1; // Start small, grow in
+      // Smooth scale animation
+      this.scale = 0.2;
       this.targetScale = 1;
 
       return this;
@@ -184,37 +160,29 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       }
 
       // Cursor as FORCE FIELD (only when NOT clicking)
-      // Smooth, natural displacement based on proximity and cursor velocity
+      // Simply push cubes away based on cursor movement
       if (mouse.x > 0 && !mouse.isDown) {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
         const distSq = dx * dx + dy * dy;
-        const radius = config.cursorFieldRadius;
+        const radius = config.cursorPushRadius;
 
-        if (distSq < radius * radius && distSq > 4) {
+        if (distSq < radius * radius && distSq > 1) {
           const dist = Math.sqrt(distSq);
           const t = 1 - (dist / radius);
-          // Smooth cubic falloff for natural feel
-          const falloff = t * t * (3 - 2 * t); // Smoothstep
+          const falloff = t * t;
 
-          // Cursor speed influences push strength
+          // Push strength based on cursor speed
           const cursorSpeed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
-          const dynamicForce = config.cursorFieldForce * (0.4 + Math.min(cursorSpeed * 0.4, 0.6));
-          const force = falloff * dynamicForce;
+          const force = falloff * config.cursorPushForce * (0.3 + cursorSpeed * 0.5);
 
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Radial push - smooth and proportional
-          this.vx += nx * force * 0.8;
-          this.vy += ny * force * 0.8;
-
-          // Inherit cursor momentum for natural flow
-          this.vx += mouse.vx * falloff * config.cursorMomentumTransfer;
-          this.vy += mouse.vy * falloff * config.cursorMomentumTransfer;
-
-          // Slight rotation boost from interaction
-          this.rotationSpeed += falloff * 0.002 * (Math.random() - 0.5);
+          // Push away + inherit cursor direction
+          this.vx += nx * force + mouse.vx * falloff * 0.2;
+          this.vy += ny * force + mouse.vy * falloff * 0.2;
+          this.rotationSpeed += force * 0.02;
         }
       }
 
@@ -310,7 +278,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Particle management
   const pool = [];
   const active = [];
-  const pendingSpawns = []; // Queue for collision spawns
 
   const getParticle = (x, y, color, type, intensity) => {
     const p = pool.length > 0 ? pool.pop() : new Particle();
@@ -319,18 +286,17 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
 
-  // COSMIC GENERATOR: Spawn explosion on click
-  const spawnExplosion = (x, y, count, intensity = 0.5) => {
-    const actualCount = Math.min(count, config.maxParticles - active.length);
-    for (let i = 0; i < actualCount; i++) {
-      const angle = (i / actualCount) * Math.PI * 2 + Math.random() * 0.4;
-      const radius = 2 + Math.random() * config.spawnRadius * 0.5;
+  // Spawn burst on click
+  const spawnBurst = (x, y, count) => {
+    for (let i = 0; i < count && active.length < config.maxParticles; i++) {
+      const angle = (i / count) * PI2 + Math.random() * 0.3;
+      const r = 2 + Math.random() * 8;
       active.push(getParticle(
-        x + Math.cos(angle) * radius,
-        y + Math.sin(angle) * radius,
+        x + Math.cos(angle) * r,
+        y + Math.sin(angle) * r,
         randomColor(),
         'cube',
-        intensity + Math.random() * 0.3
+        0.5
       ));
     }
   };
@@ -345,72 +311,65 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
     if (dist < config.dragSpawnDistance) return;
 
-    // Spawn along path
-    const steps = Math.min(Math.ceil(dist / config.dragSpawnDistance), 4);
+    // Spawn multiple along path
+    const steps = Math.min(Math.ceil(dist / config.dragSpawnDistance), 5);
 
-    for (let i = 0; i < steps && active.length < config.maxParticles; i++) {
+    for (let i = 0; i < steps; i++) {
       const t = (i + 1) / steps;
-      const spawnX = mouse.lastSpawnX + dx * t + (Math.random() - 0.5) * 6;
-      const spawnY = mouse.lastSpawnY + dy * t + (Math.random() - 0.5) * 6;
+      const spawnX = mouse.lastSpawnX + dx * t;
+      const spawnY = mouse.lastSpawnY + dy * t;
 
-      active.push(getParticle(spawnX, spawnY, randomColor(), 'cube', 0.4));
+      for (let j = 0; j < config.dragSpawnCount && active.length < config.maxParticles; j++) {
+        const ox = (Math.random() - 0.5) * 8;
+        const oy = (Math.random() - 0.5) * 8;
+        active.push(getParticle(spawnX + ox, spawnY + oy, randomColor(), 'cube', 0.4));
+      }
     }
 
     mouse.lastSpawnX = mouse.x;
     mouse.lastSpawnY = mouse.y;
   };
 
-  // COLLISION EXPLOSIONS: When clicking, collisions spawn new cubes
+  // Simple collision - just physics, no spawning
   const handleCollisions = () => {
     const len = active.length;
 
     for (let i = 0; i < len; i++) {
       const a = active[i];
-      if (!a.active || a.type === 'dust') continue;
+      if (!a.active) continue;
 
       for (let j = i + 1; j < len; j++) {
         const b = active[j];
-        if (!b.active || b.type === 'dust') continue;
+        if (!b.active) continue;
 
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const distSq = dx * dx + dy * dy;
-        const minDist = (a.size + b.size) * 0.55;
+        const minDist = (a.size + b.size) * 0.5;
 
-        if (distSq < minDist * minDist && distSq > 0.1) {
+        if (distSq < minDist * minDist && distSq > 0.01) {
           const dist = Math.sqrt(distSq);
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Separation
-          const overlap = minDist - dist;
-          const separateX = nx * overlap * 0.35;
-          const separateY = ny * overlap * 0.35;
+          // Separate
+          const overlap = (minDist - dist) * 0.5;
+          a.x -= nx * overlap;
+          a.y -= ny * overlap;
+          b.x += nx * overlap;
+          b.y += ny * overlap;
 
-          a.x -= separateX;
-          a.y -= separateY;
-          b.x += separateX;
-          b.y += separateY;
-
-          // Momentum exchange
+          // Exchange velocity (natural bounce)
           const dvx = a.vx - b.vx;
           const dvy = a.vy - b.vy;
-          const impulse = (dvx * nx + dvy * ny) * 0.3;
-
-          a.vx -= impulse * nx;
-          a.vy -= impulse * ny;
-          b.vx += impulse * nx;
-          b.vy += impulse * ny;
-
-          // EXPLOSION: If clicking, collision spawns new cubes
-          if (mouse.isDown &&
-              Math.abs(impulse) > 0.15 &&
-              Math.random() < config.collisionSpawnChance &&
-              active.length + pendingSpawns.length < config.maxParticles) {
-            const midX = (a.x + b.x) / 2;
-            const midY = (a.y + b.y) / 2;
-            const spawnCount = 1 + Math.floor(Math.random() * config.maxCollisionSpawns);
-            pendingSpawns.push({ x: midX, y: midY, count: spawnCount });
+          const dot = dvx * nx + dvy * ny;
+          
+          if (dot > 0) {
+            const restitution = 0.4;
+            a.vx -= dot * nx * restitution;
+            a.vy -= dot * ny * restitution;
+            b.vx += dot * nx * restitution;
+            b.vy += dot * ny * restitution;
           }
         }
       }
@@ -431,34 +390,25 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     ctx.clearRect(0, 0, w, h);
     time++;
 
-    // Calculate and smooth cursor velocity for natural feel
+    // Smooth cursor velocity
     const rawVx = mouse.x - mouse.prevX;
     const rawVy = mouse.y - mouse.prevY;
-    smoothVx += (rawVx - smoothVx) * 0.3; // Ease towards raw velocity
-    smoothVy += (rawVy - smoothVy) * 0.3;
+    smoothVx += (rawVx - smoothVx) * 0.4;
+    smoothVy += (rawVy - smoothVy) * 0.4;
     mouse.vx = smoothVx;
     mouse.vy = smoothVy;
 
-    // Spawn on drag (with click)
-    trySpawnOnDrag();
-
-    // Process pending collision spawns (limit per frame)
-    let spawnsThisFrame = 0;
-    while (pendingSpawns.length > 0 && active.length < config.maxParticles && spawnsThisFrame < 3) {
-      const spawn = pendingSpawns.shift();
-      spawnExplosion(spawn.x, spawn.y, spawn.count, 0.25);
-      spawnsThisFrame++;
+    // Only spawn when clicking
+    if (mouse.isDown) {
+      trySpawnOnDrag();
     }
-    if (pendingSpawns.length > 5) pendingSpawns.length = 5; // Cap queue
 
     // Update previous position
     mouse.prevX = mouse.x;
     mouse.prevY = mouse.y;
 
-    // Handle collisions
-    if (time % 2 === 0) {
-      handleCollisions();
-    }
+    // Collisions every frame for smooth physics
+    handleCollisions();
 
     // Update and draw particles
     for (let i = active.length - 1; i >= 0; i--) {
@@ -483,8 +433,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.lastSpawnX = e.clientX;
     mouse.lastSpawnY = e.clientY;
 
-    // COSMIC EXPLOSION on click
-    spawnExplosion(e.clientX, e.clientY, config.clickSpawnCount, 0.5);
+    // Spawn burst on click
+    spawnBurst(e.clientX, e.clientY, config.clickSpawnCount);
   };
 
   const onMouseUp = () => {
