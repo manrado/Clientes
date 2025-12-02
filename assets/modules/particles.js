@@ -118,31 +118,22 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Helper to check if element is interactive (should not spawn particles)
   const isInteractiveElement = (element) => {
     if (!element) return false;
-    const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL'];
+    const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL', 'NAV'];
     const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'checkbox', 'radio'];
 
-    // Check the element and its ancestors
+    // Check the element and its ancestors (fast checks only)
     let el = element;
     while (el && el !== document.body) {
-      // Check tag name
       if (interactiveTags.includes(el.tagName)) return true;
-      // Check role attribute
-      if (el.getAttribute && interactiveRoles.includes(el.getAttribute('role'))) return true;
-      // Check if it has onclick or is clickable
-      if (el.onclick || el.hasAttribute?.('onclick')) return true;
-      // Check for common interactive classes
-      if (el.classList?.contains('btn') || el.classList?.contains('button') ||
-          el.classList?.contains('link') || el.classList?.contains('clickable')) return true;
-      // Check cursor style
-      const style = window.getComputedStyle?.(el);
-      if (style?.cursor === 'pointer') return true;
-
+      const role = el.getAttribute?.('role');
+      if (role && interactiveRoles.includes(role)) return true;
+      if (el.classList?.contains('btn') || el.classList?.contains('button')) return true;
+      if (el.hasAttribute?.('data-cta')) return true;
       el = el.parentElement;
     }
     return false;
   };
 
-  let time = 0;
   let running = true;
   let rafId = null;
 
@@ -354,11 +345,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
 
-  // Spawn cubes at cursor position while click is held - STRICT CHECK
+  // Spawn cubes at cursor position while click is held
   const spawnAtCursor = () => {
-    // STRICT: Must have valid click AND valid position
-    if (!isClickActive()) return;
-    if (mouse.x < 0 || mouse.y < 0) return;
     if (active.length >= config.maxParticles) return;
 
     const now = performance.now();
@@ -369,30 +357,23 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     for (let i = 0; i < config.spawnPerTick && active.length < config.maxParticles; i++) {
       const ox = (Math.random() - 0.5) * 6;
       const oy = (Math.random() - 0.5) * 6;
-      active.push(getParticle(
-        mouse.x + ox,
-        mouse.y + oy,
-        randomColor()
-      ));
+      active.push(getParticle(mouse.x + ox, mouse.y + oy, randomColor()));
     }
   };
 
-  // Spawn trail while dragging with click held - STRICT CHECK
+  // Spawn trail while dragging with click held
   const trySpawnOnDrag = () => {
-    // STRICT: Must have valid click AND valid positions
-    if (!isClickActive()) return;
-    if (mouse.x < 0 || mouse.y < 0) return;
-    if (mouse.lastSpawnX < 0 || mouse.lastSpawnY < 0) return;
-    if (active.length >= config.maxParticles) return;
+    if (mouse.lastSpawnX < 0 || active.length >= config.maxParticles) return;
 
     const dx = mouse.x - mouse.lastSpawnX;
     const dy = mouse.y - mouse.lastSpawnY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    const distSq = dx * dx + dy * dy;
+    const minDist = config.dragSpawnDistance;
 
-    if (dist < config.dragSpawnDistance) return;
+    if (distSq < minDist * minDist) return;
 
-    // Spawn along the path traveled
-    const steps = Math.min(Math.ceil(dist / config.dragSpawnDistance), 5);
+    const dist = Math.sqrt(distSq);
+    const steps = Math.min(Math.ceil(dist / minDist), 5);
     for (let i = 0; i < steps && active.length < config.maxParticles; i++) {
       const t = (i + 1) / steps;
       const px = mouse.lastSpawnX + dx * t;
@@ -517,7 +498,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     const w = canvas.width;
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
-    time++;
 
     // Smooth cursor velocity
     const rawVx = mouse.x - mouse.prevX;
@@ -527,10 +507,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.vx = smoothVx;
     mouse.vy = smoothVy;
 
-    // ONLY spawn when clicking - STRICT triple verification
-    if (isClickActive() && mouse.x >= 0 && mouse.y >= 0) {
-      spawnAtCursor();    // Continuous spawn at cursor position
-      trySpawnOnDrag();   // Trail when moving
+    // ONLY spawn when clicking (single verification point)
+    if (isClickActive() && mouse.x >= 0) {
+      spawnAtCursor();
+      trySpawnOnDrag();
     }
 
     // Update previous position
@@ -575,7 +555,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   };
 
   const onMouseUp = (e) => {
-    // Only respond to left click release
     if (e && e.button !== 0) return;
     mouse.isDown = false;
     mouse.clickStartTime = 0;
@@ -586,28 +565,25 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.y = e.clientY;
   };
 
-  const onMouseLeave = () => {
+  // Reset mouse state helper (reduces code duplication)
+  const resetMouseState = () => {
     mouse.isDown = false;
     mouse.clickStartTime = 0;
-    mouse.x = -1000;
-    mouse.y = -1000;
     mouse.lastSpawnX = -1000;
     mouse.lastSpawnY = -1000;
   };
 
-  const onBlur = () => {
-    mouse.isDown = false;
-    mouse.clickStartTime = 0;
-    mouse.lastSpawnX = -1000;
-    mouse.lastSpawnY = -1000;
+  const onMouseLeave = () => {
+    resetMouseState();
+    mouse.x = -1000;
+    mouse.y = -1000;
   };
+
+  const onBlur = () => resetMouseState();
 
   const onVisibilityChange = () => {
     if (document.hidden) {
-      mouse.isDown = false;
-      mouse.clickStartTime = 0;
-      mouse.lastSpawnX = -1000;
-      mouse.lastSpawnY = -1000;
+      resetMouseState();
       running = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     } else if (!running) {
@@ -616,13 +592,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   };
 
-  // Prevent context menu from causing stuck states
-  const onContextMenu = () => {
-    mouse.isDown = false;
-    mouse.clickStartTime = 0;
-    mouse.lastSpawnX = -1000;
-    mouse.lastSpawnY = -1000;
-  };
+  const onContextMenu = () => resetMouseState();
 
   // Touch support for mobile devices
   const onTouchStart = (e) => {
@@ -654,12 +624,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   };
 
-  const onTouchEnd = () => {
-    mouse.isDown = false;
-    mouse.clickStartTime = 0;
-    mouse.lastSpawnX = -1000;
-    mouse.lastSpawnY = -1000;
-  };
+  const onTouchEnd = () => resetMouseState();
 
   // Attach listeners - document for mousedown since canvas has pointer-events: none
   document.addEventListener('mousedown', onMouseDown);
