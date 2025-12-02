@@ -1,14 +1,15 @@
 import { qs } from './dom.js';
 
 /**
- * Cosmic Particle System - Isometric Cubes
+ * Cosmic Particle System - Elegant Isometric Cubes
  *
  * Philosophy:
- * - CLICK: Cursor becomes a cosmic generator, spawning cubes
- * - COLLISION (while clicking): Cubes colliding create explosions, spawning more
- * - NO CLICK: Cursor is a force field, pushing existing cubes away
- * - EDGES: Walls that bounce cubes back into play
- * - LIFE: All cubes degrade over time until they fade into the void
+ * - Ethereal, contemplative movement like distant stars
+ * - Corporate elegance with muted, sophisticated colors
+ * - Minimal gravity - elements float gracefully
+ * - Slow, deliberate animations - nothing rushed
+ * - Click spawns a gentle emergence, not an explosion
+ * - Cursor gently guides existing elements
  */
 export function initParticleCanvas(selector = '#particle-canvas') {
   const canvas = qs(selector);
@@ -24,30 +25,37 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - natural physics, many small cubes
+  // Configuration - elegant, cosmic, corporate
   const config = {
-    maxParticles: 200,        // Many cubes
-    colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6', '#38bdf8'],
+    maxParticles: 40,         // Few elements - minimalist
+    colors: [
+      '#64748b',              // Slate gray
+      '#475569',              // Darker slate
+      '#94a3b8',              // Light slate
+      '#6b7280',              // Cool gray
+      '#9ca3af',              // Soft gray
+      '#60a5fa',              // Accent blue (subtle)
+    ],
 
-    // Physics - natural, organic
-    gravity: 0.015,           // Light but present
-    friction: 0.992,          // Natural air resistance
-    groundFriction: 0.95,     // Smooth floor slide
-    bounciness: 0.5,          // Gentle bounces
-    maxVelocity: 6,           // Smooth cap
+    // Physics - ethereal, almost weightless
+    gravity: 0.003,           // Near-zero gravity - floating in space
+    friction: 0.997,          // Very slow deceleration
+    groundFriction: 0.99,     // Glides smoothly
+    bounciness: 0.3,          // Soft, muted bounces
+    maxVelocity: 1.5,         // Slow, contemplative movement
 
-    // Cursor PUSH (NO click) - push existing cubes
-    cursorPushRadius: 70,
-    cursorPushForce: 0.4,
+    // Cursor influence (NO click) - gentle guidance
+    cursorPushRadius: 120,    // Wide, soft influence
+    cursorPushForce: 0.08,    // Very gentle push
 
-    // Cursor SPAWN (WITH click) - generate many small cubes
-    clickSpawnCount: 8,       // Many per click
-    dragSpawnDistance: 10,    // Denser trail
-    dragSpawnCount: 3,        // Per drag step
+    // Cursor SPAWN (WITH click) - gradual emergence
+    clickSpawnCount: 3,       // Few at a time - elegant
+    dragSpawnDistance: 40,    // Sparse trail
+    dragSpawnCount: 1,        // One at a time
 
-    // Cube sizes - small and uniform
-    minSize: 2,
-    maxSize: 4,
+    // Cube sizes - varied for depth
+    minSize: 3,
+    maxSize: 8,
   };
 
   // Pre-compute shaded colors
@@ -104,47 +112,47 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.active = true;
       this.grounded = false;
 
-      // Small, uniform cubes
+      // Varied sizes for depth perception
       this.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
-      this.mass = 0.4 + this.size * 0.05;
-      this.lifeDecay = 0.002 + Math.random() * 0.001;
+      this.mass = 0.8 + this.size * 0.02;  // Heavier feel, slower response
+      this.lifeDecay = 0.0008 + Math.random() * 0.0004;  // Long life - linger gracefully
 
-      this.isoHeight = this.size * 0.5;
+      this.isoHeight = this.size * 0.6;
       this.life = 1;
       this.rotation = Math.random() * PI2;
-      this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+      this.rotationSpeed = (Math.random() - 0.5) * 0.003;  // Very slow rotation
 
-      // Natural initial velocity - gentle spread
+      // Ethereal initial velocity - barely moving, drifting
       const angle = Math.random() * PI2;
-      const speed = 0.3 + Math.random() * 0.5;
-      this.vx = Math.cos(angle) * speed + mouse.vx * 0.1;
-      this.vy = Math.sin(angle) * speed * 0.5 - 0.2 + mouse.vy * 0.1;
+      const speed = 0.1 + Math.random() * 0.2;  // Very slow emergence
+      this.vx = Math.cos(angle) * speed;
+      this.vy = Math.sin(angle) * speed - 0.05;  // Slight upward drift
 
-      // Smooth scale animation
-      this.scale = 0.2;
+      // Slow, graceful scale animation
+      this.scale = 0;
       this.targetScale = 1;
 
       return this;
     }
 
     update(w, h) {
-      // Smooth scale-in animation
-      this.scale += (this.targetScale - this.scale) * 0.15;
+      // Very slow scale-in animation - graceful materialization
+      this.scale += (this.targetScale - this.scale) * 0.04;
 
-      // Life decay - graceful fade
-      const decay = this.grounded ? this.lifeDecay * 1.4 : this.lifeDecay;
+      // Life decay - long, contemplative existence
+      const decay = this.grounded ? this.lifeDecay * 1.2 : this.lifeDecay;
       this.life -= decay;
       if (this.life <= 0) {
         this.active = false;
         return;
       }
 
-      // Scale out when dying
-      if (this.life < 0.15) {
+      // Slow fade out when dying
+      if (this.life < 0.25) {
         this.targetScale = 0;
       }
 
-      // Gravity - feather-light
+      // Almost no gravity - floating in cosmic space
       this.vy += config.gravity * this.mass;
 
       // Air friction - silky smooth
@@ -159,8 +167,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         this.vy *= scale;
       }
 
-      // Cursor as FORCE FIELD (only when NOT clicking)
-      // Simply push cubes away based on cursor movement
+      // Cursor as GENTLE GUIDE (only when NOT clicking)
+      // Soft, magnetic-like influence - elements drift around cursor
       if (mouse.x > 0 && !mouse.isDown) {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
@@ -170,19 +178,24 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         if (distSq < radius * radius && distSq > 1) {
           const dist = Math.sqrt(distSq);
           const t = 1 - (dist / radius);
-          const falloff = t * t;
+          // Cubic falloff for softer, more organic feel
+          const falloff = t * t * t;
 
-          // Push strength based on cursor speed
-          const cursorSpeed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
-          const force = falloff * config.cursorPushForce * (0.3 + cursorSpeed * 0.5);
+          // Very gentle push - like a soft breeze
+          const force = falloff * config.cursorPushForce;
 
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Push away + inherit cursor direction
-          this.vx += nx * force + mouse.vx * falloff * 0.2;
-          this.vy += ny * force + mouse.vy * falloff * 0.2;
-          this.rotationSpeed += force * 0.02;
+          // Subtle push + slight orbital tendency
+          this.vx += nx * force;
+          this.vy += ny * force;
+
+          // Add slight perpendicular drift for orbital feel
+          this.vx += -ny * force * 0.3;
+          this.vy += nx * force * 0.3;
+
+          this.rotationSpeed += force * 0.002;  // Barely perceptible spin
         }
       }
 
@@ -194,42 +207,39 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       const margin = this.size * 0.5;
       this.grounded = false;
 
-      // Side walls - soft elastic bounce
+      // Side walls - soft, almost invisible interaction
       if (this.x < margin) {
         this.x = margin;
         this.vx = Math.abs(this.vx) * config.bounciness;
-        this.rotationSpeed += 0.01; // Spin on impact
       }
       if (this.x > w - margin) {
         this.x = w - margin;
         this.vx = -Math.abs(this.vx) * config.bounciness;
-        this.rotationSpeed -= 0.01;
       }
 
-      // Ceiling - gentle absorption
+      // Ceiling - gentle redirection
       if (this.y < margin) {
         this.y = margin;
-        this.vy = Math.abs(this.vy) * config.bounciness * 0.5;
+        this.vy = Math.abs(this.vy) * config.bounciness * 0.3;
       }
 
-      // Floor - elegant multi-bounce settle
+      // Floor - soft landing, then continue drifting
       if (this.y > h - margin) {
         this.y = h - margin;
         this.vy = -Math.abs(this.vy) * config.bounciness;
         this.vx *= config.groundFriction;
         this.grounded = true;
 
-        // Smooth stop for micro-bounces
-        if (Math.abs(this.vy) < 0.05) {
+        // Quick settle - no bouncing, just glide
+        if (Math.abs(this.vy) < 0.02) {
           this.vy = 0;
-          this.vx *= 0.97;
-          this.rotationSpeed *= 0.9;
+          // Continue horizontal drift slowly
         }
       }
 
-      // Smooth rotation with damping
-      this.rotationSpeed *= 0.995;
-      this.rotation += this.rotationSpeed + this.vx * 0.006;
+      // Very slow rotation - contemplative, not chaotic
+      this.rotationSpeed *= 0.998;
+      this.rotation += this.rotationSpeed + this.vx * 0.001;
     }
 
     draw(ctx) {
@@ -238,9 +248,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       // Skip if too small
       if (scale < 0.05) return;
 
-      // Smooth opacity based on life with easing
-      const lifeEased = life * life; // Quadratic ease for smoother fade
-      ctx.globalAlpha = lifeEased * (type === 'dust' ? 0.4 : 0.85) * Math.min(scale * 1.5, 1);
+      // Elegant opacity - more transparent, ethereal presence
+      const lifeEased = Math.pow(life, 1.5);  // Gentler curve
+      ctx.globalAlpha = lifeEased * 0.6 * Math.min(scale * 2, 1);  // More transparent overall
 
       // Scaled size for smooth appear/disappear
       const s = size * scale;
@@ -286,22 +296,23 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
 
-  // Spawn burst on click
+  // Spawn emergence on click - gentle, not explosive
   const spawnBurst = (x, y, count) => {
     for (let i = 0; i < count && active.length < config.maxParticles; i++) {
-      const angle = (i / count) * PI2 + Math.random() * 0.3;
-      const r = 2 + Math.random() * 8;
+      // Staggered spawn positions - natural cluster
+      const angle = (i / count) * PI2 + Math.random() * 0.5;
+      const r = 5 + Math.random() * 15;  // Wider, softer spread
       active.push(getParticle(
         x + Math.cos(angle) * r,
         y + Math.sin(angle) * r,
         randomColor(),
         'cube',
-        0.5
+        0.3  // Lower intensity
       ));
     }
   };
 
-  // Spawn trail while dragging with click
+  // Spawn sparse trail while dragging - deliberate, not frantic
   const trySpawnOnDrag = () => {
     if (!mouse.isDown || mouse.x < 0) return;
 
@@ -311,19 +322,11 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
     if (dist < config.dragSpawnDistance) return;
 
-    // Spawn multiple along path
-    const steps = Math.min(Math.ceil(dist / config.dragSpawnDistance), 5);
-
-    for (let i = 0; i < steps; i++) {
-      const t = (i + 1) / steps;
-      const spawnX = mouse.lastSpawnX + dx * t;
-      const spawnY = mouse.lastSpawnY + dy * t;
-
-      for (let j = 0; j < config.dragSpawnCount && active.length < config.maxParticles; j++) {
-        const ox = (Math.random() - 0.5) * 8;
-        const oy = (Math.random() - 0.5) * 8;
-        active.push(getParticle(spawnX + ox, spawnY + oy, randomColor(), 'cube', 0.4));
-      }
+    // Single spawn at cursor position - minimal, elegant
+    if (active.length < config.maxParticles) {
+      const ox = (Math.random() - 0.5) * 10;
+      const oy = (Math.random() - 0.5) * 10;
+      active.push(getParticle(mouse.x + ox, mouse.y + oy, randomColor(), 'cube', 0.3));
     }
 
     mouse.lastSpawnX = mouse.x;
@@ -352,20 +355,20 @@ export function initParticleCanvas(selector = '#particle-canvas') {
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Separate
-          const overlap = (minDist - dist) * 0.5;
+          // Gentle separation - no harsh bouncing
+          const overlap = (minDist - dist) * 0.3;  // Softer separation
           a.x -= nx * overlap;
           a.y -= ny * overlap;
           b.x += nx * overlap;
           b.y += ny * overlap;
 
-          // Exchange velocity (natural bounce)
+          // Very soft velocity exchange - like clouds passing
           const dvx = a.vx - b.vx;
           const dvy = a.vy - b.vy;
           const dot = dvx * nx + dvy * ny;
 
           if (dot > 0) {
-            const restitution = 0.4;
+            const restitution = 0.15;  // Much softer interaction
             a.vx -= dot * nx * restitution;
             a.vy -= dot * ny * restitution;
             b.vx += dot * nx * restitution;
