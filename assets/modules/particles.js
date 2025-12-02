@@ -21,21 +21,22 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - tuned for natural, subtle physics
+  // Configuration - refined for aesthetic, natural physics
   const config = {
-    maxParticles: 60,
-    colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa'],
-    // Physics - softer, more organic feel
-    gravity: 0.025,          // Very gentle gravity (was 0.05)
-    friction: 0.988,         // Slightly more air drag for floaty feel
-    groundFriction: 0.92,    // Less abrupt ground stopping
-    bounciness: 0.25,        // Softer bounces (was 0.35)
-    // Cursor interaction - subtle influence
-    cursorRadius: 45,        // Smaller influence zone
-    cursorForce: 0.15,       // Much gentler push (was 0.4)
-    // Spawning
-    minSpawnDistance: 18,    // Slightly more spacing
-    clickSpawnCount: 2,      // Particles per single click
+    maxParticles: 100,
+    colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6'],
+    // Physics - ultra smooth, floaty feel
+    gravity: 0.018,          // Very light gravity for graceful fall
+    friction: 0.994,         // Minimal air drag - particles glide
+    groundFriction: 0.96,    // Smooth ground sliding
+    bounciness: 0.45,        // Lively but elegant bounces
+    // Cursor interaction - whisper-soft
+    cursorRadius: 35,
+    cursorForce: 0.08,
+    // Spawning - generous
+    minSpawnDistance: 12,
+    clickSpawnCount: 4,      // More particles per click
+    dragSpawnRate: 0.85,     // Higher spawn chance on drag
   };
 
   // Pre-compute shaded colors
@@ -92,55 +93,65 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.active = true;
       this.grounded = false;
 
-      // Size based on type
+      // Size based on type - more variety
       if (type === 'dust') {
-        this.size = 1 + Math.random() * 2;
-        this.mass = 0.2;
-        this.lifeDecay = 0.035 + Math.random() * 0.015;
+        this.size = 0.8 + Math.random() * 1.5;
+        this.mass = 0.15;
+        this.lifeDecay = 0.025 + Math.random() * 0.01;
       } else {
-        // Cube - main particle with varied sizes
-        this.size = 3.5 + Math.random() * 3.5 + intensity * 1.5;
-        this.mass = 0.5 + this.size * 0.03;
-        this.lifeDecay = 0.003 + Math.random() * 0.002; // Longer life
+        // Cube - varied sizes for visual interest
+        const sizeVariant = Math.random();
+        if (sizeVariant < 0.3) {
+          this.size = 2.5 + Math.random() * 2; // Small
+        } else if (sizeVariant < 0.8) {
+          this.size = 4 + Math.random() * 3; // Medium
+        } else {
+          this.size = 6 + Math.random() * 3; // Large
+        }
+        this.size += intensity * 1.2;
+        this.mass = 0.3 + this.size * 0.025;
+        this.lifeDecay = 0.0018 + Math.random() * 0.0012; // Much longer life
       }
 
       this.isoHeight = this.size * 0.5;
       this.life = 1;
       this.rotation = Math.random() * PI2;
+      this.rotationSpeed = (Math.random() - 0.5) * 0.015; // Slow spin
 
-      // Initial velocity - natural, organic spread
+      // Initial velocity - graceful, organic movement
       if (type === 'dust') {
         const angle = Math.random() * PI2;
-        const speed = 0.2 + Math.random() * 0.6;
+        const speed = 0.15 + Math.random() * 0.4;
         this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed - 0.2;
+        this.vy = Math.sin(angle) * speed - 0.15;
       } else {
-        // Gentle initial velocity with slight upward bias
-        const spread = 0.4 + Math.random() * 0.3;
-        this.vx = (Math.random() - 0.5) * spread + mouse.vx * 0.1;
-        this.vy = (Math.random() - 0.5) * spread - 0.15 + mouse.vy * 0.1;
+        // Soft launch with gentle spread
+        const angle = Math.random() * PI2;
+        const speed = 0.2 + Math.random() * 0.35;
+        this.vx = Math.cos(angle) * speed * 0.6 + mouse.vx * 0.08;
+        this.vy = Math.sin(angle) * speed * 0.4 - 0.1 + mouse.vy * 0.08;
       }
 
       return this;
     }
 
     update(w, h) {
-      // Life decay - slightly faster when grounded
-      const decay = this.grounded ? this.lifeDecay * 1.3 : this.lifeDecay;
+      // Life decay - graceful fade
+      const decay = this.grounded ? this.lifeDecay * 1.5 : this.lifeDecay;
       this.life -= decay;
       if (this.life <= 0) {
         this.active = false;
         return;
       }
 
-      // Gravity
+      // Gravity - smooth acceleration
       this.vy += config.gravity * this.mass;
 
-      // Air friction
+      // Air friction - silky smooth
       this.vx *= config.friction;
       this.vy *= config.friction;
 
-      // Cursor influence - very subtle, natural displacement
+      // Cursor influence - whisper soft
       if (mouse.x > 0) {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
@@ -149,16 +160,13 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
         if (distSq < radius * radius && distSq > 1) {
           const dist = Math.sqrt(distSq);
-          // Cubic falloff for smoother transition
           const t = 1 - (dist / radius);
-          const falloff = t * t * t;
+          const falloff = t * t * t * t; // Quartic - even smoother
           const force = falloff * config.cursorForce;
           const nx = dx / dist;
           const ny = dy / dist;
-
-          // Gentle displacement away from cursor
-          this.vx += nx * force * 0.3;
-          this.vy += ny * force * 0.3;
+          this.vx += nx * force * 0.2;
+          this.vy += ny * force * 0.2;
         }
       }
 
@@ -166,40 +174,45 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.x += this.vx;
       this.y += this.vy;
 
-      // Boundary collisions - soft, natural bounces
-      const margin = this.size * 0.7;
+      // Boundary collisions - elegant, lively bounces
+      const margin = this.size * 0.6;
       this.grounded = false;
 
-      // Left wall - gentle bounce
+      // Side walls - playful bounce with slight energy retention
       if (this.x < margin) {
-        this.x = margin;
+        this.x = margin + (margin - this.x) * 0.3;
         this.vx = Math.abs(this.vx) * config.bounciness;
+        this.vy *= 0.98; // Tiny vertical damping
       }
-      // Right wall
       if (this.x > w - margin) {
-        this.x = w - margin;
+        this.x = w - margin - (this.x - (w - margin)) * 0.3;
         this.vx = -Math.abs(this.vx) * config.bounciness;
+        this.vy *= 0.98;
       }
-      // Ceiling - very soft
+
+      // Ceiling - soft absorption
       if (this.y < margin) {
         this.y = margin;
-        this.vy = Math.abs(this.vy) * config.bounciness * 0.5;
+        this.vy = Math.abs(this.vy) * config.bounciness * 0.4;
       }
-      // Floor - particles settle naturally
+
+      // Floor - elegant settle with multiple small bounces
       if (this.y > h - margin) {
         this.y = h - margin;
-        this.vy = -Math.abs(this.vy) * config.bounciness;
+        const bounceVy = -Math.abs(this.vy) * config.bounciness;
+        this.vy = bounceVy;
         this.vx *= config.groundFriction;
         this.grounded = true;
 
-        // Stop micro-bounces smoothly
-        if (Math.abs(this.vy) < 0.15) {
+        // Progressive bounce damping
+        if (Math.abs(this.vy) < 0.08) {
           this.vy = 0;
+          this.vx *= 0.95;
         }
       }
 
-      // Very subtle rotation based on horizontal velocity only
-      this.rotation += this.vx * 0.01;
+      // Smooth rotation tied to movement
+      this.rotation += this.rotationSpeed + this.vx * 0.008;
     }
 
     draw(ctx) {
@@ -247,25 +260,26 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
 
-  // Spawn particles on click (initial) or while dragging (trail)
+  // Spawn burst of particles on click
   const spawnOnClick = (x, y) => {
-    if (active.length >= config.maxParticles) return;
-
-    const count = config.clickSpawnCount;
+    const count = config.clickSpawnCount + Math.floor(Math.random() * 2);
     for (let i = 0; i < count && active.length < config.maxParticles; i++) {
-      const offsetX = (Math.random() - 0.5) * 8;
-      const offsetY = (Math.random() - 0.5) * 8;
+      // Spread in a small circle
+      const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+      const radius = 3 + Math.random() * 6;
+      const offsetX = Math.cos(angle) * radius;
+      const offsetY = Math.sin(angle) * radius;
       active.push(getParticle(
         x + offsetX,
         y + offsetY,
         randomColor(),
         'cube',
-        0.6
+        0.5 + Math.random() * 0.3
       ));
     }
   };
 
-  // Spawn particles while dragging (movement trail)
+  // Spawn particles while dragging (flowing trail)
   const trySpawnOnDrag = () => {
     if (!mouse.isDown || mouse.x < 0) return;
 
@@ -273,24 +287,25 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     const dy = mouse.y - mouse.lastSpawnY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // Need movement to spawn trail
     if (dist < config.minSpawnDistance) return;
 
-    // Spawn along the path with natural spacing
-    const steps = Math.min(Math.ceil(dist / config.minSpawnDistance), 3);
+    // More particles along the path
+    const steps = Math.min(Math.ceil(dist / config.minSpawnDistance), 5);
     const stepX = dx / steps;
     const stepY = dy / steps;
 
     for (let i = 0; i < steps && active.length < config.maxParticles; i++) {
-      const spawnX = mouse.lastSpawnX + stepX * (i + 1);
-      const spawnY = mouse.lastSpawnY + stepY * (i + 1);
+      const t = (i + 1) / steps;
+      const spawnX = mouse.lastSpawnX + dx * t;
+      const spawnY = mouse.lastSpawnY + dy * t;
 
-      // Natural randomness
-      const offsetX = (Math.random() - 0.5) * 5;
-      const offsetY = (Math.random() - 0.5) * 5;
+      // Perpendicular spread for ribbon effect
+      const perpX = -stepY * 0.15;
+      const perpY = stepX * 0.15;
+      const offsetX = perpX * (Math.random() - 0.5) * 2 + (Math.random() - 0.5) * 4;
+      const offsetY = perpY * (Math.random() - 0.5) * 2 + (Math.random() - 0.5) * 4;
 
-      // Spawn with slight probability variation
-      if (Math.random() < 0.7) {
+      if (Math.random() < config.dragSpawnRate) {
         active.push(getParticle(
           spawnX + offsetX,
           spawnY + offsetY,
