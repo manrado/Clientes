@@ -24,29 +24,31 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - cosmic physics
+  // Configuration - perfected cosmic physics
   const config = {
-    maxParticles: 120,
-    colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6'],
+    maxParticles: 100,
+    colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6', '#38bdf8'],
 
-    // Physics
-    gravity: 0.012,           // Feather-light gravity
-    friction: 0.996,          // Almost frictionless space
-    groundFriction: 0.94,     // Smooth ground slide
-    bounciness: 0.55,         // Lively wall bounces
+    // Physics - ultra smooth
+    gravity: 0.008,           // Whisper gravity
+    friction: 0.9975,         // Near-frictionless glide
+    groundFriction: 0.965,    // Silky ground slide
+    bounciness: 0.6,          // Springy bounces
+    maxVelocity: 8,           // Velocity cap for smoothness
 
     // Cursor as force field (NO click)
-    cursorFieldRadius: 80,    // Large influence zone
-    cursorFieldForce: 0.35,   // Strong push away
+    cursorFieldRadius: 100,   // Generous influence zone
+    cursorFieldForce: 0.25,   // Smooth push
+    cursorMomentumTransfer: 0.12, // How much cursor momentum transfers
 
     // Cursor as generator (WITH click)
-    spawnRadius: 25,          // Spawn zone around cursor
-    clickSpawnCount: 5,       // Particles per click
-    dragSpawnDistance: 14,    // Min distance to spawn while dragging
+    spawnRadius: 20,
+    clickSpawnCount: 4,
+    dragSpawnDistance: 16,
 
     // Collision explosions (WITH click)
-    collisionSpawnChance: 0.4, // Chance to spawn on collision
-    maxCollisionSpawns: 2,     // Max spawns per collision
+    collisionSpawnChance: 0.35,
+    maxCollisionSpawns: 2,
   };
 
   // Pre-compute shaded colors
@@ -128,66 +130,91 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.rotation = Math.random() * PI2;
       this.rotationSpeed = (Math.random() - 0.5) * 0.015; // Slow spin
 
-      // Initial velocity - graceful, organic movement
+      // Initial velocity - silky smooth launch
       if (type === 'dust') {
         const angle = Math.random() * PI2;
-        const speed = 0.15 + Math.random() * 0.4;
+        const speed = 0.1 + Math.random() * 0.3;
         this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed - 0.15;
+        this.vy = Math.sin(angle) * speed - 0.1;
       } else {
-        // Soft launch with gentle spread
+        // Elegant radial burst with cursor influence
         const angle = Math.random() * PI2;
-        const speed = 0.2 + Math.random() * 0.35;
-        this.vx = Math.cos(angle) * speed * 0.6 + mouse.vx * 0.08;
-        this.vy = Math.sin(angle) * speed * 0.4 - 0.1 + mouse.vy * 0.08;
+        const speed = 0.15 + Math.random() * 0.25;
+        this.vx = Math.cos(angle) * speed + mouse.vx * 0.06;
+        this.vy = Math.sin(angle) * speed - 0.08 + mouse.vy * 0.06;
       }
+
+      // Easing values for smooth animations
+      this.scale = 0.1; // Start small, grow in
+      this.targetScale = 1;
 
       return this;
     }
 
     update(w, h) {
+      // Smooth scale-in animation
+      this.scale += (this.targetScale - this.scale) * 0.15;
+
       // Life decay - graceful fade
-      const decay = this.grounded ? this.lifeDecay * 1.5 : this.lifeDecay;
+      const decay = this.grounded ? this.lifeDecay * 1.4 : this.lifeDecay;
       this.life -= decay;
       if (this.life <= 0) {
         this.active = false;
         return;
       }
 
-      // Gravity - smooth acceleration
+      // Scale out when dying
+      if (this.life < 0.15) {
+        this.targetScale = 0;
+      }
+
+      // Gravity - feather-light
       this.vy += config.gravity * this.mass;
 
       // Air friction - silky smooth
       this.vx *= config.friction;
       this.vy *= config.friction;
 
+      // Velocity cap for smooth movement
+      const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+      if (speed > config.maxVelocity) {
+        const scale = config.maxVelocity / speed;
+        this.vx *= scale;
+        this.vy *= scale;
+      }
+
       // Cursor as FORCE FIELD (only when NOT clicking)
-      // Pushes particles away based on cursor movement
+      // Smooth, natural displacement based on proximity and cursor velocity
       if (mouse.x > 0 && !mouse.isDown) {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
         const distSq = dx * dx + dy * dy;
         const radius = config.cursorFieldRadius;
 
-        if (distSq < radius * radius && distSq > 1) {
+        if (distSq < radius * radius && distSq > 4) {
           const dist = Math.sqrt(distSq);
           const t = 1 - (dist / radius);
-          const falloff = t * t; // Quadratic falloff
+          // Smooth cubic falloff for natural feel
+          const falloff = t * t * (3 - 2 * t); // Smoothstep
 
-          // Push force based on cursor velocity + radial push
+          // Cursor speed influences push strength
           const cursorSpeed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
-          const force = falloff * config.cursorFieldForce * (0.5 + cursorSpeed * 0.3);
+          const dynamicForce = config.cursorFieldForce * (0.4 + Math.min(cursorSpeed * 0.4, 0.6));
+          const force = falloff * dynamicForce;
 
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Radial push away from cursor
-          this.vx += nx * force;
-          this.vy += ny * force;
+          // Radial push - smooth and proportional
+          this.vx += nx * force * 0.8;
+          this.vy += ny * force * 0.8;
 
-          // Also inherit some cursor momentum
-          this.vx += mouse.vx * falloff * 0.15;
-          this.vy += mouse.vy * falloff * 0.15;
+          // Inherit cursor momentum for natural flow
+          this.vx += mouse.vx * falloff * config.cursorMomentumTransfer;
+          this.vy += mouse.vy * falloff * config.cursorMomentumTransfer;
+
+          // Slight rotation boost from interaction
+          this.rotationSpeed += falloff * 0.002 * (Math.random() - 0.5);
         }
       }
 
@@ -195,77 +222,87 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.x += this.vx;
       this.y += this.vy;
 
-      // Boundary collisions - elegant, lively bounces
-      const margin = this.size * 0.6;
+      // Boundary collisions - smooth, springy bounces
+      const margin = this.size * 0.5;
       this.grounded = false;
 
-      // Side walls - playful bounce with slight energy retention
+      // Side walls - soft elastic bounce
       if (this.x < margin) {
-        this.x = margin + (margin - this.x) * 0.3;
+        this.x = margin;
         this.vx = Math.abs(this.vx) * config.bounciness;
-        this.vy *= 0.98; // Tiny vertical damping
+        this.rotationSpeed += 0.01; // Spin on impact
       }
       if (this.x > w - margin) {
-        this.x = w - margin - (this.x - (w - margin)) * 0.3;
+        this.x = w - margin;
         this.vx = -Math.abs(this.vx) * config.bounciness;
-        this.vy *= 0.98;
+        this.rotationSpeed -= 0.01;
       }
 
-      // Ceiling - soft absorption
+      // Ceiling - gentle absorption
       if (this.y < margin) {
         this.y = margin;
-        this.vy = Math.abs(this.vy) * config.bounciness * 0.4;
+        this.vy = Math.abs(this.vy) * config.bounciness * 0.5;
       }
 
-      // Floor - elegant settle with multiple small bounces
+      // Floor - elegant multi-bounce settle
       if (this.y > h - margin) {
         this.y = h - margin;
-        const bounceVy = -Math.abs(this.vy) * config.bounciness;
-        this.vy = bounceVy;
+        this.vy = -Math.abs(this.vy) * config.bounciness;
         this.vx *= config.groundFriction;
         this.grounded = true;
 
-        // Progressive bounce damping
-        if (Math.abs(this.vy) < 0.08) {
+        // Smooth stop for micro-bounces
+        if (Math.abs(this.vy) < 0.05) {
           this.vy = 0;
-          this.vx *= 0.95;
+          this.vx *= 0.97;
+          this.rotationSpeed *= 0.9;
         }
       }
 
-      // Smooth rotation tied to movement
-      this.rotation += this.rotationSpeed + this.vx * 0.008;
+      // Smooth rotation with damping
+      this.rotationSpeed *= 0.995;
+      this.rotation += this.rotationSpeed + this.vx * 0.006;
     }
 
     draw(ctx) {
-      const { x, y, size, isoHeight, colors, life, type } = this;
+      const { x, y, size, isoHeight, colors, life, type, scale } = this;
 
-      ctx.globalAlpha = life * (type === 'dust' ? 0.5 : 0.85);
+      // Skip if too small
+      if (scale < 0.05) return;
+
+      // Smooth opacity based on life with easing
+      const lifeEased = life * life; // Quadratic ease for smoother fade
+      ctx.globalAlpha = lifeEased * (type === 'dust' ? 0.4 : 0.85) * Math.min(scale * 1.5, 1);
+
+      // Scaled size for smooth appear/disappear
+      const s = size * scale;
+      const ih = isoHeight * scale;
 
       // Top face
       ctx.fillStyle = colors.top;
       ctx.beginPath();
-      ctx.moveTo(x, y - isoHeight);
-      ctx.lineTo(x + size, y);
-      ctx.lineTo(x, y + isoHeight);
-      ctx.lineTo(x - size, y);
+      ctx.moveTo(x, y - ih);
+      ctx.lineTo(x + s, y);
+      ctx.lineTo(x, y + ih);
+      ctx.lineTo(x - s, y);
       ctx.fill();
 
       // Left face
       ctx.fillStyle = colors.left;
       ctx.beginPath();
-      ctx.moveTo(x - size, y);
-      ctx.lineTo(x, y + isoHeight);
-      ctx.lineTo(x, y + isoHeight + size);
-      ctx.lineTo(x - size, y + size);
+      ctx.moveTo(x - s, y);
+      ctx.lineTo(x, y + ih);
+      ctx.lineTo(x, y + ih + s);
+      ctx.lineTo(x - s, y + s);
       ctx.fill();
 
       // Right face
       ctx.fillStyle = colors.right;
       ctx.beginPath();
-      ctx.moveTo(x + size, y);
-      ctx.lineTo(x, y + isoHeight);
-      ctx.lineTo(x, y + isoHeight + size);
-      ctx.lineTo(x + size, y + size);
+      ctx.moveTo(x + s, y);
+      ctx.lineTo(x, y + ih);
+      ctx.lineTo(x, y + ih + s);
+      ctx.lineTo(x + s, y + s);
       ctx.fill();
     }
   }
@@ -367,7 +404,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
           // EXPLOSION: If clicking, collision spawns new cubes
           if (mouse.isDown &&
-              Math.abs(impulse) > 0.2 &&
+              Math.abs(impulse) > 0.15 &&
               Math.random() < config.collisionSpawnChance &&
               active.length + pendingSpawns.length < config.maxParticles) {
             const midX = (a.x + b.x) / 2;
@@ -380,6 +417,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   };
 
+  // Smoothed cursor velocity
+  let smoothVx = 0;
+  let smoothVy = 0;
+
   // Animation loop
   const animate = () => {
     if (!running) return;
@@ -390,26 +431,32 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     ctx.clearRect(0, 0, w, h);
     time++;
 
-    // Calculate cursor velocity
-    mouse.vx = (mouse.x - mouse.prevX) * 0.5;
-    mouse.vy = (mouse.y - mouse.prevY) * 0.5;
+    // Calculate and smooth cursor velocity for natural feel
+    const rawVx = mouse.x - mouse.prevX;
+    const rawVy = mouse.y - mouse.prevY;
+    smoothVx += (rawVx - smoothVx) * 0.3; // Ease towards raw velocity
+    smoothVy += (rawVy - smoothVy) * 0.3;
+    mouse.vx = smoothVx;
+    mouse.vy = smoothVy;
 
     // Spawn on drag (with click)
     trySpawnOnDrag();
 
-    // Process pending collision spawns
-    while (pendingSpawns.length > 0 && active.length < config.maxParticles) {
+    // Process pending collision spawns (limit per frame)
+    let spawnsThisFrame = 0;
+    while (pendingSpawns.length > 0 && active.length < config.maxParticles && spawnsThisFrame < 3) {
       const spawn = pendingSpawns.shift();
-      spawnExplosion(spawn.x, spawn.y, spawn.count, 0.3);
+      spawnExplosion(spawn.x, spawn.y, spawn.count, 0.25);
+      spawnsThisFrame++;
     }
-    pendingSpawns.length = 0; // Clear any overflow
+    if (pendingSpawns.length > 5) pendingSpawns.length = 5; // Cap queue
 
     // Update previous position
     mouse.prevX = mouse.x;
     mouse.prevY = mouse.y;
 
     // Handle collisions
-    if (time % 3 === 0) {
+    if (time % 2 === 0) {
       handleCollisions();
     }
 
