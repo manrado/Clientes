@@ -110,12 +110,11 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.active = false;
     }
 
-    init(x, y, color, type = 'cube', intensity = 1) {
+    init(x, y, color) {
       this.x = x;
       this.y = y;
       this.color = color;
       this.colors = getColorSet(color);
-      this.type = type;
       this.active = true;
       this.grounded = false;
 
@@ -248,7 +247,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
 
     draw(ctx) {
-      const { x, y, size, isoHeight, colors, life, type, scale } = this;
+      const { x, y, size, isoHeight, colors, life, scale, rotation } = this;
 
       // Skip if too small
       if (scale < 0.05) return;
@@ -261,32 +260,39 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       const s = size * scale;
       const ih = isoHeight * scale;
 
-      // Top face
+      // Apply subtle rotation for dynamic feel
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation * 0.15);  // Subtle rotation effect
+
+      // Top face (relative to origin now)
       ctx.fillStyle = colors.top;
       ctx.beginPath();
-      ctx.moveTo(x, y - ih);
-      ctx.lineTo(x + s, y);
-      ctx.lineTo(x, y + ih);
-      ctx.lineTo(x - s, y);
+      ctx.moveTo(0, -ih);
+      ctx.lineTo(s, 0);
+      ctx.lineTo(0, ih);
+      ctx.lineTo(-s, 0);
       ctx.fill();
 
       // Left face
       ctx.fillStyle = colors.left;
       ctx.beginPath();
-      ctx.moveTo(x - s, y);
-      ctx.lineTo(x, y + ih);
-      ctx.lineTo(x, y + ih + s);
-      ctx.lineTo(x - s, y + s);
+      ctx.moveTo(-s, 0);
+      ctx.lineTo(0, ih);
+      ctx.lineTo(0, ih + s);
+      ctx.lineTo(-s, s);
       ctx.fill();
 
       // Right face
       ctx.fillStyle = colors.right;
       ctx.beginPath();
-      ctx.moveTo(x + s, y);
-      ctx.lineTo(x, y + ih);
-      ctx.lineTo(x, y + ih + s);
-      ctx.lineTo(x + s, y + s);
+      ctx.moveTo(s, 0);
+      ctx.lineTo(0, ih);
+      ctx.lineTo(0, ih + s);
+      ctx.lineTo(s, s);
       ctx.fill();
+
+      ctx.restore();
     }
   }
 
@@ -294,9 +300,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const pool = [];
   const active = [];
 
-  const getParticle = (x, y, color, type, intensity) => {
+  const getParticle = (x, y, color) => {
     const p = pool.length > 0 ? pool.pop() : new Particle();
-    return p.init(x, y, color, type, intensity);
+    return p.init(x, y, color);
   };
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
@@ -317,9 +323,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       active.push(getParticle(
         mouse.x + ox,
         mouse.y + oy,
-        randomColor(),
-        'cube',
-        0.5
+        randomColor()
       ));
     }
   };
@@ -343,14 +347,14 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       const py = mouse.lastSpawnY + dy * t;
       const ox = (Math.random() - 0.5) * 4;
       const oy = (Math.random() - 0.5) * 4;
-      active.push(getParticle(px + ox, py + oy, randomColor(), 'cube', 0.5));
+      active.push(getParticle(px + ox, py + oy, randomColor()));
     }
 
     mouse.lastSpawnX = mouse.x;
     mouse.lastSpawnY = mouse.y;
   };
 
-  // Natural collision physics
+  // Natural collision physics with momentum conservation
   const handleCollisions = () => {
     const len = active.length;
 
@@ -379,17 +383,25 @@ export function initParticleCanvas(selector = '#particle-canvas') {
           b.x += nx * overlap;
           b.y += ny * overlap;
 
-          // Natural velocity exchange
+          // Momentum-conserving velocity exchange
           const dvx = a.vx - b.vx;
           const dvy = a.vy - b.vy;
           const dot = dvx * nx + dvy * ny;
 
           if (dot > 0) {
-            const restitution = 0.3;
-            a.vx -= dot * nx * restitution;
-            a.vy -= dot * ny * restitution;
-            b.vx += dot * nx * restitution;
-            b.vy += dot * ny * restitution;
+            const totalMass = a.mass + b.mass;
+            const restitution = 0.35;
+            const impulseA = (2 * b.mass / totalMass) * dot * restitution;
+            const impulseB = (2 * a.mass / totalMass) * dot * restitution;
+
+            a.vx -= impulseA * nx;
+            a.vy -= impulseA * ny;
+            b.vx += impulseB * nx;
+            b.vy += impulseB * ny;
+
+            // Add slight spin on collision
+            a.rotationSpeed += dot * 0.002;
+            b.rotationSpeed -= dot * 0.002;
           }
         }
       }
@@ -431,14 +443,16 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     // Collisions every frame for smooth physics
     handleCollisions();
 
-    // Update and draw particles
+    // Update and draw particles (optimized removal with swap-remove)
     for (let i = active.length - 1; i >= 0; i--) {
       const p = active[i];
       p.update(w, h);
 
       if (!p.active) {
-        active.splice(i, 1);
+        // Swap-remove: O(1) instead of splice O(n)
         pool.push(p);
+        active[i] = active[active.length - 1];
+        active.pop();
       } else {
         p.draw(ctx);
       }
@@ -496,6 +510,35 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.isDown = false;
   };
 
+  // Touch support for mobile devices
+  const onTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      mouse.isDown = true;
+      mouse.x = touch.clientX;
+      mouse.y = touch.clientY;
+      mouse.prevX = touch.clientX;
+      mouse.prevY = touch.clientY;
+      mouse.lastSpawnX = touch.clientX;
+      mouse.lastSpawnY = touch.clientY;
+      mouse.lastSpawnTime = 0;
+    }
+  };
+
+  const onTouchMove = (e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      mouse.x = touch.clientX;
+      mouse.y = touch.clientY;
+    }
+  };
+
+  const onTouchEnd = () => {
+    mouse.isDown = false;
+  };
+
   // Attach listeners - document for mousedown since canvas has pointer-events: none
   document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mousemove', onMouseMove);
@@ -504,6 +547,12 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   window.addEventListener('blur', onBlur);
   document.addEventListener('visibilitychange', onVisibilityChange);
   document.addEventListener('contextmenu', onContextMenu);
+
+  // Touch events for mobile
+  document.addEventListener('touchstart', onTouchStart, { passive: false });
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('touchend', onTouchEnd);
+  document.addEventListener('touchcancel', onTouchEnd);
 
   animate();
 
@@ -519,6 +568,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       document.removeEventListener('contextmenu', onContextMenu);
+      document.removeEventListener('touchstart', onTouchStart);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('touchcancel', onTouchEnd);
       window.removeEventListener('resize', resizeCanvas);
       active.length = 0;
       pool.length = 0;
