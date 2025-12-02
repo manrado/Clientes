@@ -115,6 +115,33 @@ export function initParticleCanvas(selector = '#particle-canvas') {
            (performance.now() - mouse.clickStartTime) < 60000; // Max 1 min
   };
 
+  // Helper to check if element is interactive (should not spawn particles)
+  const isInteractiveElement = (element) => {
+    if (!element) return false;
+    const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL'];
+    const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'checkbox', 'radio'];
+
+    // Check the element and its ancestors
+    let el = element;
+    while (el && el !== document.body) {
+      // Check tag name
+      if (interactiveTags.includes(el.tagName)) return true;
+      // Check role attribute
+      if (el.getAttribute && interactiveRoles.includes(el.getAttribute('role'))) return true;
+      // Check if it has onclick or is clickable
+      if (el.onclick || el.hasAttribute?.('onclick')) return true;
+      // Check for common interactive classes
+      if (el.classList?.contains('btn') || el.classList?.contains('button') ||
+          el.classList?.contains('link') || el.classList?.contains('clickable')) return true;
+      // Check cursor style
+      const style = window.getComputedStyle?.(el);
+      if (style?.cursor === 'pointer') return true;
+
+      el = el.parentElement;
+    }
+    return false;
+  };
+
   let time = 0;
   let running = true;
   let rafId = null;
@@ -533,6 +560,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     // Only respond to left click (button 0)
     if (e.button !== 0) return;
 
+    // Don't spawn particles when clicking interactive elements (buttons, links, etc.)
+    if (isInteractiveElement(e.target)) return;
+
     mouse.isDown = true;
     mouse.clickStartTime = performance.now();
     mouse.x = e.clientX;
@@ -597,8 +627,12 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Touch support for mobile devices
   const onTouchStart = (e) => {
     if (e.touches.length === 1) {
-      e.preventDefault();
       const touch = e.touches[0];
+
+      // Don't spawn particles when touching interactive elements
+      if (isInteractiveElement(e.target)) return;
+
+      e.preventDefault();
       mouse.isDown = true;
       mouse.clickStartTime = performance.now();
       mouse.x = touch.clientX;
