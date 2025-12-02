@@ -496,8 +496,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.isDown = false;
   };
 
-  // Attach listeners - mousedown ONLY on canvas
-  canvas.addEventListener('mousedown', onMouseDown);
+  // Attach listeners - document for mousedown since canvas has pointer-events: none
+  document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
   document.addEventListener('mouseleave', onMouseLeave);
@@ -512,7 +512,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       running = false;
       mouse.isDown = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-      canvas.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('mouseleave', onMouseLeave);
