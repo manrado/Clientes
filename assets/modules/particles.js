@@ -363,7 +363,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
           const dvx = a.vx - b.vx;
           const dvy = a.vy - b.vy;
           const dot = dvx * nx + dvy * ny;
-          
+
           if (dot > 0) {
             const restitution = 0.4;
             a.vx -= dot * nx * restitution;
