@@ -26,37 +26,37 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - VBA/Excel colors, accounting duality
+  // Configuration - Professional vibrant colors, engaging interaction
   const config = {
     maxParticles: Infinity,   // NO LIMIT while clicking
     colors: [
-      '#1F4E79',              // Excel dark blue (headers)
-      '#2E75B6',              // Excel medium blue
-      '#5B9BD5',              // Excel light blue
-      '#548235',              // Excel green (positive/credit)
-      '#70AD47',              // Excel light green
-      '#C65911',              // Excel orange (accent)
-      '#843C0C',              // Excel dark red/brown
-      '#BF8F00',              // Excel gold (totals)
+      '#60a5fa',              // Brand accent blue (primary)
+      '#3b82f6',              // Vivid blue
+      '#2563eb',              // Deep blue
+      '#10b981',              // Emerald green (success/credit)
+      '#059669',              // Deep emerald
+      '#f59e0b',              // Amber gold (highlights)
+      '#8b5cf6',              // Violet accent
+      '#06b6d4',              // Cyan accent
     ],
 
-    // Physics - natural, grounded
-    gravity: 0.025,           // Noticeable but gentle gravity
-    friction: 0.995,          // Smooth air resistance
-    groundFriction: 0.96,     // Floor friction
-    bounciness: 0.4,          // Moderate bounces
-    maxVelocity: 4,           // Reasonable speed cap
+    // Physics - smooth, professional, engaging
+    gravity: 0.02,            // Gentle but present
+    friction: 0.993,          // Smooth deceleration
+    groundFriction: 0.94,     // Natural floor slide
+    bounciness: 0.45,         // Satisfying bounces
+    maxVelocity: 5,           // Dynamic but controlled
 
     // Cursor influence (NO click) - push existing cubes
-    cursorPushRadius: 80,
-    cursorPushForce: 0.25,
+    cursorPushRadius: 90,
+    cursorPushForce: 0.3,
 
     // Spawning (ONLY with click) - at cursor position
-    spawnInterval: 50,        // ms between spawns while holding click
+    spawnInterval: 40,        // ms between spawns while holding click
     spawnPerTick: 2,          // Cubes per spawn tick
-    dragSpawnDistance: 12,    // Pixels moved before trail spawn
+    dragSpawnDistance: 10,    // Pixels moved before trail spawn
 
-    // Cube sizes
+    // Cube sizes - varied for visual interest
     minSize: 4,
     maxSize: 7,
   };
