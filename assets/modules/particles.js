@@ -30,51 +30,22 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - Subtle, elegant decoration for contact portal
-  // Colors harmonized with CSS variables: --accent, --ok, --warn
+  // Configuration - harmonized with CSS: --accent, --ok, --warn
   const config = {
-    maxParticles: isMobile ? 80 : 180,   // Many small cubes
-    colors: [
-      // Blues (primary theme) - 50% weight
-      '#60a5fa',              // --accent (primary brand)
-      '#60a5fa',              // (weighted duplicate)
-      '#3b82f6',              // Vivid blue
-      '#93c5fd',              // Light blue (ethereal)
-      // Emerald (success/trust) - 30% weight
-      '#34d399',              // --ok (exact match)
-      '#6ee7b7',              // Light emerald
-      // Warm accent (subtle warmth) - 20% weight
-      '#fbbf24',              // --warn (golden glow)
-      '#fcd34d',              // Light gold (soft)
-    ],
-
-    // Physics - SLOW, gentle, floating feel
-    gravity: 0.008,           // Very gentle gravity - almost floating
-    friction: 0.997,          // Very smooth, slow deceleration
-    groundFriction: 0.95,     // Soft floor slide
-    bounciness: 0.3,          // Subtle, soft bounces
-    maxVelocity: 2.5,         // Slow, controlled movement
-
-    // Cursor influence (NO click) - gentle push
-    cursorPushRadius: 70,
-    cursorPushForce: 0.2,
-
-    // Spawning (ONLY with click) - more cubes, smaller
-    spawnInterval: isMobile ? 35 : 22,
-    spawnPerTick: isMobile ? 1 : 2,
-    dragSpawnDistance: isMobile ? 6 : 4,
-
-    // Cube sizes - SMALL and delicate
-    minSize: 2,               // Very small minimum
-    maxSize: 6,               // Small maximum
-    sizeDistribution: 0.7,    // Strong bias toward tiny cubes
-
-    // Life settings - longer life for subtle presence
-    groundedLifeMultiplier: 2,
-    baseLifeDecay: 0.0008,    // Slow fade
-
-    // Spatial grid for collision optimization
-    gridCellSize: 20,
+    maxParticles: isMobile ? 80 : 180,
+    colors: ['#60a5fa','#60a5fa','#3b82f6','#93c5fd','#34d399','#6ee7b7','#fbbf24','#fcd34d'],
+    // Physics
+    gravity: 0.01, friction: 0.996, groundFriction: 0.94, bounciness: 0.25, maxVelocity: 2.2,
+    // Cursor force field
+    cursorPushRadius: 65, cursorPushForce: 0.18,
+    // Spawning (click only)
+    spawnInterval: isMobile ? 35 : 20, spawnPerTick: isMobile ? 1 : 2, dragSpawnDistance: isMobile ? 6 : 4,
+    // Cube sizing
+    minSize: 2, maxSize: 5.5, sizeDistribution: 0.65,
+    // Life
+    groundedLifeMultiplier: 2.5, baseLifeDecay: 0.0007,
+    // Grid
+    gridCellSize: 18,
   };
 
   // Pre-compute shaded colors
@@ -182,13 +153,13 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.isoHeight = this.size * 0.5;
       this.life = 1;
       this.rotation = Math.random() * PI2;
-      this.rotationSpeed = (Math.random() - 0.5) * 0.008;  // Very slow spin
+      this.rotationSpeed = (Math.random() - 0.5) * 0.006;
 
-      // SLOW initial velocity - gentle float
+      // Gentle initial velocity with cursor inheritance
       const angle = Math.random() * PI2;
-      const speed = 0.1 + Math.random() * 0.2;
-      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.05;
-      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.05 - 0.1;
+      const speed = 0.08 + Math.random() * 0.15;
+      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.04;
+      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.04 - 0.08;
 
       // Soft appearance animation
       this.scale = 0.1;
@@ -304,31 +275,24 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
     draw(ctx, canvasHeight) {
       const { x, y, size, isoHeight, colors, life, scale, rotation } = this;
-
-      // Skip if too small
       if (scale < 0.03) return;
 
-      // Size-based depth effect - smaller cubes more ethereal
+      // Unified depth calculation
+      const yRatio = y / canvasHeight;
       const sizeRatio = (size - config.minSize) / (config.maxSize - config.minSize);
-      const sizeDepth = 0.6 + sizeRatio * 0.4;
-
-      // Gentle parallax depth (less extreme)
-      const depthScale = 0.95 + (y / canvasHeight) * 0.1;
+      const depthScale = 0.96 + yRatio * 0.08;
       const finalScale = scale * depthScale;
 
-      // Balanced opacity - visible but ethereal
-      const lifeEased = life * life * life;  // Cubic easing for softer fade
-      const depthAlpha = 0.6 + (y / canvasHeight) * 0.3;
-      ctx.globalAlpha = lifeEased * 0.62 * sizeDepth * Math.min(finalScale, 1) * depthAlpha;
+      // Consistent opacity: life³ × base(0.58) × size(0.65-1) × depth(0.7-1)
+      const lifeEased = life * life * life;
+      ctx.globalAlpha = lifeEased * 0.58 * (0.65 + sizeRatio * 0.35) * (0.7 + yRatio * 0.3);
 
-      // Scaled size
       const s = size * finalScale;
       const ih = isoHeight * finalScale;
 
-      // Very subtle rotation
       ctx.save();
       ctx.translate(x, y);
-      ctx.rotate(rotation * 0.08);
+      ctx.rotate(rotation * 0.05);
 
       // Top face
       ctx.fillStyle = colors.top;
