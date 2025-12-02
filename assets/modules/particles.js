@@ -118,8 +118,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Helper to check if element is interactive (should not spawn particles)
   const isInteractiveElement = (element) => {
     if (!element) return false;
-    const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL', 'NAV'];
-    const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'checkbox', 'radio'];
+    const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL', 'NAV', 'HEADER', 'FOOTER'];
+    const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'checkbox', 'radio', 'navigation'];
+    const interactiveClasses = ['btn', 'button', 'fab-contact', 'nav', 'menu', 'brand', 'tag', 'card', 'hero-login'];
 
     // Check the element and its ancestors (fast checks only)
     let el = element;
@@ -127,8 +128,14 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       if (interactiveTags.includes(el.tagName)) return true;
       const role = el.getAttribute?.('role');
       if (role && interactiveRoles.includes(role)) return true;
-      if (el.classList?.contains('btn') || el.classList?.contains('button')) return true;
+      // Check multiple classes at once
+      if (el.classList) {
+        for (const cls of interactiveClasses) {
+          if (el.classList.contains(cls)) return true;
+        }
+      }
       if (el.hasAttribute?.('data-cta')) return true;
+      if (el.hasAttribute?.('href')) return true;
       el = el.parentElement;
     }
     return false;
@@ -554,8 +561,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.lastSpawnTime = 0;  // Reset to spawn immediately
   };
 
-  const onMouseUp = (e) => {
-    if (e && e.button !== 0) return;
+  const onMouseUp = () => {
+    // Always reset on any mouseup event
     mouse.isDown = false;
     mouse.clickStartTime = 0;
   };
@@ -563,6 +570,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const onMouseMove = (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
+    // Check if mouse button is still pressed (catches missed mouseup events)
+    if (mouse.isDown && e.buttons === 0) {
+      resetMouseState();
+    }
   };
 
   // Reset mouse state helper (reduces code duplication)
@@ -629,11 +640,16 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Attach listeners - document for mousedown since canvas has pointer-events: none
   document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mousemove', onMouseMove);
+  // Listen mouseup on both window AND document for maximum coverage
   window.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mouseup', onMouseUp);
   document.addEventListener('mouseleave', onMouseLeave);
   window.addEventListener('blur', onBlur);
   document.addEventListener('visibilitychange', onVisibilityChange);
   document.addEventListener('contextmenu', onContextMenu);
+  // Also reset on pointerup and pointercancel for better coverage
+  window.addEventListener('pointerup', onMouseUp);
+  window.addEventListener('pointercancel', resetMouseState);
 
   // Touch events for mobile
   document.addEventListener('touchstart', onTouchStart, { passive: false });
@@ -646,15 +662,18 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   return {
     stop() {
       running = false;
-      mouse.isDown = false;
+      resetMouseState();
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('mouseleave', onMouseLeave);
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       document.removeEventListener('contextmenu', onContextMenu);
+      window.removeEventListener('pointerup', onMouseUp);
+      window.removeEventListener('pointercancel', resetMouseState);
       document.removeEventListener('touchstart', onTouchStart);
       document.removeEventListener('touchmove', onTouchMove);
       document.removeEventListener('touchend', onTouchEnd);
