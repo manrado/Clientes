@@ -30,46 +30,46 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - Professional vibrant colors, engaging interaction
+  // Configuration - Subtle, elegant decoration for contact portal
   const config = {
-    maxParticles: isMobile ? 120 : 250,  // Balanced for performance
+    maxParticles: isMobile ? 80 : 180,   // Many small cubes
     colors: [
       '#60a5fa',              // Brand accent blue (primary)
       '#3b82f6',              // Vivid blue
-      '#2563eb',              // Deep blue
-      '#10b981',              // Emerald green (success/credit)
-      '#059669',              // Deep emerald
-      '#f59e0b',              // Amber gold (highlights)
+      '#93c5fd',              // Light blue (subtle)
+      '#10b981',              // Emerald green
+      '#6ee7b7',              // Light emerald (subtle)
       '#8b5cf6',              // Violet accent
-      '#06b6d4',              // Cyan accent
+      '#c4b5fd',              // Light violet (subtle)
     ],
 
-    // Physics - smooth, professional, harmonious
-    gravity: 0.02,            // Gentle gravity
-    friction: 0.994,          // Smooth deceleration
-    groundFriction: 0.9,      // Natural floor slide
-    bounciness: 0.45,         // Subtle bounces
-    maxVelocity: 5,           // Controlled movement
+    // Physics - SLOW, gentle, floating feel
+    gravity: 0.008,           // Very gentle gravity - almost floating
+    friction: 0.997,          // Very smooth, slow deceleration
+    groundFriction: 0.95,     // Soft floor slide
+    bounciness: 0.3,          // Subtle, soft bounces
+    maxVelocity: 2.5,         // Slow, controlled movement
 
-    // Cursor influence (NO click) - push existing cubes
-    cursorPushRadius: 90,
-    cursorPushForce: 0.35,
+    // Cursor influence (NO click) - gentle push
+    cursorPushRadius: 70,
+    cursorPushForce: 0.2,
 
-    // Spawning (ONLY with click) - at cursor position
-    spawnInterval: isMobile ? 45 : 30,
-    spawnPerTick: 1,
-    dragSpawnDistance: isMobile ? 10 : 6,
+    // Spawning (ONLY with click) - more cubes, smaller
+    spawnInterval: isMobile ? 35 : 22,
+    spawnPerTick: isMobile ? 1 : 2,
+    dragSpawnDistance: isMobile ? 6 : 4,
 
-    // Cube sizes - MORE VARIED for visual depth
-    minSize: 3,               // Smaller minimum
-    maxSize: 12,              // Larger maximum
-    sizeDistribution: 0.6,    // Bias toward smaller cubes (0-1)
+    // Cube sizes - SMALL and delicate
+    minSize: 2,               // Very small minimum
+    maxSize: 6,               // Small maximum
+    sizeDistribution: 0.7,    // Strong bias toward tiny cubes
 
-    // Life settings
-    groundedLifeMultiplier: 2.5,
+    // Life settings - longer life for subtle presence
+    groundedLifeMultiplier: 2,
+    baseLifeDecay: 0.0008,    // Slow fade
 
     // Spatial grid for collision optimization
-    gridCellSize: 25,         // Size of each grid cell
+    gridCellSize: 20,
   };
 
   // Pre-compute shaded colors
@@ -165,38 +165,38 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.active = true;
       this.grounded = false;
 
-      // Varied sizes with bias toward smaller cubes (more natural distribution)
+      // Varied sizes with strong bias toward tiny cubes
       const sizeRand = Math.pow(Math.random(), config.sizeDistribution);
       this.size = config.minSize + sizeRand * (config.maxSize - config.minSize);
-      this.mass = 0.3 + this.size * 0.08;  // Mass scales with size
+      this.mass = 0.2 + this.size * 0.1;
 
-      // Smaller cubes live longer, larger fade faster
+      // All cubes live long for subtle, persistent presence
       const sizeRatio = (this.size - config.minSize) / (config.maxSize - config.minSize);
-      this.lifeDecay = 0.001 + sizeRatio * 0.002;
+      this.lifeDecay = config.baseLifeDecay + sizeRatio * 0.0006;
 
-      this.isoHeight = this.size * 0.55;
+      this.isoHeight = this.size * 0.5;
       this.life = 1;
       this.rotation = Math.random() * PI2;
-      this.rotationSpeed = (Math.random() - 0.5) * 0.015 * (1 - sizeRatio * 0.5);  // Smaller spin faster
+      this.rotationSpeed = (Math.random() - 0.5) * 0.008;  // Very slow spin
 
-      // Natural initial velocity - smaller cubes spread more
+      // SLOW initial velocity - gentle float
       const angle = Math.random() * PI2;
-      const speed = (0.2 + Math.random() * 0.4) * (1.5 - sizeRatio * 0.5);
-      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.12;
-      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.12 - 0.2;
+      const speed = 0.1 + Math.random() * 0.2;
+      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.05;
+      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.05 - 0.1;
 
-      // Quick appearance animation
-      this.scale = 0.2;
+      // Soft appearance animation
+      this.scale = 0.1;
       this.targetScale = 1;
 
       return this;
     }
 
     update(w, h) {
-      // Scale-in animation
-      this.scale += (this.targetScale - this.scale) * 0.12;
+      // Soft, slow scale-in animation
+      this.scale += (this.targetScale - this.scale) * 0.08;
 
-      // Life decay - faster on ground
+      // Life decay - slower for longer presence
       const decay = this.grounded
         ? this.lifeDecay * config.groundedLifeMultiplier
         : this.lifeDecay;
@@ -206,15 +206,15 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         return;
       }
 
-      // Fade out when dying
-      if (this.life < 0.2) {
+      // Gentle fade out when dying
+      if (this.life < 0.25) {
         this.targetScale = 0;
       }
 
-      // Natural gravity
+      // Very gentle gravity - almost floating
       this.vy += config.gravity * this.mass;
 
-      // Air friction - silky smooth
+      // Smooth, slow friction
       this.vx *= config.friction;
       this.vy *= config.friction;
 
@@ -292,40 +292,40 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         }
       }
 
-      // Natural rotation with damping
-      this.rotationSpeed *= 0.995;
-      this.rotation += this.rotationSpeed + this.vx * 0.004;
+      // Natural rotation with very slow damping
+      this.rotationSpeed *= 0.998;
+      this.rotation += this.rotationSpeed + this.vx * 0.002;
     }
 
     draw(ctx, canvasHeight) {
       const { x, y, size, isoHeight, colors, life, scale, rotation } = this;
 
       // Skip if too small
-      if (scale < 0.05) return;
+      if (scale < 0.03) return;
 
-      // Size-based depth effect - smaller cubes appear further away
+      // Size-based depth effect - smaller cubes more ethereal
       const sizeRatio = (size - config.minSize) / (config.maxSize - config.minSize);
-      const sizeDepth = 0.7 + sizeRatio * 0.3;  // Smaller = more transparent
+      const sizeDepth = 0.5 + sizeRatio * 0.5;
 
-      // Parallax depth effect - cubes lower on screen appear slightly larger
-      const depthScale = 0.85 + (y / canvasHeight) * 0.25;
+      // Parallax depth effect
+      const depthScale = 0.9 + (y / canvasHeight) * 0.2;
       const finalScale = scale * depthScale;
 
-      // Elegant opacity based on life, size, and position
-      const lifeEased = life * life;
-      const depthAlpha = 0.6 + (y / canvasHeight) * 0.4;
-      ctx.globalAlpha = lifeEased * 0.8 * sizeDepth * Math.min(finalScale * 1.2, 1) * depthAlpha;
+      // SUBTLE opacity - delicate, ethereal presence
+      const lifeEased = life * life * life;  // Cubic easing for softer fade
+      const depthAlpha = 0.4 + (y / canvasHeight) * 0.4;
+      ctx.globalAlpha = lifeEased * 0.55 * sizeDepth * Math.min(finalScale, 1) * depthAlpha;
 
-      // Scaled size for smooth appear/disappear
+      // Scaled size
       const s = size * finalScale;
       const ih = isoHeight * finalScale;
 
-      // Apply subtle rotation for dynamic feel
+      // Very subtle rotation
       ctx.save();
       ctx.translate(x, y);
-      ctx.rotate(rotation * 0.15);  // Subtle rotation effect
+      ctx.rotate(rotation * 0.08);
 
-      // Top face (relative to origin now)
+      // Top face
       ctx.fillStyle = colors.top;
       ctx.beginPath();
       ctx.moveTo(0, -ih);
