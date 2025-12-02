@@ -440,7 +440,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const onMouseDown = (e) => {
     // Only respond to left click (button 0)
     if (e.button !== 0) return;
-    
+
     mouse.isDown = true;
     mouse.x = e.clientX;
     mouse.y = e.clientY;
