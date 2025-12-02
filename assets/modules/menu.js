@@ -1,4 +1,4 @@
-import { qs, qsa, on } from './dom.js';
+import { qs, qsa } from './dom.js';
 
 // Focus trap helper
 function trapFocus(container) {

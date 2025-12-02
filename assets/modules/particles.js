@@ -1,12 +1,12 @@
 import { qs } from './dom.js';
 
 /**
- * Particle canvas with cursor-traced isometric cubes.
- * Cubes spawn along the cursor path while mouse is pressed.
- * Intensity depends on cursor dwell time at each position.
- * Particles interact and create dust when colliding.
+ * Particle canvas with physics-based isometric cubes.
+ * Cubes spawn ONLY while mouse is pressed AND moving.
+ * Particles are affected by gravity, cursor influence, and collisions.
+ * They bounce off walls, pile up, and fade naturally.
  */
-export function initParticleCanvas(selector = '#particle-canvas', options = {}) {
+export function initParticleCanvas(selector = '#particle-canvas') {
   const canvas = qs(selector);
   if (!canvas) return { stop: () => {} };
 
@@ -22,8 +22,15 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
 
   // Configuration
   const config = {
-    maxParticles: 120,
+    maxParticles: 80,
     colors: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa'],
+    gravity: 0.05,           // Gentle gravity pulling down
+    friction: 0.992,         // Air resistance (higher = less drag)
+    groundFriction: 0.88,    // Friction when touching ground
+    bounciness: 0.35,        // How bouncy walls are
+    cursorRadius: 60,        // Cursor influence radius
+    cursorForce: 0.4,        // How strongly cursor pushes particles
+    minSpawnDistance: 15,    // Min distance to spawn new particle
   };
 
   // Pre-compute shaded colors
@@ -48,14 +55,15 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     return `#${((1 << 24) | (R << 16) | (G << 8) | B).toString(16).slice(1)}`;
   }
 
-  // Mouse state with path tracking
+  // Mouse state - tracks click, position, and movement
   const mouse = {
     x: -1000,
     y: -1000,
     prevX: -1000,
     prevY: -1000,
+    vx: 0,                   // Cursor velocity for physics
+    vy: 0,
     isDown: false,
-    dwellTime: 0,        // How long cursor stays in same area
     lastSpawnX: -1000,
     lastSpawnY: -1000,
   };
@@ -64,89 +72,148 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
   let running = true;
   let rafId = null;
 
-  // Particle types: 'cube' (main), 'dust' (collision effect), 'spark' (quick click)
+  // Particle class with realistic physics
   class Particle {
     constructor() {
       this.active = false;
     }
 
-    init(x, y, color, type, intensity = 1) {
+    init(x, y, color, type = 'cube', intensity = 1) {
       this.x = x;
       this.y = y;
       this.color = color;
       this.colors = getColorSet(color);
       this.type = type;
       this.active = true;
+      this.grounded = false;
 
-      // Size varies by type and intensity
+      // Size based on type
       if (type === 'dust') {
-        this.size = 1.5 + Math.random() * 2;
-        this.lifeDecay = 0.03 + Math.random() * 0.02;
+        this.size = 1 + Math.random() * 2;
+        this.mass = 0.3;
+        this.lifeDecay = 0.04 + Math.random() * 0.02;
       } else if (type === 'spark') {
-        this.size = 2 + Math.random() * 3;
-        this.lifeDecay = 0.025;
+        this.size = 2 + Math.random() * 2.5;
+        this.mass = 0.5;
+        this.lifeDecay = 0.03;
       } else {
-        // cube - size influenced by intensity (dwell time)
-        this.size = 3 + Math.random() * 4 + intensity * 2;
-        this.lifeDecay = 0.008 + (1 - intensity * 0.5) * 0.01;
+        // Cube - main particle
+        this.size = 4 + Math.random() * 4 + intensity * 2;
+        this.mass = 0.8 + this.size * 0.05;
+        this.lifeDecay = 0.004 + Math.random() * 0.003;
       }
 
       this.isoHeight = this.size * 0.5;
       this.life = 1;
+      this.rotation = Math.random() * PI2;
 
-      // Physics
-      this.phase = Math.random() * PI2;
-      this.amplitude = 0.05 + Math.random() * 0.15;
-      this.frequency = 0.01 + Math.random() * 0.02;
-
+      // Initial velocity - inherit some cursor momentum
       if (type === 'dust') {
-        // Dust spreads outward from collision
         const angle = Math.random() * PI2;
-        const speed = 0.5 + Math.random() * 1.5;
+        const speed = 0.3 + Math.random() * 1;
         this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed;
+        this.vy = Math.sin(angle) * speed - 0.3;
       } else if (type === 'spark') {
-        // Quick burst on click
         const angle = Math.random() * PI2;
-        const speed = 1.5 + Math.random() * 2;
+        const speed = 0.8 + Math.random() * 1.5;
         this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed;
+        this.vy = Math.sin(angle) * speed - 0.5;
       } else {
-        // Cubes float gently upward
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = -0.2 - Math.random() * 0.5;
+        // Inherit cursor velocity with gentle spread
+        this.vx = mouse.vx * 0.2 + (Math.random() - 0.5) * 0.8;
+        this.vy = mouse.vy * 0.2 + (Math.random() - 0.5) * 0.8 - 0.3;
       }
 
       return this;
     }
 
-    update(w, h, t) {
-      this.life -= this.lifeDecay;
+    update(w, h) {
+      // Life decay - slightly faster when grounded
+      const decay = this.grounded ? this.lifeDecay * 1.3 : this.lifeDecay;
+      this.life -= decay;
       if (this.life <= 0) {
         this.active = false;
         return;
       }
 
-      // Organic oscillation
-      const osc = Math.sin(t * this.frequency + this.phase) * this.amplitude;
-      this.vx = this.vx * 0.98 + osc * 0.05;
-      this.vy = this.vy * 0.98 + Math.cos(t * this.frequency * 0.7 + this.phase) * this.amplitude * 0.03;
+      // Gravity
+      this.vy += config.gravity * this.mass;
 
-      // Soft boundaries
-      const s = this.size;
-      if (this.x + s > w) { this.x = w - s; this.vx *= -0.3; }
-      else if (this.x - s < 0) { this.x = s; this.vx *= -0.3; }
-      if (this.y + s > h) { this.y = h - s; this.vy *= -0.3; }
-      else if (this.y - s < 0) { this.y = s; this.vy *= -0.3; }
+      // Air friction
+      this.vx *= config.friction;
+      this.vy *= config.friction;
 
+      // Cursor influence - gently push particles when cursor passes near
+      if (mouse.x > 0) {
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const distSq = dx * dx + dy * dy;
+        const radius = config.cursorRadius;
+
+        if (distSq < radius * radius && distSq > 1) {
+          const dist = Math.sqrt(distSq);
+          // Smooth falloff - stronger near center
+          const falloff = 1 - (dist / radius);
+          const force = falloff * falloff * config.cursorForce;
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          // Push away from cursor smoothly
+          this.vx += nx * force * 0.5;
+          this.vy += ny * force * 0.5;
+
+          // Add fraction of cursor's momentum
+          this.vx += mouse.vx * force * 0.15;
+          this.vy += mouse.vy * force * 0.15;
+        }
+      }
+
+      // Apply velocity
       this.x += this.vx;
       this.y += this.vy;
+
+      // Boundary collisions - keep particles inside with soft bounces
+      const margin = this.size * 0.8;
+      this.grounded = false;
+
+      // Left wall
+      if (this.x < margin) {
+        this.x = margin;
+        this.vx = Math.abs(this.vx) * config.bounciness;
+        this.vx = Math.min(this.vx, 2); // Limit max bounce velocity
+      }
+      // Right wall
+      if (this.x > w - margin) {
+        this.x = w - margin;
+        this.vx = -Math.abs(this.vx) * config.bounciness;
+        this.vx = Math.max(this.vx, -2);
+      }
+      // Ceiling
+      if (this.y < margin) {
+        this.y = margin;
+        this.vy = Math.abs(this.vy) * config.bounciness;
+      }
+      // Floor - particles settle and pile up here
+      if (this.y > h - margin) {
+        this.y = h - margin;
+        this.vy = -Math.abs(this.vy) * config.bounciness;
+        this.vx *= config.groundFriction;
+        this.grounded = true;
+
+        // Stop micro-bounces
+        if (Math.abs(this.vy) < 0.3) {
+          this.vy = 0;
+        }
+      }
+
+      // Subtle rotation based on velocity
+      this.rotation += (this.vx + this.vy) * 0.02;
     }
 
     draw(ctx) {
       const { x, y, size, isoHeight, colors, life, type } = this;
 
-      ctx.globalAlpha = life * (type === 'dust' ? 0.6 : 0.9);
+      ctx.globalAlpha = life * (type === 'dust' ? 0.5 : 0.85);
 
       // Top face
       ctx.fillStyle = colors.top;
@@ -188,50 +255,59 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
 
-  // Spawn cubes along cursor path with interpolation
-  const spawnAlongPath = (x1, y1, x2, y2, intensity) => {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
+  // Spawn particles ONLY when click is held AND cursor is moving
+  const trySpawnParticle = () => {
+    // CRITICAL: Only spawn when mouse is actively pressed
+    if (!mouse.isDown || mouse.x < 0) return;
+
+    const dx = mouse.x - mouse.lastSpawnX;
+    const dy = mouse.y - mouse.lastSpawnY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < 1) {
-      // Cursor stationary - spawn at position with higher intensity
-      if (Math.random() < 0.3 + intensity * 0.4) {
-        const offsetX = (Math.random() - 0.5) * 10;
-        const offsetY = (Math.random() - 0.5) * 10;
-        active.push(getParticle(x2 + offsetX, y2 + offsetY, randomColor(), 'cube', intensity));
-      }
-      return;
+    // MUST have movement to spawn - no spawning while stationary
+    if (dist < config.minSpawnDistance) {
+      return; // No spawn without movement
     }
 
-    // Interpolate along the path
-    const step = Math.max(8, 20 - intensity * 10); // Denser spawn with more intensity
-    const steps = Math.ceil(dist / step);
+    // Interpolate spawn positions along the path
+    const steps = Math.ceil(dist / config.minSpawnDistance);
+    const stepX = dx / steps;
+    const stepY = dy / steps;
 
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const px = x1 + dx * t;
-      const py = y1 + dy * t;
+    for (let i = 0; i < steps && active.length < config.maxParticles; i++) {
+      const spawnX = mouse.lastSpawnX + stepX * (i + 1);
+      const spawnY = mouse.lastSpawnY + stepY * (i + 1);
 
-      // Probability influenced by intensity
-      if (Math.random() < 0.4 + intensity * 0.3) {
-        const offsetX = (Math.random() - 0.5) * 6;
-        const offsetY = (Math.random() - 0.5) * 6;
-        active.push(getParticle(px + offsetX, py + offsetY, randomColor(), 'cube', intensity * 0.7));
+      // Add slight randomness to position
+      const offsetX = (Math.random() - 0.5) * 6;
+      const offsetY = (Math.random() - 0.5) * 6;
+
+      // Spawn with probability for natural distribution
+      if (Math.random() < 0.6) {
+        active.push(getParticle(
+          spawnX + offsetX,
+          spawnY + offsetY,
+          randomColor(),
+          'cube',
+          0.5
+        ));
       }
     }
+
+    mouse.lastSpawnX = mouse.x;
+    mouse.lastSpawnY = mouse.y;
   };
 
   // Create spark burst on quick click
   const createSpark = (x, y) => {
-    const count = 3 + (Math.random() * 3) | 0;
-    for (let i = 0; i < count; i++) {
+    const count = 3 + (Math.random() * 4) | 0;
+    for (let i = 0; i < count && active.length < config.maxParticles; i++) {
       active.push(getParticle(x, y, randomColor(), 'spark', 0.5));
     }
   };
 
-  // Check for particle collisions and spawn dust
-  const checkCollisions = () => {
+  // Particle-to-particle collisions
+  const handleCollisions = () => {
     const len = active.length;
     for (let i = 0; i < len; i++) {
       const a = active[i];
@@ -241,29 +317,42 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
         const b = active[j];
         if (!b.active || b.type === 'dust') continue;
 
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
         const distSq = dx * dx + dy * dy;
-        const minDist = (a.size + b.size) * 0.8;
+        const minDist = (a.size + b.size) * 0.6;
 
-        if (distSq < minDist * minDist && distSq > 0) {
-          // Collision detected - spawn dust
-          const midX = (a.x + b.x) / 2;
-          const midY = (a.y + b.y) / 2;
-
-          if (active.length < config.maxParticles - 2) {
-            active.push(getParticle(midX, midY, randomColor(), 'dust', 0.3));
-          }
-
-          // Push particles apart
+        if (distSq < minDist * minDist && distSq > 0.1) {
           const dist = Math.sqrt(distSq);
           const nx = dx / dist;
           const ny = dy / dist;
-          const push = 0.3;
-          a.vx += nx * push;
-          a.vy += ny * push;
-          b.vx -= nx * push;
-          b.vy -= ny * push;
+
+          // Separate particles
+          const overlap = minDist - dist;
+          const separateX = nx * overlap * 0.5;
+          const separateY = ny * overlap * 0.5;
+
+          a.x -= separateX;
+          a.y -= separateY;
+          b.x += separateX;
+          b.y += separateY;
+
+          // Exchange momentum (soft collision)
+          const dvx = a.vx - b.vx;
+          const dvy = a.vy - b.vy;
+          const impulse = (dvx * nx + dvy * ny) * 0.4;
+
+          a.vx -= impulse * nx;
+          a.vy -= impulse * ny;
+          b.vx += impulse * nx;
+          b.vy += impulse * ny;
+
+          // Spawn dust on significant collision
+          if (Math.abs(impulse) > 0.5 && active.length < config.maxParticles - 1) {
+            const midX = (a.x + b.x) / 2;
+            const midY = (a.y + b.y) / 2;
+            active.push(getParticle(midX, midY, randomColor(), 'dust', 0.2));
+          }
         }
       }
     }
@@ -279,48 +368,26 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     ctx.clearRect(0, 0, w, h);
     time++;
 
-    // Spawn particles along cursor path while mouse is down
-    if (mouse.isDown && mouse.x > 0) {
-      // Calculate dwell time (how long cursor stays in same area)
-      const moveDist = Math.sqrt(
-        (mouse.x - mouse.lastSpawnX) ** 2 +
-        (mouse.y - mouse.lastSpawnY) ** 2
-      );
+    // Calculate cursor velocity
+    mouse.vx = (mouse.x - mouse.prevX) * 0.5;
+    mouse.vy = (mouse.y - mouse.prevY) * 0.5;
 
-      if (moveDist < 5) {
-        mouse.dwellTime = Math.min(mouse.dwellTime + 0.02, 1);
-      } else {
-        mouse.dwellTime = Math.max(mouse.dwellTime - 0.05, 0.1);
-      }
-
-      // Spawn along path from previous to current position
-      if (time % 2 === 0) { // Every 2 frames
-        spawnAlongPath(mouse.prevX, mouse.prevY, mouse.x, mouse.y, mouse.dwellTime);
-        mouse.lastSpawnX = mouse.x;
-        mouse.lastSpawnY = mouse.y;
-      }
-    }
+    // Try to spawn particles (only if clicking and moving)
+    trySpawnParticle();
 
     // Update previous position
     mouse.prevX = mouse.x;
     mouse.prevY = mouse.y;
 
-    // Collision detection (throttled)
-    if (time % 5 === 0) {
-      checkCollisions();
+    // Handle collisions (throttled for performance)
+    if (time % 3 === 0) {
+      handleCollisions();
     }
 
-    // Enforce particle limit
-    while (active.length > config.maxParticles) {
-      const removed = active.shift();
-      removed.active = false;
-      pool.push(removed);
-    }
-
-    // Update and draw
+    // Update and draw particles
     for (let i = active.length - 1; i >= 0; i--) {
       const p = active[i];
-      p.update(w, h, time);
+      p.update(w, h);
 
       if (!p.active) {
         active.splice(i, 1);
@@ -342,7 +409,6 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     mouse.prevY = e.clientY;
     mouse.lastSpawnX = e.clientX;
     mouse.lastSpawnY = e.clientY;
-    mouse.dwellTime = 0.2;
     clickStart = Date.now();
   };
 
@@ -355,7 +421,6 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     }
 
     mouse.isDown = false;
-    mouse.dwellTime = 0;
   };
 
   const onMouseMove = (e) => {
@@ -367,7 +432,6 @@ export function initParticleCanvas(selector = '#particle-canvas', options = {}) 
     mouse.x = -1000;
     mouse.y = -1000;
     mouse.isDown = false;
-    mouse.dwellTime = 0;
   };
 
   const onVisibilityChange = () => {
