@@ -19,6 +19,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const ctx = canvas.getContext('2d', { alpha: true });
   const PI2 = Math.PI * 2;
 
+  // Detect mobile for performance optimization
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    || ('ontouchstart' in window);
+
   const resizeCanvas = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -28,7 +32,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   // Configuration - Professional vibrant colors, engaging interaction
   const config = {
-    maxParticles: 300,        // Limit to prevent performance issues
+    maxParticles: isMobile ? 150 : 300,  // Reduced on mobile for performance
     colors: [
       '#60a5fa',              // Brand accent blue (primary)
       '#3b82f6',              // Vivid blue
@@ -52,9 +56,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     cursorPushForce: 0.4,
 
     // Spawning (ONLY with click) - at cursor position
-    spawnInterval: 35,        // ms between spawns while holding click
+    spawnInterval: isMobile ? 50 : 35,  // Slower on mobile
     spawnPerTick: 1,          // Cubes per spawn tick
-    dragSpawnDistance: 8,     // Pixels moved before trail spawn
+    dragSpawnDistance: isMobile ? 12 : 8,  // Less dense on mobile
 
     // Cube sizes - varied for visual interest
     minSize: 5,
@@ -62,6 +66,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
     // Life settings
     groundedLifeMultiplier: 3, // Cubes on ground decay faster
+
+    // Spatial grid for collision optimization
+    gridCellSize: 25,         // Size of each grid cell
   };
 
   // Pre-compute shaded colors
@@ -246,19 +253,24 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       this.rotation += this.rotationSpeed + this.vx * 0.004;
     }
 
-    draw(ctx) {
+    draw(ctx, canvasHeight) {
       const { x, y, size, isoHeight, colors, life, scale, rotation } = this;
 
       // Skip if too small
       if (scale < 0.05) return;
 
-      // Corporate opacity - visible but elegant
-      const lifeEased = life * life;
-      ctx.globalAlpha = lifeEased * 0.85 * Math.min(scale * 1.5, 1);
+      // Parallax depth effect - cubes lower on screen appear slightly larger
+      const depthScale = 0.85 + (y / canvasHeight) * 0.3;
+      const finalScale = scale * depthScale;
 
-      // Scaled size for smooth appear/disappear
-      const s = size * scale;
-      const ih = isoHeight * scale;
+      // Corporate opacity - visible but elegant, with depth fade
+      const lifeEased = life * life;
+      const depthAlpha = 0.7 + (y / canvasHeight) * 0.3;  // Closer = more opaque
+      ctx.globalAlpha = lifeEased * 0.85 * Math.min(finalScale * 1.5, 1) * depthAlpha;
+
+      // Scaled size for smooth appear/disappear with depth
+      const s = size * finalScale;
+      const ih = isoHeight * finalScale;
 
       // Apply subtle rotation for dynamic feel
       ctx.save();
@@ -354,17 +366,62 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.lastSpawnY = mouse.y;
   };
 
-  // Natural collision physics with momentum conservation
-  const handleCollisions = () => {
-    const len = active.length;
+  // Spatial grid for O(n) collision detection
+  const grid = new Map();
 
-    for (let i = 0; i < len; i++) {
+  const getGridKey = (x, y) => {
+    const cellX = Math.floor(x / config.gridCellSize);
+    const cellY = Math.floor(y / config.gridCellSize);
+    return `${cellX},${cellY}`;
+  };
+
+  const buildGrid = () => {
+    grid.clear();
+    for (let i = 0; i < active.length; i++) {
+      const p = active[i];
+      if (!p.active) continue;
+      const key = getGridKey(p.x, p.y);
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key).push(p);
+    }
+  };
+
+  const getNeighborCells = (x, y) => {
+    const cellX = Math.floor(x / config.gridCellSize);
+    const cellY = Math.floor(y / config.gridCellSize);
+    const neighbors = [];
+    // Check 3x3 grid around particle
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const key = `${cellX + dx},${cellY + dy}`;
+        if (grid.has(key)) {
+          neighbors.push(...grid.get(key));
+        }
+      }
+    }
+    return neighbors;
+  };
+
+  // Optimized collision physics with spatial grid - O(n) instead of O(n²)
+  const handleCollisions = () => {
+    buildGrid();
+    const checked = new Set();
+
+    for (let i = 0; i < active.length; i++) {
       const a = active[i];
       if (!a.active) continue;
 
-      for (let j = i + 1; j < len; j++) {
-        const b = active[j];
-        if (!b.active) continue;
+      const neighbors = getNeighborCells(a.x, a.y);
+
+      for (const b of neighbors) {
+        if (a === b || !b.active) continue;
+
+        // Create unique pair key to avoid double-checking
+        const pairKey = a.x < b.x || (a.x === b.x && a.y < b.y)
+          ? `${i}-${active.indexOf(b)}`
+          : `${active.indexOf(b)}-${i}`;
+        if (checked.has(pairKey)) continue;
+        checked.add(pairKey);
 
         const dx = b.x - a.x;
         const dy = b.y - a.y;
@@ -454,7 +511,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         active[i] = active[active.length - 1];
         active.pop();
       } else {
-        p.draw(ctx);
+        p.draw(ctx, h);  // Pass canvas height for parallax effect
       }
     }
   };
