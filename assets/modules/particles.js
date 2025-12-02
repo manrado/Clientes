@@ -31,16 +31,21 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   window.addEventListener('resize', resizeCanvas);
 
   // Configuration - Subtle, elegant decoration for contact portal
+  // Colors harmonized with CSS variables: --accent, --ok, --warn
   const config = {
     maxParticles: isMobile ? 80 : 180,   // Many small cubes
     colors: [
-      '#60a5fa',              // Brand accent blue (primary)
+      // Blues (primary theme) - 50% weight
+      '#60a5fa',              // --accent (primary brand)
+      '#60a5fa',              // (weighted duplicate)
       '#3b82f6',              // Vivid blue
-      '#93c5fd',              // Light blue (subtle)
-      '#10b981',              // Emerald green
-      '#6ee7b7',              // Light emerald (subtle)
-      '#8b5cf6',              // Violet accent
-      '#c4b5fd',              // Light violet (subtle)
+      '#93c5fd',              // Light blue (ethereal)
+      // Emerald (success/trust) - 30% weight
+      '#34d399',              // --ok (exact match)
+      '#6ee7b7',              // Light emerald
+      // Warm accent (subtle warmth) - 20% weight
+      '#fbbf24',              // --warn (golden glow)
+      '#fcd34d',              // Light gold (soft)
     ],
 
     // Physics - SLOW, gentle, floating feel
@@ -305,16 +310,16 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
       // Size-based depth effect - smaller cubes more ethereal
       const sizeRatio = (size - config.minSize) / (config.maxSize - config.minSize);
-      const sizeDepth = 0.5 + sizeRatio * 0.5;
+      const sizeDepth = 0.6 + sizeRatio * 0.4;
 
-      // Parallax depth effect
-      const depthScale = 0.9 + (y / canvasHeight) * 0.2;
+      // Gentle parallax depth (less extreme)
+      const depthScale = 0.95 + (y / canvasHeight) * 0.1;
       const finalScale = scale * depthScale;
 
-      // SUBTLE opacity - delicate, ethereal presence
+      // Balanced opacity - visible but ethereal
       const lifeEased = life * life * life;  // Cubic easing for softer fade
-      const depthAlpha = 0.4 + (y / canvasHeight) * 0.4;
-      ctx.globalAlpha = lifeEased * 0.55 * sizeDepth * Math.min(finalScale, 1) * depthAlpha;
+      const depthAlpha = 0.6 + (y / canvasHeight) * 0.3;
+      ctx.globalAlpha = lifeEased * 0.62 * sizeDepth * Math.min(finalScale, 1) * depthAlpha;
 
       // Scaled size
       const s = size * finalScale;
