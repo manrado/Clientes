@@ -1,15 +1,16 @@
 import { qs } from './dom.js';
 
 /**
- * Cosmic Particle System - Elegant Isometric Cubes
+ * Accounting Duality Particle System - Isometric Cubes
  *
  * Philosophy:
- * - Ethereal, contemplative movement like distant stars
- * - Corporate elegance with muted, sophisticated colors
- * - Minimal gravity - elements float gracefully
- * - Slow, deliberate animations - nothing rushed
- * - Click spawns a gentle emergence, not an explosion
- * - Cursor gently guides existing elements
+ * - Cubes represent the dual nature of accounting (debit/credit)
+ * - Colors inspired by VBA/Excel financial reports
+ * - NO generation without click - cubes only spawn on persistent click
+ * - While clicking: spawn at cursor position continuously
+ * - While clicking + moving: trail follows cursor path
+ * - NO particle limit while clicking - unlimited generation
+ * - Without click: cursor pushes existing cubes (force field)
  */
 export function initParticleCanvas(selector = '#particle-canvas') {
   const canvas = qs(selector);
@@ -25,37 +26,39 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Configuration - elegant, cosmic, corporate
+  // Configuration - VBA/Excel colors, accounting duality
   const config = {
-    maxParticles: 40,         // Few elements - minimalist
+    maxParticles: Infinity,   // NO LIMIT while clicking
     colors: [
-      '#64748b',              // Slate gray
-      '#475569',              // Darker slate
-      '#94a3b8',              // Light slate
-      '#6b7280',              // Cool gray
-      '#9ca3af',              // Soft gray
-      '#60a5fa',              // Accent blue (subtle)
+      '#1F4E79',              // Excel dark blue (headers)
+      '#2E75B6',              // Excel medium blue
+      '#5B9BD5',              // Excel light blue
+      '#548235',              // Excel green (positive/credit)
+      '#70AD47',              // Excel light green
+      '#C65911',              // Excel orange (accent)
+      '#843C0C',              // Excel dark red/brown
+      '#BF8F00',              // Excel gold (totals)
     ],
 
-    // Physics - ethereal, almost weightless
-    gravity: 0.003,           // Near-zero gravity - floating in space
-    friction: 0.997,          // Very slow deceleration
-    groundFriction: 0.99,     // Glides smoothly
-    bounciness: 0.3,          // Soft, muted bounces
-    maxVelocity: 1.5,         // Slow, contemplative movement
+    // Physics - natural, grounded
+    gravity: 0.025,           // Noticeable but gentle gravity
+    friction: 0.995,          // Smooth air resistance
+    groundFriction: 0.96,     // Floor friction
+    bounciness: 0.4,          // Moderate bounces
+    maxVelocity: 4,           // Reasonable speed cap
 
-    // Cursor influence (NO click) - gentle guidance
-    cursorPushRadius: 120,    // Wide, soft influence
-    cursorPushForce: 0.08,    // Very gentle push
+    // Cursor influence (NO click) - push existing cubes
+    cursorPushRadius: 80,
+    cursorPushForce: 0.25,
 
-    // Cursor SPAWN (WITH click) - gradual emergence
-    clickSpawnCount: 3,       // Few at a time - elegant
-    dragSpawnDistance: 40,    // Sparse trail
-    dragSpawnCount: 1,        // One at a time
+    // Spawning (ONLY with click) - at cursor position
+    spawnInterval: 50,        // ms between spawns while holding click
+    spawnPerTick: 2,          // Cubes per spawn tick
+    dragSpawnDistance: 12,    // Pixels moved before trail spawn
 
-    // Cube sizes - varied for depth
-    minSize: 3,
-    maxSize: 8,
+    // Cube sizes
+    minSize: 4,
+    maxSize: 7,
   };
 
   // Pre-compute shaded colors
@@ -86,11 +89,12 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     y: -1000,
     prevX: -1000,
     prevY: -1000,
-    vx: 0,                   // Cursor velocity for physics
+    vx: 0,
     vy: 0,
     isDown: false,
     lastSpawnX: -1000,
     lastSpawnY: -1000,
+    lastSpawnTime: 0,        // For continuous spawn while holding
   };
 
   let time = 0;
@@ -114,45 +118,45 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
       // Varied sizes for depth perception
       this.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
-      this.mass = 0.8 + this.size * 0.02;  // Heavier feel, slower response
-      this.lifeDecay = 0.0008 + Math.random() * 0.0004;  // Long life - linger gracefully
+      this.mass = 0.5 + this.size * 0.05;
+      this.lifeDecay = 0.0015 + Math.random() * 0.001;  // Moderate life
 
       this.isoHeight = this.size * 0.6;
       this.life = 1;
       this.rotation = Math.random() * PI2;
-      this.rotationSpeed = (Math.random() - 0.5) * 0.003;  // Very slow rotation
+      this.rotationSpeed = (Math.random() - 0.5) * 0.01;
 
-      // Ethereal initial velocity - barely moving, drifting
+      // Natural initial velocity - gentle spread from cursor
       const angle = Math.random() * PI2;
-      const speed = 0.1 + Math.random() * 0.2;  // Very slow emergence
-      this.vx = Math.cos(angle) * speed;
-      this.vy = Math.sin(angle) * speed - 0.05;  // Slight upward drift
+      const speed = 0.3 + Math.random() * 0.5;
+      this.vx = Math.cos(angle) * speed + (mouse.vx || 0) * 0.15;
+      this.vy = Math.sin(angle) * speed + (mouse.vy || 0) * 0.15 - 0.3;  // Slight upward
 
-      // Slow, graceful scale animation
-      this.scale = 0;
+      // Quick appearance animation
+      this.scale = 0.3;
       this.targetScale = 1;
 
       return this;
     }
 
     update(w, h) {
-      // Very slow scale-in animation - graceful materialization
-      this.scale += (this.targetScale - this.scale) * 0.04;
+      // Scale-in animation
+      this.scale += (this.targetScale - this.scale) * 0.12;
 
-      // Life decay - long, contemplative existence
-      const decay = this.grounded ? this.lifeDecay * 1.2 : this.lifeDecay;
+      // Life decay
+      const decay = this.grounded ? this.lifeDecay * 1.5 : this.lifeDecay;
       this.life -= decay;
       if (this.life <= 0) {
         this.active = false;
         return;
       }
 
-      // Slow fade out when dying
-      if (this.life < 0.25) {
+      // Fade out when dying
+      if (this.life < 0.2) {
         this.targetScale = 0;
       }
 
-      // Almost no gravity - floating in cosmic space
+      // Natural gravity
       this.vy += config.gravity * this.mass;
 
       // Air friction - silky smooth
@@ -167,8 +171,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         this.vy *= scale;
       }
 
-      // Cursor as GENTLE GUIDE (only when NOT clicking)
-      // Soft, magnetic-like influence - elements drift around cursor
+      // Cursor as FORCE FIELD (only when NOT clicking)
+      // Push cubes away based on proximity and cursor movement
       if (mouse.x > 0 && !mouse.isDown) {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
@@ -178,24 +182,19 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         if (distSq < radius * radius && distSq > 1) {
           const dist = Math.sqrt(distSq);
           const t = 1 - (dist / radius);
-          // Cubic falloff for softer, more organic feel
-          const falloff = t * t * t;
+          const falloff = t * t;  // Quadratic falloff
 
-          // Very gentle push - like a soft breeze
-          const force = falloff * config.cursorPushForce;
+          // Push based on cursor movement speed
+          const cursorSpeed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
+          const force = falloff * config.cursorPushForce * (0.5 + cursorSpeed * 0.3);
 
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Subtle push + slight orbital tendency
-          this.vx += nx * force;
-          this.vy += ny * force;
-
-          // Add slight perpendicular drift for orbital feel
-          this.vx += -ny * force * 0.3;
-          this.vy += nx * force * 0.3;
-
-          this.rotationSpeed += force * 0.002;  // Barely perceptible spin
+          // Push away + inherit cursor direction
+          this.vx += nx * force + mouse.vx * falloff * 0.15;
+          this.vy += ny * force + mouse.vy * falloff * 0.15;
+          this.rotationSpeed += force * 0.008;
         }
       }
 
@@ -223,23 +222,23 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         this.vy = Math.abs(this.vy) * config.bounciness * 0.3;
       }
 
-      // Floor - soft landing, then continue drifting
+      // Floor - natural landing with bounce
       if (this.y > h - margin) {
         this.y = h - margin;
         this.vy = -Math.abs(this.vy) * config.bounciness;
         this.vx *= config.groundFriction;
         this.grounded = true;
 
-        // Quick settle - no bouncing, just glide
-        if (Math.abs(this.vy) < 0.02) {
+        // Settle when slow enough
+        if (Math.abs(this.vy) < 0.1) {
           this.vy = 0;
-          // Continue horizontal drift slowly
+          this.vx *= 0.98;
         }
       }
 
-      // Very slow rotation - contemplative, not chaotic
-      this.rotationSpeed *= 0.998;
-      this.rotation += this.rotationSpeed + this.vx * 0.001;
+      // Natural rotation with damping
+      this.rotationSpeed *= 0.995;
+      this.rotation += this.rotationSpeed + this.vx * 0.004;
     }
 
     draw(ctx) {
@@ -248,9 +247,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       // Skip if too small
       if (scale < 0.05) return;
 
-      // Elegant opacity - more transparent, ethereal presence
-      const lifeEased = Math.pow(life, 1.5);  // Gentler curve
-      ctx.globalAlpha = lifeEased * 0.6 * Math.min(scale * 2, 1);  // More transparent overall
+      // Corporate opacity - visible but elegant
+      const lifeEased = life * life;
+      ctx.globalAlpha = lifeEased * 0.85 * Math.min(scale * 1.5, 1);
 
       // Scaled size for smooth appear/disappear
       const s = size * scale;
@@ -296,23 +295,29 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   const randomColor = () => config.colors[(Math.random() * config.colors.length) | 0];
 
-  // Spawn emergence on click - gentle, not explosive
-  const spawnBurst = (x, y, count) => {
-    for (let i = 0; i < count && active.length < config.maxParticles; i++) {
-      // Staggered spawn positions - natural cluster
-      const angle = (i / count) * PI2 + Math.random() * 0.5;
-      const r = 5 + Math.random() * 15;  // Wider, softer spread
+  // Spawn cubes at cursor position while click is held
+  const spawnAtCursor = () => {
+    if (!mouse.isDown || mouse.x < 0) return;
+    
+    const now = performance.now();
+    if (now - mouse.lastSpawnTime < config.spawnInterval) return;
+    mouse.lastSpawnTime = now;
+    
+    // Spawn at exact cursor position with tiny variance
+    for (let i = 0; i < config.spawnPerTick; i++) {
+      const ox = (Math.random() - 0.5) * 6;
+      const oy = (Math.random() - 0.5) * 6;
       active.push(getParticle(
-        x + Math.cos(angle) * r,
-        y + Math.sin(angle) * r,
+        mouse.x + ox,
+        mouse.y + oy,
         randomColor(),
         'cube',
-        0.3  // Lower intensity
+        0.5
       ));
     }
   };
 
-  // Spawn sparse trail while dragging - deliberate, not frantic
+  // Spawn trail while dragging with click held
   const trySpawnOnDrag = () => {
     if (!mouse.isDown || mouse.x < 0) return;
 
@@ -322,18 +327,22 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
     if (dist < config.dragSpawnDistance) return;
 
-    // Single spawn at cursor position - minimal, elegant
-    if (active.length < config.maxParticles) {
-      const ox = (Math.random() - 0.5) * 10;
-      const oy = (Math.random() - 0.5) * 10;
-      active.push(getParticle(mouse.x + ox, mouse.y + oy, randomColor(), 'cube', 0.3));
+    // Spawn along the path traveled
+    const steps = Math.ceil(dist / config.dragSpawnDistance);
+    for (let i = 0; i < steps; i++) {
+      const t = (i + 1) / steps;
+      const px = mouse.lastSpawnX + dx * t;
+      const py = mouse.lastSpawnY + dy * t;
+      const ox = (Math.random() - 0.5) * 4;
+      const oy = (Math.random() - 0.5) * 4;
+      active.push(getParticle(px + ox, py + oy, randomColor(), 'cube', 0.5));
     }
 
     mouse.lastSpawnX = mouse.x;
     mouse.lastSpawnY = mouse.y;
   };
 
-  // Simple collision - just physics, no spawning
+  // Natural collision physics
   const handleCollisions = () => {
     const len = active.length;
 
@@ -355,20 +364,20 @@ export function initParticleCanvas(selector = '#particle-canvas') {
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Gentle separation - no harsh bouncing
-          const overlap = (minDist - dist) * 0.3;  // Softer separation
+          // Separate overlapping cubes
+          const overlap = (minDist - dist) * 0.4;
           a.x -= nx * overlap;
           a.y -= ny * overlap;
           b.x += nx * overlap;
           b.y += ny * overlap;
 
-          // Very soft velocity exchange - like clouds passing
+          // Natural velocity exchange
           const dvx = a.vx - b.vx;
           const dvy = a.vy - b.vy;
           const dot = dvx * nx + dvy * ny;
 
           if (dot > 0) {
-            const restitution = 0.15;  // Much softer interaction
+            const restitution = 0.3;
             a.vx -= dot * nx * restitution;
             a.vy -= dot * ny * restitution;
             b.vx += dot * nx * restitution;
@@ -401,9 +410,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.vx = smoothVx;
     mouse.vy = smoothVy;
 
-    // Only spawn when clicking
+    // ONLY spawn when clicking - continuous spawn + trail
     if (mouse.isDown) {
-      trySpawnOnDrag();
+      spawnAtCursor();    // Continuous spawn at cursor position
+      trySpawnOnDrag();   // Trail when moving
     }
 
     // Update previous position
@@ -435,9 +445,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.prevY = e.clientY;
     mouse.lastSpawnX = e.clientX;
     mouse.lastSpawnY = e.clientY;
-
-    // Spawn burst on click
-    spawnBurst(e.clientX, e.clientY, config.clickSpawnCount);
+    mouse.lastSpawnTime = 0;  // Reset to spawn immediately
+    // NO burst - continuous spawn handled in animation loop
   };
 
   const onMouseUp = () => {
