@@ -92,10 +92,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         this.size = 1 + Math.random() * 2;
         this.mass = 0.3;
         this.lifeDecay = 0.04 + Math.random() * 0.02;
-      } else if (type === 'spark') {
-        this.size = 2 + Math.random() * 2.5;
-        this.mass = 0.5;
-        this.lifeDecay = 0.03;
       } else {
         // Cube - main particle
         this.size = 4 + Math.random() * 4 + intensity * 2;
@@ -113,11 +109,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         const speed = 0.3 + Math.random() * 1;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed - 0.3;
-      } else if (type === 'spark') {
-        const angle = Math.random() * PI2;
-        const speed = 0.8 + Math.random() * 1.5;
-        this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed - 0.5;
       } else {
         // Inherit cursor velocity with gentle spread
         this.vx = mouse.vx * 0.2 + (Math.random() - 0.5) * 0.8;
@@ -298,14 +289,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.lastSpawnY = mouse.y;
   };
 
-  // Create spark burst on quick click
-  const createSpark = (x, y) => {
-    const count = 3 + (Math.random() * 4) | 0;
-    for (let i = 0; i < count && active.length < config.maxParticles; i++) {
-      active.push(getParticle(x, y, randomColor(), 'spark', 0.5));
-    }
-  };
-
   // Particle-to-particle collisions
   const handleCollisions = () => {
     const len = active.length;
@@ -398,9 +381,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   };
 
-  // Track click duration for spark vs trail
-  let clickStart = 0;
-
   const onMouseDown = (e) => {
     mouse.isDown = true;
     mouse.x = e.clientX;
@@ -409,17 +389,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.prevY = e.clientY;
     mouse.lastSpawnX = e.clientX;
     mouse.lastSpawnY = e.clientY;
-    clickStart = Date.now();
   };
 
-  const onMouseUp = (e) => {
-    const clickDuration = Date.now() - clickStart;
-
-    // Quick click (< 150ms) creates a spark burst
-    if (clickDuration < 150 && mouse.x > 0) {
-      createSpark(mouse.x, mouse.y);
-    }
-
+  const onMouseUp = () => {
     mouse.isDown = false;
   };
 
@@ -434,8 +406,13 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.isDown = false;
   };
 
+  const onBlur = () => {
+    mouse.isDown = false;
+  };
+
   const onVisibilityChange = () => {
     if (document.hidden) {
+      mouse.isDown = false;
       running = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     } else if (!running) {
@@ -444,11 +421,12 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   };
 
-  // Attach listeners
+  // Attach listeners - use window for mouseup to catch releases outside document
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mousedown', onMouseDown);
-  document.addEventListener('mouseup', onMouseUp);
+  window.addEventListener('mouseup', onMouseUp);
   document.addEventListener('mouseleave', onMouseLeave);
+  window.addEventListener('blur', onBlur);
   document.addEventListener('visibilitychange', onVisibilityChange);
 
   animate();
@@ -456,11 +434,13 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   return {
     stop() {
       running = false;
+      mouse.isDown = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('resize', resizeCanvas);
       active.length = 0;

@@ -233,6 +233,10 @@ header {
 }
 
 .btn-primary {
+  background: var(--accent);
+  color: #071225;
+}
+
 .btn-primary:hover {
   color: #071225;
 }
