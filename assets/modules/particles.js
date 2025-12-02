@@ -28,7 +28,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
   // Configuration - Professional vibrant colors, engaging interaction
   const config = {
-    maxParticles: Infinity,   // NO LIMIT while clicking
+    maxParticles: 300,        // Limit to prevent performance issues
     colors: [
       '#60a5fa',              // Brand accent blue (primary)
       '#3b82f6',              // Vivid blue
@@ -41,24 +41,27 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     ],
 
     // Physics - smooth, professional, engaging
-    gravity: 0.02,            // Gentle but present
-    friction: 0.993,          // Smooth deceleration
-    groundFriction: 0.94,     // Natural floor slide
-    bounciness: 0.45,         // Satisfying bounces
-    maxVelocity: 5,           // Dynamic but controlled
+    gravity: 0.025,           // Slightly stronger gravity
+    friction: 0.992,          // Smooth deceleration
+    groundFriction: 0.92,     // Natural floor slide
+    bounciness: 0.5,          // Satisfying bounces
+    maxVelocity: 6,           // Dynamic but controlled
 
     // Cursor influence (NO click) - push existing cubes
-    cursorPushRadius: 90,
-    cursorPushForce: 0.3,
+    cursorPushRadius: 100,
+    cursorPushForce: 0.4,
 
     // Spawning (ONLY with click) - at cursor position
-    spawnInterval: 40,        // ms between spawns while holding click
-    spawnPerTick: 2,          // Cubes per spawn tick
-    dragSpawnDistance: 10,    // Pixels moved before trail spawn
+    spawnInterval: 35,        // ms between spawns while holding click
+    spawnPerTick: 1,          // Cubes per spawn tick
+    dragSpawnDistance: 8,     // Pixels moved before trail spawn
 
     // Cube sizes - varied for visual interest
-    minSize: 4,
-    maxSize: 7,
+    minSize: 5,
+    maxSize: 8,
+
+    // Life settings
+    groundedLifeMultiplier: 3, // Cubes on ground decay faster
   };
 
   // Pre-compute shaded colors
@@ -143,8 +146,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       // Scale-in animation
       this.scale += (this.targetScale - this.scale) * 0.12;
 
-      // Life decay
-      const decay = this.grounded ? this.lifeDecay * 1.5 : this.lifeDecay;
+      // Life decay - faster on ground
+      const decay = this.grounded
+        ? this.lifeDecay * config.groundedLifeMultiplier
+        : this.lifeDecay;
       this.life -= decay;
       if (this.life <= 0) {
         this.active = false;
@@ -186,15 +191,16 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
           // Push based on cursor movement speed
           const cursorSpeed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
-          const force = falloff * config.cursorPushForce * (0.5 + cursorSpeed * 0.3);
+          const baseForce = config.cursorPushForce;
+          const force = falloff * baseForce * (0.6 + cursorSpeed * 0.4);
 
           const nx = dx / dist;
           const ny = dy / dist;
 
           // Push away + inherit cursor direction
-          this.vx += nx * force + mouse.vx * falloff * 0.15;
-          this.vy += ny * force + mouse.vy * falloff * 0.15;
-          this.rotationSpeed += force * 0.008;
+          this.vx += nx * force + mouse.vx * falloff * 0.2;
+          this.vy += ny * force + mouse.vy * falloff * 0.2;
+          this.rotationSpeed += force * 0.01;
         }
       }
 
@@ -298,13 +304,14 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Spawn cubes at cursor position while click is held
   const spawnAtCursor = () => {
     if (!mouse.isDown || mouse.x < 0) return;
+    if (active.length >= config.maxParticles) return;  // Respect limit
 
     const now = performance.now();
     if (now - mouse.lastSpawnTime < config.spawnInterval) return;
     mouse.lastSpawnTime = now;
 
     // Spawn at exact cursor position with tiny variance
-    for (let i = 0; i < config.spawnPerTick; i++) {
+    for (let i = 0; i < config.spawnPerTick && active.length < config.maxParticles; i++) {
       const ox = (Math.random() - 0.5) * 6;
       const oy = (Math.random() - 0.5) * 6;
       active.push(getParticle(
@@ -320,6 +327,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   // Spawn trail while dragging with click held
   const trySpawnOnDrag = () => {
     if (!mouse.isDown || mouse.x < 0) return;
+    if (active.length >= config.maxParticles) return;  // Respect limit
 
     const dx = mouse.x - mouse.lastSpawnX;
     const dy = mouse.y - mouse.lastSpawnY;
@@ -328,8 +336,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     if (dist < config.dragSpawnDistance) return;
 
     // Spawn along the path traveled
-    const steps = Math.ceil(dist / config.dragSpawnDistance);
-    for (let i = 0; i < steps; i++) {
+    const steps = Math.min(Math.ceil(dist / config.dragSpawnDistance), 5);  // Limit steps
+    for (let i = 0; i < steps && active.length < config.maxParticles; i++) {
       const t = (i + 1) / steps;
       const px = mouse.lastSpawnX + dx * t;
       const py = mouse.lastSpawnY + dy * t;
