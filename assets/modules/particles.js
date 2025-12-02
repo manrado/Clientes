@@ -438,6 +438,9 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   };
 
   const onMouseDown = (e) => {
+    // Only respond to left click (button 0)
+    if (e.button !== 0) return;
+    
     mouse.isDown = true;
     mouse.x = e.clientX;
     mouse.y = e.clientY;
@@ -446,10 +449,11 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     mouse.lastSpawnX = e.clientX;
     mouse.lastSpawnY = e.clientY;
     mouse.lastSpawnTime = 0;  // Reset to spawn immediately
-    // NO burst - continuous spawn handled in animation loop
   };
 
-  const onMouseUp = () => {
+  const onMouseUp = (e) => {
+    // Only respond to left click release
+    if (e && e.button !== 0) return;
     mouse.isDown = false;
   };
 
@@ -479,13 +483,19 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     }
   };
 
-  // Attach listeners
+  // Prevent context menu from causing stuck states
+  const onContextMenu = () => {
+    mouse.isDown = false;
+  };
+
+  // Attach listeners - mousedown ONLY on canvas
+  canvas.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mousedown', onMouseDown);
   window.addEventListener('mouseup', onMouseUp);
   document.addEventListener('mouseleave', onMouseLeave);
   window.addEventListener('blur', onBlur);
   document.addEventListener('visibilitychange', onVisibilityChange);
+  document.addEventListener('contextmenu', onContextMenu);
 
   animate();
 
@@ -494,12 +504,13 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       running = false;
       mouse.isDown = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      canvas.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('mouseleave', onMouseLeave);
       window.removeEventListener('blur', onBlur);
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      document.removeEventListener('contextmenu', onContextMenu);
       window.removeEventListener('resize', resizeCanvas);
       active.length = 0;
       pool.length = 0;
