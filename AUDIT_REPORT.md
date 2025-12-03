@@ -158,19 +158,6 @@ ffmpeg -i assets/video.mp4 -c:v libvpx-vp9 -crf 30 assets/video.webm
 ### Corto Plazo (Quick Wins)
 - [x] **CSS externo implementado** (mejor cacheo)
 - [x] **CTAs optimizados** (mayor conversión)
-- [x] **Trust signals añadidos** (credibilidad)
-- [x] **SEO mejorado** (mejor visibilidad)
-
-### Mediano Plazo (Mejoras Estructurales)
-- [ ] **Compresión de video** (5MB objetivo)
-- [ ] **Compilación TailwindCSS** (CSS optimizado para producción)
-- [ ] **Formulario de contacto** (captura de leads estructurada)
-- [ ] **Google Analytics 4** (medición de conversiones)
-
----
-
-## Ejemplos de Código - Antes y Después
-
 ### Ejemplo 1: CTA Principal
 **Antes**:
 ```html
