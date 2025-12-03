@@ -37,30 +37,6 @@ ARIA_LABELS=$(grep -c "aria-label" index.html)
 FOCUS_VISIBLE=$(grep -c "focus-visible" assets/styles.css)
 REDUCED_MOTION=$(grep -c "prefers-reduced-motion" assets/styles.css)
 
-echo "  • Skip links: $SKIP_LINKS ✅"
-echo "  • ARIA labels: $ARIA_LABELS ✅"
-echo "  • Focus indicators: $FOCUS_VISIBLE ✅"
-echo "  • Motion preferences: $REDUCED_MOTION ✅"
-
-# Check business optimization features
-echo ""
-echo "💼 Business Optimization Features:"
-CTA_PRIMARY=$(grep -c "Agendar Consulta" index.html)
-TRUST_SIGNALS=$(grep -c "trust-signal" index.html)
-TESTIMONIALS=$(grep -c "CFO" index.html)
-INSIGHTS_SECTION=$(grep -c "Insights Financieros" index.html)
-
-echo "  • Primary CTAs: $CTA_PRIMARY ✅"
-echo "  • Trust signals: $TRUST_SIGNALS ✅"
-echo "  • Testimonials: $TESTIMONIALS ✅"
-echo "  • Thought leadership: $INSIGHTS_SECTION ✅"
-
-# Check video optimization
-echo ""
-echo "📹 Media Optimization:"
-VIDEO_SIZE=$(ls -la assets/video.mp4 | awk '{print $5}')
-VIDEO_SIZE_MB=$((VIDEO_SIZE / 1024 / 1024))
-
 echo "  • Video file size: ${VIDEO_SIZE_MB}MB"
 if [ $VIDEO_SIZE_MB -gt 5 ]; then
     echo "  ⚠️  Recommendation: Compress video to <5MB for better performance"

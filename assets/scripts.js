@@ -2,12 +2,14 @@ import { initMobileMenu } from './modules/menu.js';
 import { initHeroTags } from './modules/hero-tags.js';
 import { initParticleCanvas } from './modules/particles.js';
 import { initSmoothScroll } from './modules/smooth-scroll.js';
+import { initContactForm } from './modules/contact.js';
 
 // Entry point
 document.addEventListener('DOMContentLoaded', () => {
 	initMobileMenu();
 	initHeroTags();
 	initSmoothScroll();
+	initContactForm();
 	initParticleCanvas('#particle-canvas');
 	// FAB keyboard accessibility (Enter/Space to open mailto)
 	const fab = document.querySelector('.fab-contact');
