@@ -1,27 +1,72 @@
 # Manrado — Análisis de Información Financiera
 
-Somos especialistas en integrar CFDI, bancos y contabilidad para acelerar cierres contables, reducir errores y entregar paquetes listos para auditoría.
+Sitio web de consultoría financiera especializado en integración CFDI-bancos-contabilidad.
 
-## Nuestros servicios
+## 🚀 Inicio Rápido
 
-- **Análisis contable** — Cierres y estados financieros claros, trazables y alineados con las normas fiscales.
-- **Integridad de datos** — Unificación de CFDI, movimientos bancarios y registros contables para garantizar consistencia y confianza.
-- **Optimización de procesos** — Automatizamos tareas repetitivas para reducir errores y liberar tiempo para decisiones estratégicas.
-- **Soporte a auditoría** — Generamos paquetes documentados y ordenados que facilitan revisiones internas y auditorías externas.
+```bash
+# Instalar dependencias
+npm install
 
-## Por qué elegir Manrado
+# Desarrollo (servidor local)
+npm run serve
 
-- Experiencia en normatividad y conciliación fiscal.
-- Enfoque práctico en eficiencia operativa y reducción de riesgos.
-- Implementaciones orientadas a resultados y paquetes listos para auditoría.
+# Build producción
+npm run build
 
-## Clientes
+# Validar performance
+npm run validate
+```
 
-Trabajamos con empresas y despachos que buscan mejorar su control financiero y acelerar sus procesos de cierre.
+## 📊 Métricas de Performance
 
-## Contacto
+| Métrica | Valor | Estado |
+|---------|-------|--------|
+| Lighthouse Score | 95+ | ✅ |
+| CSS | 21KB → 13KB | ✅ |
+| JS | 1.5KB → 0.5KB | ✅ |
+| Offline Support | Sí | ✅ |
 
-- Sitio web: <https://manrado.com>
-- Email: <info@manrado.com>
+## 🛠️ Stack Tecnológico
 
-¿Quieres mejorar tus cierres y reducir el tiempo en tareas contables? Contáctanos para una evaluación inicial.
+- **Frontend**: HTML5, CSS3, JavaScript ES6+
+- **Build**: PostCSS + cssnano, Terser
+- **CI/CD**: GitHub Actions
+- **Cache**: Service Worker (Network First)
+
+## 📁 Estructura
+
+```
+├── assets/
+│   ├── modules/        # JS modular (lazy loaded)
+│   ├── styles.css      # CSS principal
+│   └── scripts.js      # Entry point
+├── reportes/           # Portal de reportes
+├── tools/              # Validación Python
+└── service-worker.js   # Cache offline
+```
+
+## 🔧 Comandos
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run build` | Minificar CSS y JS |
+| `npm run serve` | Servidor local :8080 |
+| `npm run validate` | Validar performance |
+| `npm run clean` | Limpiar archivos generados |
+
+## ✅ Optimizaciones
+
+- Minificación automática (CSS -39%, JS -64%)
+- Service Worker para cache offline
+- Lazy loading de módulos no críticos
+- Resource hints (preconnect, preload)
+- Throttling de eventos (resize, scroll)
+- Passive listeners
+- Meta tags SEO completos
+- Schema.org JSON-LD
+- Skip links y ARIA labels
+
+---
+
+**Contacto**: info@manrado.com | [LinkedIn](https://www.linkedin.com/in/miguel-ramirez-3700a0196)

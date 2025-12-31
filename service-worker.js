@@ -1,21 +1,15 @@
 /**
- * Service Worker - Manrado Website
+ * Service Worker - Manrado Website v2
  * Estrategia: Network First con fallback a cache
  */
 
-const CACHE_NAME = 'manrado-v1';
+const CACHE_NAME = 'manrado-v2';
 const urlsToCache = [
   '/',
-  '/index.html',
   '/assets/styles.css',
   '/assets/scripts.js',
   '/assets/icons.svg',
-  '/assets/silueta_blanca.ico',
-  '/assets/modules/dom.js',
-  '/assets/modules/menu.js',
-  '/assets/modules/hero-tags.js',
-  '/assets/modules/particles.js',
-  '/assets/modules/smooth-scroll.js'
+  '/assets/silueta_blanca.ico'
 ];
 
 // Instalación del Service Worker

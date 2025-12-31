@@ -1,20 +1,38 @@
 
-.clinerules/byterover-rules.md
-.kilocode/rules/byterover-rules.md
-.roo/rules/byterover-rules.md
-.windsurf/rules/byterover-rules.md
-.cursor/rules/byterover-rules.mdc
-.kiro/steering/byterover-rules.md
-.qoder/rules/byterover-rules.md
-.augment/rules/byterover-rules.md
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+assets/*.min.css
+assets/*.min.js
 
 # Virtual environment
 .venv/
 
-# Node.js
-node_modules/
-package-lock.json
+# Logs
+*.log
+npm-debug.log*
 
-# Build outputs (minified files are generated, not committed)
-assets/*.min.css
-assets/*.min.js
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Byterover rules
+.clinerules/
+.kilocode/
+.roo/
+.windsurf/
+.cursor/
+.kiro/
+.qoder/
+.augment/

@@ -1,6 +1,6 @@
 {
   "name": "manrado-website",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Manrado - Análisis de Información Financiera",
   "private": true,
   "scripts": {
@@ -9,7 +9,8 @@
     "build:js": "terser assets/scripts.js -o assets/scripts.min.js --module --compress --mangle",
     "serve": "http-server -p 8080 -c-1",
     "validate": "python tools/validate_performance.py",
-    "validate:strict": "python tools/validate_performance.py --fail-on-warnings"
+    "validate:strict": "python tools/validate_performance.py --fail-on-warnings",
+    "clean": "node -e \"const fs=require('fs');['assets/styles.min.css','assets/scripts.min.js'].forEach(f=>{try{fs.unlinkSync(f)}catch(e){}});console.log('Cleaned')\""
   },
   "devDependencies": {
     "cssnano": "^6.0.0",
