@@ -1,0 +1,33 @@
+{
+  "name": "manrado-website",
+  "version": "1.0.0",
+  "description": "Manrado - Análisis de Información Financiera",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "npx cssnano assets/styles.css assets/styles.min.css",
+    "build:js": "npx terser assets/scripts.js -o assets/scripts.min.js --module --compress --mangle",
+    "serve": "npx http-server -p 8080 -c-1",
+    "validate": "python tools/validate_performance.py",
+    "validate:strict": "python tools/validate_performance.py --fail-on-warnings"
+  },
+  "devDependencies": {
+    "cssnano": "^6.0.0",
+    "cssnano-preset-default": "^6.0.0",
+    "terser": "^5.27.0",
+    "http-server": "^14.1.1"
+  },
+  "keywords": [
+    "financial",
+    "consulting",
+    "cfdi",
+    "accounting",
+    "mexico"
+  ],
+  "author": "Miguel Ramirez <info@manrado.com>",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manrado/Clientes.git"
+  }
+}
