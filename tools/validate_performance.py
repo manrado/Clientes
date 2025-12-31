@@ -143,7 +143,9 @@ def gather_basic_checks(
 
     # SEO & semantics
     title_count = count_pattern(html_text, r"<title>.*?</title>", flags=re.I | re.S)
-    meta_desc_count = count_pattern(html_text, r"name=\\\"description\\\"", flags=re.I)
+    meta_desc_count = count_pattern(
+        html_text, r'name=["\']description["\']', flags=re.I
+    )
     h1_count = count_pattern(html_text, r"<h1[^>]*>", flags=re.I)
     h2_count = count_pattern(html_text, r"<h2[^>]*>", flags=re.I)
     structured_data = count_pattern(html_text, r'"@type"', flags=re.I)
@@ -169,7 +171,11 @@ def gather_basic_checks(
     results.append(CheckResult("H1 presence", h1_count > 0, f"{h1_count} H1(s)"))
 
     # Accessibility
-    skip_links = count_pattern(html_text, r"skip-link", flags=re.I)
+    skip_links = count_pattern(
+        html_text,
+        r'class=["\'][^"\']*skip[^"\']*["\']|href=["\']#[^"\']+["\'][^>]*class=["\'][^"\']*skip',
+        flags=re.I,
+    )
     aria_labels = count_pattern(html_text, r"aria-label", flags=re.I)
     focus_visible = count_pattern(css_text, r"focus-visible", flags=re.I)
     reduced_motion = count_pattern(css_text, r"prefers-reduced-motion", flags=re.I)
@@ -189,7 +195,11 @@ def gather_basic_checks(
     )
 
     # Business features
-    cta_primary = count_pattern(html_text, r"Agendar Consulta", flags=re.I)
+    cta_primary = count_pattern(
+        html_text,
+        r'data-cta=["\']primary["\']|class=["\'][^"\']*btn-primary[^"\']*["\']',
+        flags=re.I,
+    )
     trust_signals = count_pattern(html_text, r"trust-signal", flags=re.I)
     testimonials = count_pattern(html_text, r"CFO", flags=re.I)
     insights_section = count_pattern(html_text, r"Insights Financieros", flags=re.I)
