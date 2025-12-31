@@ -10,3 +10,11 @@
 
 # Virtual environment
 .venv/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Build outputs (minified files are generated, not committed)
+assets/*.min.css
+assets/*.min.js

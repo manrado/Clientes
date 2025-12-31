@@ -5,15 +5,16 @@
   "private": true,
   "scripts": {
     "build": "npm run build:css && npm run build:js",
-    "build:css": "npx cssnano assets/styles.css assets/styles.min.css",
-    "build:js": "npx terser assets/scripts.js -o assets/scripts.min.js --module --compress --mangle",
-    "serve": "npx http-server -p 8080 -c-1",
+    "build:css": "postcss assets/styles.css -o assets/styles.min.css",
+    "build:js": "terser assets/scripts.js -o assets/scripts.min.js --module --compress --mangle",
+    "serve": "http-server -p 8080 -c-1",
     "validate": "python tools/validate_performance.py",
     "validate:strict": "python tools/validate_performance.py --fail-on-warnings"
   },
   "devDependencies": {
     "cssnano": "^6.0.0",
-    "cssnano-preset-default": "^6.0.0",
+    "postcss": "^8.4.0",
+    "postcss-cli": "^11.0.0",
     "terser": "^5.27.0",
     "http-server": "^14.1.1"
   },
