@@ -64,7 +64,7 @@ export function initMobileMenu() {
 
   navLinks.addEventListener('click', (e) => {
     if (e.target && e.target.matches('a')) closeMenu();
-  });
+  }, { passive: true });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && navLinks.classList.contains('active')) {

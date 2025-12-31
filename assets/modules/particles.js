@@ -23,12 +23,24 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     || ('ontouchstart' in window);
 
+  // Throttle helper para limitar llamadas frecuentes
+  const throttle = (fn, wait) => {
+    let last = 0;
+    return (...args) => {
+      const now = performance.now();
+      if (now - last >= wait) {
+        last = now;
+        fn(...args);
+      }
+    };
+  };
+
   const resizeCanvas = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   };
   resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('resize', throttle(resizeCanvas, 100), { passive: true });
 
   // Configuration - harmonized with CSS: --accent, --ok, --warn
   const config = {
