@@ -890,48 +890,36 @@ footer {
 }
 
 .footer-links a {
-  color: var(--accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 0.75rem; /* give social links a bit more space */
-  min-width: 40px;
-  min-height: 40px;
-  transition: color var(--transition-base), background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: #b6c2d9;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-/* Individual social link shapes: GitHub is circular; LinkedIn is a rounded square */
-.footer-links a[aria-label="GitHub"] {
-  border-radius: 999px;
-}
-
-.footer-links a[aria-label="LinkedIn"] {
-  border-radius: 0.5rem;
-}
-
-/* Hover & focus styles for social icons */
-.footer-links a[aria-label="GitHub"]:hover,
-.footer-links a[aria-label="GitHub"]:focus-visible {
-  background: rgba(255,255,255,0.08);
-  color: var(--ink);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  transform: translateY(-1px);
+  text-decoration: none;
 }
 
 .footer-links a[aria-label="LinkedIn"]:hover,
 .footer-links a[aria-label="LinkedIn"]:focus-visible {
-  background: rgba(95,179,255,0.18);
-  color: #071225; /* dark text on light blue background */
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(95,179,255,0.14);
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.10);
+  border-color: rgba(96, 165, 250, 0.24);
 }
 
-.footer-links a:hover {
-  color: var(--ink);
-  text-decoration: underline;
+.footer-links a[aria-label="GitHub"]:hover,
+.footer-links a[aria-label="GitHub"]:focus-visible {
+  color: #c4b5fd;
+  background: rgba(196, 181, 253, 0.10);
+  border-color: rgba(196, 181, 253, 0.24);
 }
 
 /* ==================== HERO SUB-CTA (NUEVO) ==================== */
