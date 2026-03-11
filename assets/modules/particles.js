@@ -59,8 +59,12 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const EMIT_COUNT    = isMobile ? 1  : 2;
   const EMIT_INTERVAL = isMobile ? 0.042 : 0.028; // seconds between continuous emissions
   const POOL_MAX      = isMobile ? 110 : 220;
-  const LIFE_MIN      = 0.9;
-  const LIFE_MAX      = 1.6;
+  const LIFE_MIN      = isMobile ? 1.4 : 1.8;
+  const LIFE_MAX      = isMobile ? 2.4 : 3.2;
+  const FLASH_DUR_MIN = 0.08;   // seconds — spawn flash window
+  const FLASH_DUR_MAX = 0.14;
+  const FLASH_SCALE   = 1.35;   // size multiplier during flash peak
+  const FLASH_OPACITY = 1.4;    // opacity multiplier during flash peak
   const MIN_SIZE      = 2;
   const MAX_SIZE      = 5.5;
   const VEL_DRAG      = 0.955;  // base drag per frame @60fps
@@ -118,6 +122,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       rotationSpeed: (Math.random() - 0.5) * 0.025,
       life: LIFE_MIN + Math.random() * (LIFE_MAX - LIFE_MIN),
       age: 0,
+      flashDur: FLASH_DUR_MIN + Math.random() * (FLASH_DUR_MAX - FLASH_DUR_MIN),
       baseOpacity: 0.45 + Math.random() * 0.35,
     };
   }
@@ -145,12 +150,23 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     for (let i = 0; i < n; i++) particles.push(createParticle(x, y));
   }
 
-  /* ── Fade curve: quick appearance, visible hold, long tail ── */
+  /* ── Fade curve: stable visible phase, smooth long tail ── */
   function fadeCurve(t) {
     // t in [0,1] where 0=birth 1=death
-    if (t < 0.05) return t / 0.05;                   // fast fade-in
-    if (t < 0.3) return 1;                            // full visible
-    return 1 - ((t - 0.3) / 0.7) * ((t - 0.3) / 0.7); // quadratic fade-out
+    // Flash handles the first moments; this curve starts at 1
+    if (t < 0.25) return 1;                            // full visible
+    const fade = (t - 0.25) / 0.75;
+    return 1 - fade * fade;                            // quadratic fade-out
+  }
+
+  /* ── Spawn flash: brief cosmetic sparkle ── */
+  function flashMultiplier(age, flashDur) {
+    if (age >= flashDur) return 1;
+    // 0→1 fast rise then 1→0 ease-out within flashDur
+    const t = age / flashDur;
+    // peak at t≈0.3, smooth bell-ish shape
+    const bell = Math.sin(t * Math.PI);
+    return 1 + bell; // returns 1..2..1
   }
 
   /* ── Animation loop (self-stopping when idle) ── */
@@ -232,42 +248,49 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       p.y  += p.vy * dtRatio;
       p.rotation += p.rotationSpeed * dtRatio;
 
-      // Opacity via fade curve
+      // Opacity via fade curve + spawn flash
       const lifeT = p.age / p.life;
-      const alpha = p.baseOpacity * fadeCurve(lifeT);
+      const flash = flashMultiplier(p.age, p.flashDur);
+      const alpha = Math.min(1, p.baseOpacity * fadeCurve(lifeT) * (flash > 1 ? FLASH_OPACITY * (flash - 1) + 1 : 1));
       if (alpha < 0.005) continue;
 
-      const { size, isoHeight, colors: c } = p;
+      // Scale: slight enlargement during flash, then settle to normal
+      const scaleMul = flash > 1 ? 1 + (FLASH_SCALE - 1) * (flash - 1) : 1;
+      const drawSize = p.size * scaleMul;
+      const drawIsoH = p.isoHeight * scaleMul;
+
       ctx.globalAlpha = alpha;
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rotation * 0.05);
 
+      const c = p.colors;
+
       // Top face
       ctx.fillStyle = c.top;
       ctx.beginPath();
-      ctx.moveTo(0, -isoHeight);
-      ctx.lineTo(size, 0);
-      ctx.lineTo(0, isoHeight);
-      ctx.lineTo(-size, 0);
+      ctx.moveTo(0, -drawIsoH);
+      ctx.lineTo(drawSize, 0);
+      ctx.lineTo(0, drawIsoH);
+      ctx.lineTo(-drawSize, 0);
       ctx.fill();
 
       // Left face
       ctx.fillStyle = c.left;
       ctx.beginPath();
-      ctx.moveTo(-size, 0);
-      ctx.lineTo(0, isoHeight);
-      ctx.lineTo(0, isoHeight + size);
-      ctx.lineTo(-size, size);
+      ctx.moveTo(-drawSize, 0);
+      ctx.lineTo(0, drawIsoH);
+      ctx.lineTo(0, drawIsoH + drawSize);
+      ctx.lineTo(-drawSize, drawSize);
       ctx.fill();
 
       // Right face
       ctx.fillStyle = c.right;
       ctx.beginPath();
-      ctx.moveTo(size, 0);
-      ctx.lineTo(0, isoHeight);
-      ctx.lineTo(0, isoHeight + size);
-      ctx.lineTo(size, size);
+      ctx.moveTo(drawSize, 0);
+      ctx.lineTo(0, drawIsoH);
+      ctx.lineTo(0, drawIsoH + drawSize);
+      ctx.lineTo(drawSize, drawSize);
       ctx.fill();
 
       ctx.restore();
