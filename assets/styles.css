@@ -331,25 +331,7 @@ header {
   height: 16px;
 }
 
-/* Hero Tags - Static visual badges */
-.hero-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: var(--spacing-xl) 0;
-  padding: 0;
-  list-style: none;
-}
 
-.hero-tags .tag {
-  padding: 0.5rem 1rem;
-  background: rgba(95, 179, 255, 0.1);
-  border: 1px solid rgba(95, 179, 255, 0.2);
-  border-radius: 2rem;
-  color: var(--ink);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
 
 /* Responsive tweaks: on smaller screens we slightly darken the overlay to retain
    text contrast and ensure legibility where images might be busier. On larger
@@ -553,8 +535,6 @@ header {
   background: rgba(11, 21, 38, 0.5);
   border-radius: var(--radius);
   border: 1px solid var(--muted);
-  display: flex;
-  flex-direction: column;
   transition: all var(--transition-slow);
 }
 
@@ -563,37 +543,60 @@ header {
   background: rgba(11, 21, 38, 0.7);
 }
 
-.service-category h3 {
+.service-category summary {
   color: var(--accent);
-  margin-top: 0;
-  margin-bottom: var(--spacing-md);
   font-size: 1.25rem;
-  border-bottom: 1px solid var(--muted);
-  padding-bottom: var(--spacing-sm);
   font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--muted);
+}
+
+.service-category summary::-webkit-details-marker {
+  display: none;
+}
+
+.service-category summary::after {
+  content: '+';
+  float: right;
+  font-size: 1.25rem;
+  color: var(--ink-2);
+  transition: transform var(--transition-base);
+}
+
+.service-category[open] summary::after {
+  content: '\2212';
+}
+
+.service-category[open] summary {
+  margin-bottom: var(--spacing-md);
 }
 
 .service-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  flex-grow: 1;
 }
 
 .service-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.85rem;
   padding: 0.6rem 0;
+  padding-left: 1.25rem;
+  position: relative;
   color: var(--ink-2);
   font-size: 0.95rem;
   line-height: 1.5;
 }
 
-.service-list li svg {
-  flex-shrink: 0;
-  margin-top: 4px;
-  color: var(--ok);
+.service-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
 }
 
 .service-item-desc {
