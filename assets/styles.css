@@ -455,8 +455,8 @@ header {
 }
 
 #servicios-detalle .cat-fiscal .service-category-title {
-  color: #2dd4bf;
-  border-bottom-color: rgba(45,212,191,0.2);
+  color: #f3f4f6;
+  border-bottom-color: rgba(45,212,191,0.15);
 }
 
 #servicios-detalle .cat-fiscal .service-list li::before {
@@ -470,8 +470,8 @@ header {
 }
 
 #servicios-detalle .cat-nomina .service-category-title {
-  color: #67e8f9;
-  border-bottom-color: rgba(103,232,249,0.2);
+  color: #f3f4f6;
+  border-bottom-color: rgba(103,232,249,0.15);
 }
 
 #servicios-detalle .cat-nomina .service-list li::before {
@@ -485,8 +485,8 @@ header {
 }
 
 #servicios-detalle .cat-procesos .service-category-title {
-  color: #c4b5fd;
-  border-bottom-color: rgba(196,181,253,0.2);
+  color: #f3f4f6;
+  border-bottom-color: rgba(196,181,253,0.15);
 }
 
 #servicios-detalle .cat-procesos .service-list li::before {
