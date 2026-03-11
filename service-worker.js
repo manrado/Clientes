@@ -3,13 +3,13 @@
  * Estrategia: Network First con fallback a cache
  */
 
-const CACHE_NAME = 'manrado-v16';
+const CACHE_NAME = 'manrado-v17';
 const urlsToCache = [
   '/',
   '/servicios.html',
   '/resultados.html',
-  '/assets/styles.css',
-  '/assets/scripts.js',
+  '/assets/styles.min.css',
+  '/assets/scripts.min.js',
   '/assets/icons.svg',
   '/assets/silueta_blanca.ico'
 ];
