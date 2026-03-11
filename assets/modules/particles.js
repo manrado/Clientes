@@ -68,7 +68,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       isoHeight: size * 0.5,
       colors: getColorSet(color),
       vx: (Math.random() - 0.5) * 0.3,
-      vy: -0.1 - Math.random() * 0.2,
+      vy: (Math.random() - 0.5) * 0.25 - 0.05,
       rotation: Math.random() * Math.PI * 2,
       rotationSpeed: (Math.random() - 0.5) * 0.003,
       opacity: 0.15 + Math.random() * 0.35,
@@ -98,6 +98,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
       // Wrap around edges for seamless looping
       if (p.y < -p.size * 2) { p.y = h + p.size * 2; p.x = Math.random() * w; }
+      if (p.y > h + p.size * 2) { p.y = -p.size * 2; p.x = Math.random() * w; }
       if (p.x < -p.size * 2) p.x = w + p.size * 2;
       if (p.x > w + p.size * 2) p.x = -p.size * 2;
 
