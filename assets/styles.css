@@ -580,9 +580,10 @@ header {
 }
 
 .service-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
   padding: 0.6rem 0;
-  padding-left: 1.25rem;
-  position: relative;
   color: var(--ink-2);
   font-size: 0.95rem;
   line-height: 1.5;
@@ -590,13 +591,16 @@ header {
 
 .service-list li::before {
   content: '';
-  position: absolute;
-  left: 0;
-  top: 1em;
-  width: 6px;
-  height: 6px;
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-top: 0.55em;
   border-radius: 50%;
   background: var(--ok);
+}
+
+.service-list li strong {
+  color: var(--ink);
 }
 
 .service-item-desc {
@@ -816,6 +820,21 @@ footer {
   /* Service categories stack */
   .service-category {
     padding: var(--spacing-md);
+  }
+
+  .service-list li {
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
+    min-width: 0;
+  }
+
+  .service-list li strong {
+    display: block;
+  }
+
+  .service-item-desc {
+    display: block;
+    margin-top: 0.15rem;
   }
 
   /* Footer */
