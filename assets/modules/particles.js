@@ -12,6 +12,11 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   const canvas = qs(selector);
   if (!canvas) return { stop: () => {} };
 
+  /* ── Disable entirely on touch / coarse-pointer devices ── */
+  const isTouch = matchMedia('(hover: none), (pointer: coarse)').matches
+    || navigator.maxTouchPoints > 0;
+  if (isTouch) return { stop: () => {} };
+
   const ctx = canvas.getContext('2d', { alpha: true });
 
   const resizeCanvas = () => {
@@ -26,9 +31,6 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     resizeTimer = setTimeout(resizeCanvas, 150);
   };
   window.addEventListener('resize', onResize, { passive: true });
-
-  /* ── Platform detection ── */
-  const isMobile = matchMedia('(pointer: coarse)').matches;
 
   /* ── Colour palette & face shading ── */
   const colors = ['#60a5fa', '#3b82f6', '#93c5fd', '#34d399', '#6ee7b7', '#fbbf24', '#fcd34d'];
@@ -54,27 +56,27 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     return colorCache.get(color);
   }
 
-  /* ── Tuning knobs ── */
-  const BURST_COUNT   = isMobile ? 4   : 8;
-  const EMIT_COUNT    = isMobile ? 1   : 1;
-  const EMIT_INTERVAL = isMobile ? 0.060 : 0.036; // seconds between continuous emissions
-  const POOL_MAX      = isMobile ? 70  : 160;
-  const LIFE_MIN      = isMobile ? 1.6 : 2.2;
-  const LIFE_MAX      = isMobile ? 2.6 : 3.8;
+  /* ── Tuning knobs (desktop only — mobile is disabled at init) ── */
+  const BURST_COUNT   = 8;
+  const EMIT_COUNT    = 1;
+  const EMIT_INTERVAL = 0.036;  // seconds between continuous emissions
+  const POOL_MAX      = 160;
+  const LIFE_MIN      = 2.2;
+  const LIFE_MAX      = 3.8;
   const FLASH_DUR_MIN = 0.09;   // seconds — spawn flash window
   const FLASH_DUR_MAX = 0.14;
   const FLASH_SCALE   = 1.30;   // size multiplier during flash peak
   const FLASH_OPACITY = 1.35;   // opacity multiplier during flash peak
-  const MIN_SIZE      = isMobile ? 2.5 : 2;
+  const MIN_SIZE      = 2;
   const MAX_SIZE      = 5.5;
-  const VEL_DRAG      = isMobile ? 0.975 : 0.970; // base drag per frame @60fps
-  const ROT_DRAG      = isMobile ? 0.985 : 0.980;
-  const CURSOR_RADIUS = isMobile ? 65 : 90;
-  const CURSOR_REPUL  = isMobile ? 0.15 : 0.22;  // radial repulsion strength
-  const CURSOR_DRAG_F = isMobile ? 0.06 : 0.10;  // cursor-velocity drag strength
-  const CURSOR_CURL   = isMobile ? 0.04 : 0.06;  // tangential curl strength
-  const SPAWN_JITTER  = isMobile ? 6 : 8;         // px scatter around cursor on spawn
-  const CURSOR_VEL_INHERIT = isMobile ? 0.25 : 0.35; // fraction of cursor velocity inherited
+  const VEL_DRAG      = 0.970;  // base drag per frame @60fps
+  const ROT_DRAG      = 0.980;
+  const CURSOR_RADIUS = 90;
+  const CURSOR_REPUL  = 0.22;   // radial repulsion strength
+  const CURSOR_DRAG_F = 0.10;   // cursor-velocity drag strength
+  const CURSOR_CURL   = 0.06;   // tangential curl strength
+  const SPAWN_JITTER  = 8;      // px scatter around cursor on spawn
+  const CURSOR_VEL_INHERIT = 0.35; // fraction of cursor velocity inherited
 
   /* ── Particle pool (starts empty) ── */
   const particles = [];
@@ -102,7 +104,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   /* ── Particle creation ── */
   function createParticle(x, y) {
     const angle  = Math.random() * Math.PI * 2;
-    const speed  = isMobile ? 0.2 + Math.random() * 0.8 : 0.3 + Math.random() * 1.2;
+    const speed  = 0.3 + Math.random() * 1.2;
     const jAngle = Math.random() * Math.PI * 2;
     const jDist  = Math.random() * SPAWN_JITTER;
     const size   = MIN_SIZE + Math.random() * (MAX_SIZE - MIN_SIZE);
