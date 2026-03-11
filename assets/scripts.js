@@ -15,6 +15,17 @@ const loadDeferredModules = () => {
     initMobileMenu();
   });
 
+  // FAB keyboard accessibility
+  const fab = document.querySelector('.fab-contact');
+  if (fab) {
+    fab.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fab.click();
+      }
+    });
+  }
+
   // Copyright year
   const yearSpan = document.getElementById('copyright-year');
   if (yearSpan) yearSpan.textContent = new Date().getFullYear();
