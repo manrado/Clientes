@@ -639,17 +639,6 @@ footer {
   animation: moodborder-anim 4s linear infinite;
 }
 
-/* Particle Canvas */
-#particle-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9998;
-  pointer-events: none;
-}
-
 /* ==================== ANIMATIONS ==================== */
 @keyframes moodborder-anim {
   0% {
@@ -935,7 +924,4 @@ section:not(.hero) {
     scroll-behavior: auto !important;
   }
 
-  #particle-canvas {
-    display: none !important;
-  }
 }

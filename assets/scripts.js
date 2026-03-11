@@ -15,14 +15,6 @@ const loadDeferredModules = () => {
     initMobileMenu();
   });
 
-  // Partículas - solo si el canvas existe
-  const canvas = document.getElementById('particle-canvas');
-  if (canvas) {
-    import('./modules/particles.js').then(({ initParticleCanvas }) => {
-      initParticleCanvas('#particle-canvas');
-    });
-  }
-
   // FAB keyboard accessibility
   const fab = document.querySelector('.fab-contact');
   if (fab) {
