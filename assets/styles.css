@@ -331,7 +331,7 @@ header {
   height: 16px;
 }
 
-/* Hero Tags - Interactive subtle elements */
+/* Hero Tags - Static visual badges */
 .hero-tags {
   display: flex;
   flex-wrap: wrap;
@@ -346,30 +346,9 @@ header {
   background: rgba(95, 179, 255, 0.1);
   border: 1px solid rgba(95, 179, 255, 0.2);
   border-radius: 2rem;
-  color: var(--ink); /* CAMBIADO: de --ink-2 para más brillo */
+  color: var(--ink);
   font-size: 0.875rem;
-  cursor: pointer;
-  transition: all var(--transition-base);
   font-weight: 500;
-}
-
-.hero-tags .tag:hover,
-.hero-tags .tag:focus {
-  background: rgba(95, 179, 255, 0.2);
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-2px);
-}
-
-.hero-tags .tag:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.hero-tags .tag.active {
-  background: rgba(95, 179, 255, 0.25);
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 /* Responsive tweaks: on smaller screens we slightly darken the overlay to retain
@@ -529,12 +508,6 @@ header {
 
 .card:hover .icon {
   transform: scale(1.15) rotate(5deg);
-}
-
-.card.highlight {
-  border-color: var(--accent);
-  box-shadow: 0 0 20px rgba(95, 179, 255, 0.3);
-  transform: translateY(-6px);
 }
 
 /* Result Cards */
@@ -760,9 +733,6 @@ footer {
   margin: var(--spacing-md) 0 0; /* Reduce top margin after removing redundant button */
 }
 
-/* Ajuste para el contenedor de botones del hero */
-
-
 /* ==================== FLOATING ACTION BUTTON (NUEVO) ==================== */
 .fab-contact {
   position: fixed;
@@ -911,18 +881,6 @@ footer {
   }
 }
 
-/* ==================== ACCESSIBILITY ==================== */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .card {
@@ -962,8 +920,7 @@ section:not(.hero) {
 
 /* GPU acceleration para animaciones suaves */
 .card,
-.fab-contact,
-.tag {
+.fab-contact {
   will-change: transform;
 }
 

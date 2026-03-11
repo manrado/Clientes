@@ -15,11 +15,6 @@ const loadDeferredModules = () => {
     initMobileMenu();
   });
 
-  // Hero tags
-  import('./modules/hero-tags.js').then(({ initHeroTags }) => {
-    initHeroTags();
-  });
-
   // Partículas - solo si el canvas existe
   const canvas = document.getElementById('particle-canvas');
   if (canvas) {
