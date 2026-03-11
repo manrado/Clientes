@@ -369,6 +369,93 @@ header {
   background: var(--bg-2);
 }
 
+/* ==================== SECTION IDENTITIES ==================== */
+/* Detalle de Servicios — teal accent */
+#servicios-detalle {
+  --section-accent: #34d399;
+  background: #111827;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  border-top: 1px solid rgba(148,163,184,0.08);
+}
+
+#servicios-detalle h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  letter-spacing: 0.3px;
+}
+
+#servicios-detalle .service-category-title {
+  color: var(--section-accent);
+  border-bottom-color: rgba(52,211,153,0.2);
+}
+
+#servicios-detalle .service-list li::before {
+  background: var(--section-accent);
+}
+
+/* Resultados — blue accent */
+#resultados {
+  --section-accent: #60a5fa;
+  background: #0f172a;
+  padding-top: 6.25rem;
+  padding-bottom: 6.25rem;
+  border-top: 1px solid rgba(148,163,184,0.08);
+}
+
+#resultados h2 {
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+#resultados .result-card {
+  padding: 1.5rem;
+}
+
+/* Contacto — amber accent */
+.section-contacto {
+  --section-accent: #fbbf24;
+  background: #111827;
+  padding-top: 5.625rem;
+  padding-bottom: 5.625rem;
+  border-top: 1px solid rgba(148,163,184,0.08);
+}
+
+.section-contacto h2 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  color: var(--ink);
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-contacto .lead {
+  margin-bottom: var(--spacing-xl);
+}
+
+.btn-cta {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  border-radius: 2rem;
+  background: var(--section-accent, #fbbf24);
+  color: #071225;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 16px rgba(251,191,36,0.3);
+}
+
+.btn-cta:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(251,191,36,0.45);
+  text-decoration: none;
+}
+
+.btn-cta:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
 .center {
   text-align: center;
 }
@@ -709,42 +796,7 @@ footer {
   margin: var(--spacing-md) 0 0; /* Reduce top margin after removing redundant button */
 }
 
-/* ==================== FLOATING ACTION BUTTON (NUEVO) ==================== */
-.fab-contact {
-  position: fixed;
-  bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
-  z-index: 100;
-  display: inline-block;
-  padding: 0.85rem 1.5rem;
-  border-radius: 2rem; /* Más redondeado para un FAB */
-  background: var(--accent);
-  color: #071225;
-  font-weight: 600;
-  font-size: 1rem;
-  border: 1px solid rgba(0,0,0,0.1);
-  transition: all var(--transition-base);
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(95, 179, 255, 0.4);
-}
 
-.fab-contact:hover {
-  text-decoration: none;
-  filter: brightness(1.15);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(95, 179, 255, 0.5);
-}
-
-.fab-contact:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-  transform: translateY(-3px) scale(1.02);
-}
-
-.fab-contact:active {
-  transform: translateY(0) scale(1);
-}
 
 /* ==================== ANIMATIONS ==================== */
 @media (max-width: 768px) {
@@ -822,10 +874,7 @@ footer {
     padding: var(--spacing-xl) var(--spacing-md);
   }
 
-  /* Ocultar FAB en móvil para no tapar contenido */
-  .fab-contact {
-    display: none;
-  }
+
 }
 
 /* ==================== RESPONSIVE - TABLET ==================== */
@@ -908,7 +957,7 @@ section:not(.hero) {
 
 /* GPU acceleration para animaciones suaves */
 .card,
-.fab-contact {
+.btn-cta {
   will-change: transform;
 }
 
