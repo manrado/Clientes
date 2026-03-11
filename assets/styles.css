@@ -370,27 +370,86 @@ header {
 }
 
 /* ==================== SECTION IDENTITIES ==================== */
-/* Detalle de Servicios — teal accent */
+/* Detalle de Servicios — página propia */
 #servicios-detalle {
-  --section-accent: #34d399;
-  background: #111827;
+  background: #0b1220;
   padding-top: 5rem;
   padding-bottom: 5rem;
   border-top: 1px solid rgba(148,163,184,0.08);
 }
 
+#servicios-detalle h1,
 #servicios-detalle h2 {
+  color: #e5e7eb;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   letter-spacing: 0.3px;
 }
 
-#servicios-detalle .service-category-title {
-  color: var(--section-accent);
-  border-bottom-color: rgba(52,211,153,0.2);
+#servicios-detalle .lead {
+  color: #a8b3c7;
 }
 
-#servicios-detalle .service-list li::before {
-  background: var(--section-accent);
+#servicios-detalle .service-category {
+  background: #111b2e;
+  border-color: #22314b;
+}
+
+#servicios-detalle .service-category:hover {
+  border-color: rgba(160,180,220,0.25);
+  background: #14203a;
+}
+
+#servicios-detalle .service-list li strong {
+  color: #e5e7eb;
+}
+
+#servicios-detalle .service-list li {
+  color: #a8b3c7;
+}
+
+/* — Gestión Fiscal y Contable — teal */
+#servicios-detalle .cat-fiscal {
+  --cat-accent: #2dd4bf;
+}
+
+#servicios-detalle .cat-fiscal .service-category-title {
+  color: #2dd4bf;
+  border-bottom-color: rgba(45,212,191,0.2);
+}
+
+#servicios-detalle .cat-fiscal .service-list li::before {
+  background: #2dd4bf;
+  box-shadow: 0 0 6px rgba(45,212,191,0.45);
+}
+
+/* — Nómina y Recursos Humanos — cyan */
+#servicios-detalle .cat-nomina {
+  --cat-accent: #67e8f9;
+}
+
+#servicios-detalle .cat-nomina .service-category-title {
+  color: #67e8f9;
+  border-bottom-color: rgba(103,232,249,0.2);
+}
+
+#servicios-detalle .cat-nomina .service-list li::before {
+  background: #67e8f9;
+  box-shadow: 0 0 6px rgba(103,232,249,0.45);
+}
+
+/* — Procesos Especiales — violet */
+#servicios-detalle .cat-procesos {
+  --cat-accent: #c4b5fd;
+}
+
+#servicios-detalle .cat-procesos .service-category-title {
+  color: #c4b5fd;
+  border-bottom-color: rgba(196,181,253,0.2);
+}
+
+#servicios-detalle .cat-procesos .service-list li::before {
+  background: #c4b5fd;
+  box-shadow: 0 0 6px rgba(196,181,253,0.45);
 }
 
 /* Resultados — blue accent */
