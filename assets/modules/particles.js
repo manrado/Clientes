@@ -1,19 +1,18 @@
 import { qs } from './dom.js';
 
 /**
- * Ambient Isometric Cube Particles
+ * Interactive Isometric Cube Particles
  *
- * Decorative floating cubes with gentle drift.
- * No user interaction — purely ambient and lightweight.
+ * Click → burst of ephemeral cubes at pointer position.
+ * Hold  → continuous emission while pressed.
+ * Cubes have finite life, soft physics, and fade to nothing.
+ * Without interaction the canvas stays empty.
  */
 export function initParticleCanvas(selector = '#particle-canvas') {
   const canvas = qs(selector);
   if (!canvas) return { stop: () => {} };
 
   const ctx = canvas.getContext('2d', { alpha: true });
-
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    || ('ontouchstart' in window);
 
   const resizeCanvas = () => {
     canvas.width = window.innerWidth;
@@ -28,13 +27,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   };
   window.addEventListener('resize', onResize, { passive: true });
 
-  // Configuration — fewer particles, same color palette
-  const COUNT = isMobile ? 35 : 60;
-  const MIN_SIZE = 2;
-  const MAX_SIZE = 5.5;
+  /* ── Colour palette & face shading ── */
   const colors = ['#60a5fa', '#3b82f6', '#93c5fd', '#34d399', '#6ee7b7', '#fbbf24', '#fcd34d'];
-
-  // Pre-compute shaded face colors
   const colorCache = new Map();
 
   function shadeColor(color, percent) {
@@ -57,58 +51,90 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     return colorCache.get(color);
   }
 
-  // Create a single particle with random position and gentle drift
-  function createParticle() {
-    const size = MIN_SIZE + Math.pow(Math.random(), 0.65) * (MAX_SIZE - MIN_SIZE);
+  /* ── Tuning knobs ── */
+  const POOL_MAX     = 500;
+  const BURST_COUNT  = 12;
+  const EMIT_RATE    = 50;   // ms between emissions while holding
+  const EMIT_COUNT   = 3;    // cubes per emission tick
+  const LIFE_BASE    = 2.0;  // seconds
+  const LIFE_SPREAD  = 0.8;
+  const MIN_SIZE     = 2;
+  const MAX_SIZE     = 5.5;
+  const DRAG         = 0.97; // per-frame velocity damping
+
+  /* ── Particle pool (starts empty) ── */
+  const particles = [];
+
+  function createParticle(x, y) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 0.5 + Math.random() * 2.5;
+    const size  = MIN_SIZE + Math.random() * (MAX_SIZE - MIN_SIZE);
     const color = colors[(Math.random() * colors.length) | 0];
     return {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size,
+      x, y, size,
       isoHeight: size * 0.5,
       colors: getColorSet(color),
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.25 - 0.05,
+      vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 0.5,
+      vy: Math.sin(angle) * speed + (Math.random() - 0.5) * 0.5,
       rotation: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.003,
-      opacity: 0.15 + Math.random() * 0.35,
+      rotationSpeed: (Math.random() - 0.5) * 0.02,
+      life: LIFE_BASE + (Math.random() - 0.5) * LIFE_SPREAD,
+      age: 0,
+      baseOpacity: 0.4 + Math.random() * 0.4,
     };
   }
 
-  const particles = [];
-  for (let i = 0; i < COUNT; i++) {
-    particles.push(createParticle());
+  function emitBurst(x, y, count) {
+    const room = POOL_MAX - particles.length;
+    const n = Math.min(count, room);
+    for (let i = 0; i < n; i++) particles.push(createParticle(x, y));
   }
 
+  /* ── Animation loop (self-stopping when idle) ── */
   let running = true;
-  let rafId = null;
+  let rafId   = null;
+  let lastTs  = 0;
 
-  function animate() {
+  function animate(ts) {
     if (!running) return;
     rafId = requestAnimationFrame(animate);
+
+    const dt = lastTs ? Math.min((ts - lastTs) / 1000, 0.05) : 0.016;
+    lastTs = ts;
 
     const w = canvas.width;
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
+    let i = particles.length;
+    while (i--) {
+      const p = particles[i];
+      p.age += dt;
+
+      if (p.age >= p.life) {
+        particles[i] = particles[particles.length - 1];
+        particles.pop();
+        continue;
+      }
+
+      // Soft physics — drag only, no collisions
+      p.vx *= DRAG;
+      p.vy *= DRAG;
+      p.x  += p.vx;
+      p.y  += p.vy;
       p.rotation += p.rotationSpeed;
 
-      // Wrap around edges for seamless looping
-      if (p.y < -p.size * 2) { p.y = h + p.size * 2; p.x = Math.random() * w; }
-      if (p.y > h + p.size * 2) { p.y = -p.size * 2; p.x = Math.random() * w; }
-      if (p.x < -p.size * 2) p.x = w + p.size * 2;
-      if (p.x > w + p.size * 2) p.x = -p.size * 2;
+      // Fade proportional to remaining life
+      const alpha = p.baseOpacity * (1 - p.age / p.life);
+      if (alpha < 0.01) continue;
 
-      // Draw isometric cube
-      const { size, isoHeight, colors: c, rotation, opacity } = p;
-      ctx.globalAlpha = opacity;
+      const { size, isoHeight, colors: c } = p;
+      ctx.globalAlpha = alpha;
       ctx.save();
       ctx.translate(p.x, p.y);
-      ctx.rotate(rotation * 0.05);
+      ctx.rotate(p.rotation * 0.05);
 
+      // Top face
       ctx.fillStyle = c.top;
       ctx.beginPath();
       ctx.moveTo(0, -isoHeight);
@@ -117,6 +143,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       ctx.lineTo(-size, 0);
       ctx.fill();
 
+      // Left face
       ctx.fillStyle = c.left;
       ctx.beginPath();
       ctx.moveTo(-size, 0);
@@ -125,6 +152,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       ctx.lineTo(-size, size);
       ctx.fill();
 
+      // Right face
       ctx.fillStyle = c.right;
       ctx.beginPath();
       ctx.moveTo(size, 0);
@@ -135,27 +163,91 @@ export function initParticleCanvas(selector = '#particle-canvas') {
 
       ctx.restore();
     }
+
+    ctx.globalAlpha = 1;
+
+    // Self-park when nothing left to draw and nobody is holding
+    if (particles.length === 0 && !holding) {
+      rafId = null;
+      lastTs = 0;
+    }
   }
 
+  function ensureLoop() {
+    if (!rafId && running) rafId = requestAnimationFrame(animate);
+  }
+
+  /* ── Interaction state ── */
+  let holding  = false;
+  let holdX    = 0;
+  let holdY    = 0;
+  let emitTimer = null;
+
+  function startHold(x, y) {
+    holding = true;
+    holdX = x;
+    holdY = y;
+    emitBurst(x, y, BURST_COUNT);
+    ensureLoop();
+    emitTimer = setInterval(() => {
+      if (!holding) return;
+      emitBurst(holdX, holdY, EMIT_COUNT);
+    }, EMIT_RATE);
+  }
+
+  function moveHold(x, y) {
+    if (!holding) return;
+    holdX = x;
+    holdY = y;
+  }
+
+  function endHold() {
+    holding = false;
+    if (emitTimer) { clearInterval(emitTimer); emitTimer = null; }
+  }
+
+  /* ── Event listeners (canvas keeps pointer-events:none) ── */
+  const onMouseDown  = (e) => { startHold(e.clientX, e.clientY); };
+  const onMouseMove  = (e) => { moveHold(e.clientX, e.clientY); };
+  const onMouseUp    = ()  => { endHold(); };
+  const onTouchStart = (e) => { const t = e.touches[0]; if (t) startHold(t.clientX, t.clientY); };
+  const onTouchMove  = (e) => { const t = e.touches[0]; if (t) moveHold(t.clientX, t.clientY); };
+  const onTouchEnd   = ()  => { endHold(); };
+
+  document.addEventListener('mousedown',  onMouseDown);
+  document.addEventListener('mousemove',  onMouseMove);
+  document.addEventListener('mouseup',    onMouseUp);
+  document.addEventListener('touchstart', onTouchStart, { passive: true });
+  document.addEventListener('touchmove',  onTouchMove,  { passive: true });
+  document.addEventListener('touchend',   onTouchEnd);
+
+  /* ── Visibility: pause when tab hidden ── */
   const onVisibilityChange = () => {
     if (document.hidden) {
       running = false;
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    } else if (!running) {
+      endHold();
+    } else {
       running = true;
-      animate();
+      if (particles.length > 0) ensureLoop();
     }
   };
   document.addEventListener('visibilitychange', onVisibilityChange);
 
-  animate();
-
+  /* ── Cleanup handle ── */
   return {
     stop() {
       running = false;
+      endHold();
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      document.removeEventListener('mousedown',  onMouseDown);
+      document.removeEventListener('mousemove',  onMouseMove);
+      document.removeEventListener('mouseup',    onMouseUp);
+      document.removeEventListener('touchstart', onTouchStart);
+      document.removeEventListener('touchmove',  onTouchMove);
+      document.removeEventListener('touchend',   onTouchEnd);
       particles.length = 0;
       colorCache.clear();
     }
