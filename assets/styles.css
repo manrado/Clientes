@@ -543,34 +543,14 @@ header {
   background: rgba(11, 21, 38, 0.7);
 }
 
-.service-category summary {
+.service-category-title {
   color: var(--accent);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
   font-size: 1.25rem;
   font-weight: 600;
-  cursor: pointer;
-  list-style: none;
   padding-bottom: var(--spacing-sm);
   border-bottom: 1px solid var(--muted);
-}
-
-.service-category summary::-webkit-details-marker {
-  display: none;
-}
-
-.service-category summary::after {
-  content: '+';
-  float: right;
-  font-size: 1.25rem;
-  color: var(--ink-2);
-  transition: transform var(--transition-base);
-}
-
-.service-category[open] summary::after {
-  content: '\2212';
-}
-
-.service-category[open] summary {
-  margin-bottom: var(--spacing-md);
 }
 
 .service-list {
@@ -842,12 +822,9 @@ footer {
     padding: var(--spacing-xl) var(--spacing-md);
   }
 
-  /* Ajuste del FAB para móviles */
+  /* Ocultar FAB en móvil para no tapar contenido */
   .fab-contact {
-    bottom: var(--spacing-md);
-    right: var(--spacing-md);
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
+    display: none;
   }
 }
 
