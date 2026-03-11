@@ -55,26 +55,26 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   }
 
   /* ── Tuning knobs ── */
-  const BURST_COUNT   = isMobile ? 5  : 8;
-  const EMIT_COUNT    = isMobile ? 1  : 2;
-  const EMIT_INTERVAL = isMobile ? 0.042 : 0.028; // seconds between continuous emissions
-  const POOL_MAX      = isMobile ? 110 : 220;
-  const LIFE_MIN      = isMobile ? 1.4 : 1.8;
-  const LIFE_MAX      = isMobile ? 2.4 : 3.2;
-  const FLASH_DUR_MIN = 0.08;   // seconds — spawn flash window
+  const BURST_COUNT   = isMobile ? 4   : 8;
+  const EMIT_COUNT    = isMobile ? 1   : 1;
+  const EMIT_INTERVAL = isMobile ? 0.060 : 0.036; // seconds between continuous emissions
+  const POOL_MAX      = isMobile ? 70  : 160;
+  const LIFE_MIN      = isMobile ? 1.6 : 2.2;
+  const LIFE_MAX      = isMobile ? 2.6 : 3.8;
+  const FLASH_DUR_MIN = 0.09;   // seconds — spawn flash window
   const FLASH_DUR_MAX = 0.14;
-  const FLASH_SCALE   = 1.35;   // size multiplier during flash peak
-  const FLASH_OPACITY = 1.4;    // opacity multiplier during flash peak
-  const MIN_SIZE      = 2;
+  const FLASH_SCALE   = 1.30;   // size multiplier during flash peak
+  const FLASH_OPACITY = 1.35;   // opacity multiplier during flash peak
+  const MIN_SIZE      = isMobile ? 2.5 : 2;
   const MAX_SIZE      = 5.5;
-  const VEL_DRAG      = 0.955;  // base drag per frame @60fps
-  const ROT_DRAG      = 0.97;
-  const CURSOR_RADIUS = 90;
-  const CURSOR_REPUL  = 0.30;   // radial repulsion strength
-  const CURSOR_DRAG_F = 0.12;   // cursor-velocity drag strength
-  const CURSOR_CURL   = 0.08;   // tangential curl strength
-  const SPAWN_JITTER  = 8;      // px scatter around cursor on spawn
-  const CURSOR_VEL_INHERIT = 0.35; // fraction of cursor velocity inherited by new cubes
+  const VEL_DRAG      = isMobile ? 0.975 : 0.970; // base drag per frame @60fps
+  const ROT_DRAG      = isMobile ? 0.985 : 0.980;
+  const CURSOR_RADIUS = isMobile ? 65 : 90;
+  const CURSOR_REPUL  = isMobile ? 0.15 : 0.22;  // radial repulsion strength
+  const CURSOR_DRAG_F = isMobile ? 0.06 : 0.10;  // cursor-velocity drag strength
+  const CURSOR_CURL   = isMobile ? 0.04 : 0.06;  // tangential curl strength
+  const SPAWN_JITTER  = isMobile ? 6 : 8;         // px scatter around cursor on spawn
+  const CURSOR_VEL_INHERIT = isMobile ? 0.25 : 0.35; // fraction of cursor velocity inherited
 
   /* ── Particle pool (starts empty) ── */
   const particles = [];
@@ -102,7 +102,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   /* ── Particle creation ── */
   function createParticle(x, y) {
     const angle  = Math.random() * Math.PI * 2;
-    const speed  = 0.4 + Math.random() * 1.8;
+    const speed  = isMobile ? 0.2 + Math.random() * 0.8 : 0.3 + Math.random() * 1.2;
     const jAngle = Math.random() * Math.PI * 2;
     const jDist  = Math.random() * SPAWN_JITTER;
     const size   = MIN_SIZE + Math.random() * (MAX_SIZE - MIN_SIZE);
@@ -119,7 +119,7 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       vx: Math.cos(angle) * speed + cvxF + (Math.random() - 0.5) * 0.4,
       vy: Math.sin(angle) * speed + cvyF + (Math.random() - 0.5) * 0.4,
       rotation: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.025,
+      rotationSpeed: (Math.random() - 0.5) * 0.015,
       life: LIFE_MIN + Math.random() * (LIFE_MAX - LIFE_MIN),
       age: 0,
       flashDur: FLASH_DUR_MIN + Math.random() * (FLASH_DUR_MAX - FLASH_DUR_MIN),
