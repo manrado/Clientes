@@ -370,6 +370,48 @@ header {
 }
 
 /* ==================== SECTION IDENTITIES ==================== */
+
+/* Home — sección resumen de servicios */
+#servicios {
+  background: #08111d;
+}
+
+#servicios h2 {
+  color: #f3f4f6;
+}
+
+#servicios .card {
+  background: #111827;
+  border-color: #223047;
+}
+
+#servicios .card h3 {
+  color: #f3f4f6;
+}
+
+#servicios .card p {
+  color: #aeb8c9;
+}
+
+#servicios .card:hover {
+  border-color: rgba(160,180,220,0.3);
+}
+
+/* — Per-card accents (icon color + hover glow) — */
+#servicios .card[data-index="0"] { --card-accent: #8fb6ff; }
+#servicios .card[data-index="1"] { --card-accent: #b8a6ff; }
+#servicios .card[data-index="2"] { --card-accent: #f2a7b5; }
+#servicios .card[data-index="3"] { --card-accent: #e8c58a; }
+
+#servicios .card .icon {
+  color: var(--card-accent);
+}
+
+#servicios .card:hover {
+  border-color: color-mix(in srgb, var(--card-accent) 35%, transparent);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+}
+
 /* Detalle de Servicios — página propia */
 #servicios-detalle {
   background: #0b1220;
