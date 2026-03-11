@@ -3,10 +3,10 @@ import { qs } from './dom.js';
 /**
  * Interactive Isometric Cube Particles
  *
- * Click → burst of ephemeral cubes at pointer position.
- * Hold  → continuous emission while pressed.
- * Cubes have finite life, soft physics, and fade to nothing.
- * Without interaction the canvas stays empty.
+ * Click  → burst of ephemeral cubes at pointer position.
+ * Hold   → continuous emission while button is pressed.
+ * Move   → cursor gently pushes nearby cubes (no new cubes).
+ * Idle   → canvas empties completely.
  */
 export function initParticleCanvas(selector = '#particle-canvas') {
   const canvas = qs(selector);
@@ -52,15 +52,17 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   }
 
   /* ── Tuning knobs ── */
-  const POOL_MAX     = 500;
-  const BURST_COUNT  = 12;
-  const EMIT_RATE    = 50;   // ms between emissions while holding
-  const EMIT_COUNT   = 3;    // cubes per emission tick
-  const LIFE_BASE    = 2.0;  // seconds
-  const LIFE_SPREAD  = 0.8;
-  const MIN_SIZE     = 2;
-  const MAX_SIZE     = 5.5;
-  const DRAG         = 0.97; // per-frame velocity damping
+  const POOL_MAX      = 500;
+  const BURST_COUNT   = 12;
+  const EMIT_RATE     = 50;    // ms between emissions while holding
+  const EMIT_COUNT    = 3;     // cubes per emission tick
+  const LIFE_BASE     = 2.0;   // seconds
+  const LIFE_SPREAD   = 0.8;
+  const MIN_SIZE      = 2;
+  const MAX_SIZE      = 5.5;
+  const DRAG          = 0.97;  // per-frame velocity damping
+  const CURSOR_RADIUS = 80;    // px — influence zone around cursor
+  const CURSOR_FORCE  = 0.35;  // strength of soft push
 
   /* ── Particle pool (starts empty) ── */
   const particles = [];
@@ -90,6 +92,10 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     for (let i = 0; i < n; i++) particles.push(createParticle(x, y));
   }
 
+  /* ── Cursor tracking (always, for physics influence) ── */
+  let cursorX = -9999;
+  let cursorY = -9999;
+
   /* ── Animation loop (self-stopping when idle) ── */
   let running = true;
   let rafId   = null;
@@ -106,6 +112,8 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
+    const rSq = CURSOR_RADIUS * CURSOR_RADIUS;
+
     let i = particles.length;
     while (i--) {
       const p = particles[i];
@@ -117,7 +125,18 @@ export function initParticleCanvas(selector = '#particle-canvas') {
         continue;
       }
 
-      // Soft physics — drag only, no collisions
+      // Cursor soft-push — smooth inverse-distance repulsion
+      const dx = p.x - cursorX;
+      const dy = p.y - cursorY;
+      const distSq = dx * dx + dy * dy;
+      if (distSq < rSq && distSq > 1) {
+        const dist = Math.sqrt(distSq);
+        const factor = CURSOR_FORCE * (1 - dist / CURSOR_RADIUS);
+        p.vx += (dx / dist) * factor;
+        p.vy += (dy / dist) * factor;
+      }
+
+      // Drag — velocity damping each frame
       p.vx *= DRAG;
       p.vy *= DRAG;
       p.x  += p.vx;
@@ -178,15 +197,17 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   }
 
   /* ── Interaction state ── */
-  let holding  = false;
-  let holdX    = 0;
-  let holdY    = 0;
+  let holding   = false;
+  let holdX     = 0;
+  let holdY     = 0;
   let emitTimer = null;
 
   function startHold(x, y) {
     holding = true;
     holdX = x;
     holdY = y;
+    cursorX = x;
+    cursorY = y;
     emitBurst(x, y, BURST_COUNT);
     ensureLoop();
     emitTimer = setInterval(() => {
@@ -196,9 +217,14 @@ export function initParticleCanvas(selector = '#particle-canvas') {
   }
 
   function moveHold(x, y) {
-    if (!holding) return;
-    holdX = x;
-    holdY = y;
+    // Always update cursor for physics push on existing cubes
+    cursorX = x;
+    cursorY = y;
+    // Only update emission origin if actively holding
+    if (holding) {
+      holdX = x;
+      holdY = y;
+    }
   }
 
   function endHold() {
@@ -206,20 +232,26 @@ export function initParticleCanvas(selector = '#particle-canvas') {
     if (emitTimer) { clearInterval(emitTimer); emitTimer = null; }
   }
 
-  /* ── Event listeners (canvas keeps pointer-events:none) ── */
-  const onMouseDown  = (e) => { startHold(e.clientX, e.clientY); };
-  const onMouseMove  = (e) => { moveHold(e.clientX, e.clientY); };
-  const onMouseUp    = ()  => { endHold(); };
-  const onTouchStart = (e) => { const t = e.touches[0]; if (t) startHold(t.clientX, t.clientY); };
-  const onTouchMove  = (e) => { const t = e.touches[0]; if (t) moveHold(t.clientX, t.clientY); };
-  const onTouchEnd   = ()  => { endHold(); };
+  /* ── Event listeners ── */
+  const onMouseDown    = (e) => { startHold(e.clientX, e.clientY); };
+  const onMouseMove    = (e) => { moveHold(e.clientX, e.clientY); };
+  const onMouseUp      = ()  => { endHold(); };
+  const onMouseLeave   = ()  => { endHold(); cursorX = -9999; cursorY = -9999; };
+  const onTouchStart   = (e) => { const t = e.touches[0]; if (t) startHold(t.clientX, t.clientY); };
+  const onTouchMove    = (e) => { const t = e.touches[0]; if (t) moveHold(t.clientX, t.clientY); };
+  const onTouchEnd     = ()  => { endHold(); };
+  const onPointerCancel = () => { endHold(); };
+  const onBlur         = ()  => { endHold(); };
 
-  document.addEventListener('mousedown',  onMouseDown);
-  document.addEventListener('mousemove',  onMouseMove);
-  document.addEventListener('mouseup',    onMouseUp);
-  document.addEventListener('touchstart', onTouchStart, { passive: true });
-  document.addEventListener('touchmove',  onTouchMove,  { passive: true });
-  document.addEventListener('touchend',   onTouchEnd);
+  document.addEventListener('mousedown',     onMouseDown);
+  document.addEventListener('mousemove',     onMouseMove);
+  document.addEventListener('mouseup',       onMouseUp);
+  document.addEventListener('mouseleave',    onMouseLeave);
+  document.addEventListener('touchstart',    onTouchStart, { passive: true });
+  document.addEventListener('touchmove',     onTouchMove,  { passive: true });
+  document.addEventListener('touchend',      onTouchEnd);
+  document.addEventListener('pointercancel', onPointerCancel);
+  window.addEventListener('blur',            onBlur);
 
   /* ── Visibility: pause when tab hidden ── */
   const onVisibilityChange = () => {
@@ -241,13 +273,16 @@ export function initParticleCanvas(selector = '#particle-canvas') {
       endHold();
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('blur',   onBlur);
       document.removeEventListener('visibilitychange', onVisibilityChange);
-      document.removeEventListener('mousedown',  onMouseDown);
-      document.removeEventListener('mousemove',  onMouseMove);
-      document.removeEventListener('mouseup',    onMouseUp);
-      document.removeEventListener('touchstart', onTouchStart);
-      document.removeEventListener('touchmove',  onTouchMove);
-      document.removeEventListener('touchend',   onTouchEnd);
+      document.removeEventListener('mousedown',     onMouseDown);
+      document.removeEventListener('mousemove',     onMouseMove);
+      document.removeEventListener('mouseup',       onMouseUp);
+      document.removeEventListener('mouseleave',    onMouseLeave);
+      document.removeEventListener('touchstart',    onTouchStart);
+      document.removeEventListener('touchmove',     onTouchMove);
+      document.removeEventListener('touchend',      onTouchEnd);
+      document.removeEventListener('pointercancel', onPointerCancel);
       particles.length = 0;
       colorCache.clear();
     }
