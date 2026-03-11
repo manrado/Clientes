@@ -535,6 +535,15 @@ header {
   color: var(--ink);
 }
 
+.section-page-title {
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin: 0 0 var(--spacing-md);
+}
+
 .muted {
   color: var(--ink-2);
 }
