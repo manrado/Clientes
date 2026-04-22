@@ -851,6 +851,20 @@ a.card {
   line-height: 1.5;
 }
 
+.service-list .svc-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.service-category-note {
+  margin: -0.25rem 0 var(--spacing-sm);
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
 .service-list li::before {
   content: '';
   flex-shrink: 0;
