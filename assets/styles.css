@@ -728,6 +728,11 @@ header {
   flex-direction: column;
 }
 
+a.card {
+  text-decoration: none;
+  color: inherit;
+}
+
 .card:hover {
   transform: translateY(-6px);
   border-color: color-mix(in srgb, var(--brand) 40%, transparent);
