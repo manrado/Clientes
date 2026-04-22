@@ -777,6 +777,9 @@ a.card {
 /* Result Cards */
 .result-card {
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .result-card .muted {
