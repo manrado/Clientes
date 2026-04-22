@@ -40,25 +40,20 @@ const loadDeferredModules = () => {
       showToast._t = setTimeout(() => { toast.style.opacity = '0'; }, 4000);
     };
 
-    fab.addEventListener('click', (e) => {
+    fab.addEventListener('click', () => {
       const href = fab.getAttribute('href') || '';
       const match = href.match(/^mailto:([^?]+)/i);
       if (!match) return;
       const email = match[1];
-      const start = Date.now();
-      // Si tras 600ms la pestaña sigue visible y enfocada, asumimos que no hubo handler
-      setTimeout(() => {
-        if (document.visibilityState === 'visible' && document.hasFocus() && Date.now() - start < 1500) {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(email).then(
-              () => showToast(`Correo copiado: ${email}`),
-              () => showToast(`Escríbenos a ${email}`)
-            );
-          } else {
-            showToast(`Escríbenos a ${email}`);
-          }
-        }
-      }, 600);
+      // Siempre copiar el correo y avisar; el mailto sigue su curso normal.
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(
+          () => showToast(`Correo copiado: ${email}`),
+          () => showToast(`Escríbenos a ${email}`)
+        );
+      } else {
+        showToast(`Escríbenos a ${email}`);
+      }
     });
   }
 
