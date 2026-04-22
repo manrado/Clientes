@@ -786,6 +786,10 @@ a.card {
   text-align: left;
 }
 
+.result-card p {
+  margin-top: 0.25rem;
+}
+
 .kpi {
   display: flex;
   align-items: center;
