@@ -749,11 +749,19 @@ a.card {
   font-size: 1.25rem;
   color: var(--text-main);
   font-weight: 600;
+  line-height: 1.3;
+}
+
+article.card h3 {
+  min-height: calc(1.25rem * 1.3 * 2);
 }
 
 .card p {
-  margin-top: auto;
   line-height: 1.6;
+}
+
+a.card p {
+  margin-top: auto;
 }
 
 .card .icon {
@@ -784,10 +792,6 @@ a.card {
 
 .result-card .muted {
   text-align: left;
-}
-
-#resultados .result-card p {
-  margin-top: var(--spacing-md) !important;
 }
 
 .kpi {
