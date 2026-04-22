@@ -779,6 +779,10 @@ a.card {
   text-align: left;
 }
 
+.result-card .muted {
+  text-align: left;
+}
+
 .kpi {
   display: flex;
   align-items: center;
