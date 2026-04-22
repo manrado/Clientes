@@ -15,44 +15,13 @@ const loadDeferredModules = () => {
     initMobileMenu();
   });
 
-  // FAB keyboard accessibility + mailto fallback (copia al portapapeles si no hay cliente de correo)
+  // FAB keyboard accessibility
   const fab = document.querySelector('.fab-contact');
   if (fab) {
     fab.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         fab.click();
-      }
-    });
-
-    const showToast = (msg) => {
-      let toast = document.getElementById('fab-toast');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'fab-toast';
-        toast.setAttribute('role', 'status');
-        toast.style.cssText = 'position:fixed;bottom:5.5rem;right:1rem;z-index:9999;background:#08111b;color:#fff;padding:0.7rem 1rem;border-radius:0.5rem;font-size:0.9rem;box-shadow:0 6px 20px rgba(0,0,0,0.35);max-width:90vw;opacity:0;transition:opacity .2s ease;';
-        document.body.appendChild(toast);
-      }
-      toast.textContent = msg;
-      requestAnimationFrame(() => { toast.style.opacity = '1'; });
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => { toast.style.opacity = '0'; }, 4000);
-    };
-
-    fab.addEventListener('click', () => {
-      const href = fab.getAttribute('href') || '';
-      const match = href.match(/^mailto:([^?]+)/i);
-      if (!match) return;
-      const email = match[1];
-      // Siempre copiar el correo y avisar; el mailto sigue su curso normal.
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(email).then(
-          () => showToast(`Correo copiado: ${email}`),
-          () => showToast(`Escríbenos a ${email}`)
-        );
-      } else {
-        showToast(`Escríbenos a ${email}`);
       }
     });
   }
