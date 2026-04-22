@@ -852,16 +852,22 @@ a.card {
 }
 
 .service-list .svc-text {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  display: block;
 }
 
-.service-list .svc-text strong,
+.service-list .svc-text strong {
+  display: block;
+  color: var(--text-main);
+  margin-bottom: 0.15rem;
+}
+
 .service-list .svc-text .service-item-desc {
   display: block;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  line-height: 1.45;
 }
 
 .service-category-note {
