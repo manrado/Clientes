@@ -859,6 +859,11 @@ a.card {
   gap: 0.15rem;
 }
 
+.service-list .svc-text strong,
+.service-list .svc-text .service-item-desc {
+  display: block;
+}
+
 .service-category-note {
   margin: -0.25rem 0 var(--spacing-sm);
   font-size: 0.9rem;
