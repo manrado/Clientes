@@ -1,61 +1,35 @@
-# Manrado — Análisis de Información Financiera
+# Manrado — Automatización del cierre contable-fiscal
 
-Somos una firma de consultoría especializada en **integración CFDI–bancos–contabilidad**, ayudando a empresas y personas físicas a lograr cierres más rápidos, menos errores y paquetes listos para auditoría.
-
----
-
-## 🎯 ¿Qué hacemos?
-
-Transformamos la gestión financiera de tu negocio a través de procesos eficientes y análisis contable preciso:
-
-- **Análisis Contable**: Cierres y estados financieros trazables y alineados con SAT.
-- **Integridad de Datos**: Unificación de CFDI y bancos con tu sistema contable para mayor control.
-- **Procesos Eficientes**: Menos tareas repetitivas, menos errores, más tiempo para decidir.
-- **Soporte a Auditoría**: Paquetes ordenados para dirección o auditores externos.
+Integramos CFDI, bancos y contabilidad para ordenar el cierre mensual, reducir retrabajo y dejar la información lista para revisión.
 
 ---
 
-## 📋 Nuestros Servicios
+## ¿Qué resolvemos?
 
-### Gestión Fiscal y Contable
-- Actualización Contable y Fiscal para empresas y personas físicas
-- Inscripción al SAT de empresas y personas físicas
-- Planeación Fiscal
-- Elaboración de Contabilidad, cálculos de impuestos y estados financieros
+- **Cierre contable mensual**: orden de la información para llegar al cierre con menos retrabajo y mejor seguimiento.
+- **Integración y validación de datos**: cruce de CFDI, bancos y contabilidad para detectar diferencias y dar trazabilidad.
+- **Información lista para revisión**: papeles y reportes preparados para contador interno, dirección o auditoría.
 
-### Nómina y Recursos Humanos
-- Inscripción al IMSS (Registro patronal)
-- Cálculo Obrero-Patronal (Determinación de cuotas)
-- Gestión de Nóminas: diseño, elaboración y timbrado
-- Impuesto Sobre Nómina: cálculo e inscripción al padrón
-- Administración Laboral: expedientes y revisión de contratos
-
-### Procesos Especiales
-- Inscripción y gestión del Padrón de Importadores
-- Integración de información fiscal y financiera para licitaciones
+También apoyamos procesos complementarios de nómina, cumplimiento y requerimientos especiales cuando suman al cierre.
 
 ---
 
-## 📊 Resultados que Impulsamos
+## ¿Qué entregamos?
 
-| Resultado | Beneficio |
-|-----------|-----------|
-| **Agilidad** | Cierres contables más rápidos y eficientes |
-| **Precisión** | Integridad de datos y menos retrabajo manual |
-| **Claridad** | Paquetes listos para decisión y auditoría |
+- Papeles de trabajo y checklists de cierre.
+- Reportes de validación entre CFDI, bancos y contabilidad.
+- Información concentrada y preparada para revisión interna o externa.
 
 ---
 
-## 📞 Contáctanos
+## Contacto
 
-¿Listo para optimizar la gestión financiera de tu negocio? Cuéntanos tu situación y te proponemos un plan claro y accionable.
+Cuéntame cómo cierras hoy y te propongo el primer ajuste útil.
 
-📧 **Correo**: [info@manrado.com](mailto:info@manrado.com?subject=Consulta%20Manrado)
-
-🔗 **LinkedIn**: [Miguel Ramírez](https://www.linkedin.com/in/miguel-ramirez-3700a0196)
-
-🌐 **Sitio Web**: [manrado.com](https://manrado.com/)
+- Correo: [info@manrado.com](mailto:info@manrado.com?subject=Diagn%C3%B3stico%20inicial%20Manrado)
+- LinkedIn: [Miguel Ramírez](https://www.linkedin.com/in/miguel-ramirez-3700a0196)
+- Sitio: [manrado.com](https://manrado.com/)
 
 ---
 
-© Manrado. Todos los derechos reservados. Contenido alineado con SAT y prácticas contables mexicanas.
+© Manrado. Contenido alineado con SAT y prácticas contables mexicanas.

@@ -279,6 +279,17 @@ header {
   color: var(--cta-text);
 }
 
+.btn-secondary {
+  background: transparent;
+  color: var(--text-main);
+  border-color: color-mix(in srgb, var(--text-main) 18%, transparent);
+}
+
+.btn-secondary:hover {
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+  color: var(--text-main);
+}
+
 /* ==================== HERO SECTION ==================== */
 .hero {
   position: relative;
@@ -975,6 +986,43 @@ footer {
   margin: var(--spacing-md) 0 0; /* Reduce top margin after removing redundant button */
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+.section-intro {
+  max-width: 72ch;
+}
+
+.section-linkline {
+  margin: var(--spacing-lg) 0 0;
+}
+
+.section-linkline a {
+  font-weight: 600;
+}
+
+.narrow {
+  max-width: 860px;
+}
+
+.about-block {
+  padding-top: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+.about-block h2 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.page-note {
+  margin-top: var(--spacing-xl);
+  color: var(--text-soft);
+}
+
 
 
 /* ==================== ANIMATIONS ==================== */
@@ -1024,6 +1072,10 @@ footer {
   /* Hero adjustments */
   .hero-content {
     padding: 4rem var(--spacing-md) 5rem;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
   }
 
 
