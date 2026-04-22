@@ -786,8 +786,8 @@ a.card {
   text-align: left;
 }
 
-.result-card p {
-  margin-top: 0.25rem;
+#resultados .result-card p {
+  margin-top: var(--spacing-md) !important;
 }
 
 .kpi {
