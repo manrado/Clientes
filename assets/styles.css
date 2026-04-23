@@ -693,6 +693,18 @@ header {
   color: var(--text-muted);
 }
 
+/* About — readable centered prose column */
+.about-prose {
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-prose .lead,
+.about-prose p {
+  max-width: none;
+}
+
 /* ==================== GRID SYSTEM ==================== */
 .grid {
   display: grid;
