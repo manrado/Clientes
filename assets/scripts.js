@@ -15,16 +15,10 @@ const loadDeferredModules = () => {
     initMobileMenu();
   });
 
-  // FAB keyboard accessibility
-  const fab = document.querySelector('.fab-contact');
-  if (fab) {
-    fab.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        fab.click();
-      }
-    });
-  }
+  // Popover de contacto multicanal (WhatsApp, Gmail, Outlook, copiar, mailto)
+  import('./modules/contact-popover.js').then(({ initContactPopover }) => {
+    initContactPopover();
+  });
 
   // Copyright year
   const yearSpan = document.getElementById('copyright-year');

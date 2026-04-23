@@ -633,6 +633,135 @@ header {
   transform: translateY(0);
 }
 
+/* ==================== CONTACT POPOVER ==================== */
+.fab-popover {
+  position: fixed;
+  right: var(--spacing-lg);
+  bottom: calc(var(--spacing-lg) + 3.5rem);
+  z-index: 110;
+  min-width: 17rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.65rem;
+  background: var(--bg-main, #fff);
+  color: var(--text-main, #111);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transform-origin: bottom right;
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+  pointer-events: none;
+}
+
+.fab-popover[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.fab-popover__title {
+  padding: 0.4rem 0.6rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-muted, #666);
+}
+
+.fab-popover__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fab-popover__btn {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+  font-family: inherit;
+}
+
+.fab-popover__btn:hover,
+.fab-popover__btn:focus-visible {
+  background: rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  outline: none;
+}
+
+.fab-popover__btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--brand);
+}
+
+.fab-popover__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--text-muted, #555);
+}
+
+.fab-popover__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.fab-popover__btn--whatsapp .fab-popover__icon {
+  color: #25D366;
+}
+
+.fab-popover__btn.is-copied {
+  color: #0a7a3a;
+  background: rgba(37, 211, 102, 0.12);
+}
+
+.fab-popover__btn.is-copied .fab-popover__icon {
+  color: #0a7a3a;
+}
+
+@media (max-width: 480px) {
+  .fab-popover {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--spacing-sm) + 3rem);
+    max-width: none;
+    transform-origin: bottom center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-popover {
+    transition: opacity 0.01ms;
+    transform: none !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .fab-popover {
+    background: #1a1a1a;
+    color: #f1f1f1;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .fab-popover__btn:hover,
+  .fab-popover__btn:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
 .center {
   text-align: center;
 }
